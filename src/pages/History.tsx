@@ -205,7 +205,7 @@ const TimelineEntry = ({ r }: { r: Row }) => {
             </time>
           </div>
           <p
-            className={`font-display font-medium text-foreground mb-1 ${isThree ? "text-[17px]" : "text-[15px]"}`}
+            className={`font-display font-medium text-foreground mb-1 ${isMulti ? "text-[17px]" : "text-[15px]"}`}
           >
             {r.cards.map((c) => c.name).join("  ·  ")}
           </p>
