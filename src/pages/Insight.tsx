@@ -19,11 +19,6 @@ interface InsightRow {
   created_at: string;
 }
 
-const REFLECTION_QUESTIONS = [
-  "What part of this resonates most — and why?",
-  "If you trusted this perspective today, what would you do differently?",
-  "What's one small, honest step you could take this week?",
-];
 
 const Insight = () => {
   const { id } = useParams<{ id: string }>();
@@ -138,6 +133,9 @@ const Insight = () => {
             <p className="text-[15px] leading-relaxed text-foreground/90">
               {card.shortMeaning}
             </p>
+            <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+              {card.deeperMeaning}
+            </p>
           </article>
         ))}
       </section>
@@ -174,17 +172,19 @@ const Insight = () => {
         </p>
 
         <ul className="space-y-2 mb-4">
-          {REFLECTION_QUESTIONS.map((q, i) => (
-            <li
-              key={i}
-              className="flex gap-3 text-sm text-foreground/85 leading-relaxed"
-            >
-              <span className="font-display text-muted-foreground tabular-nums">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span>{q}</span>
-            </li>
-          ))}
+          {Array.from(new Set(cards.flatMap((c) => c.prompts)))
+            .slice(0, 4)
+            .map((q, i) => (
+              <li
+                key={i}
+                className="flex gap-3 text-sm text-foreground/85 leading-relaxed"
+              >
+                <span className="font-display text-muted-foreground tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span>{q}</span>
+              </li>
+            ))}
         </ul>
 
         <Textarea
