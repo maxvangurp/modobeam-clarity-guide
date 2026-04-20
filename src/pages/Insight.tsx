@@ -172,17 +172,19 @@ const Insight = () => {
         </p>
 
         <ul className="space-y-2 mb-4">
-          {REFLECTION_QUESTIONS.map((q, i) => (
-            <li
-              key={i}
-              className="flex gap-3 text-sm text-foreground/85 leading-relaxed"
-            >
-              <span className="font-display text-muted-foreground tabular-nums">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <span>{q}</span>
-            </li>
-          ))}
+          {Array.from(new Set(cards.flatMap((c) => c.prompts)))
+            .slice(0, 4)
+            .map((q, i) => (
+              <li
+                key={i}
+                className="flex gap-3 text-sm text-foreground/85 leading-relaxed"
+              >
+                <span className="font-display text-muted-foreground tabular-nums">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span>{q}</span>
+              </li>
+            ))}
         </ul>
 
         <Textarea
