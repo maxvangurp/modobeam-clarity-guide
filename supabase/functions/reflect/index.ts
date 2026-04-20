@@ -4,7 +4,7 @@
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 interface CardInput {
@@ -17,9 +17,21 @@ interface CardInput {
 
 interface Payload {
   intention?: string;
-  drawType: "daily" | "three";
+  drawType: string;
+  positionLabels?: string[];
   cards: CardInput[];
 }
+
+const READING_DESCRIPTIONS: Record<string, string> = {
+  daily: "a single daily clarity card",
+  three: "a 3-card insight (past influence → present focus → emerging direction)",
+  "next-phase":
+    "a 5-card Next Phase reading (what is ending → what is emerging → what challenges you → what supports you → your direction)",
+  direction:
+    "a 4-card Direction reading (where you are → what keeps you stuck → what wants to change → next step)",
+  love: "a 4-card Love & Emotion reading (what you feel → what you hold onto → what you need to see → what helps you move forward)",
+  year: "a 4-card Year Reflection (main theme → inner tension → growth area → focus point)",
+};
 
 const SYSTEM_PROMPT = `You are Modobeam — a reflective voice that helps people see themselves more clearly. You sound like a thoughtful human, not a system. Sometimes a perceptive friend, sometimes a quiet therapist, sometimes a writer noticing something true.
 
@@ -45,10 +57,17 @@ Variation — this matters:
 - Don't follow a fixed template. Each reading should sound like it was written by a human reflecting in that moment, not assembled from parts.
 
 What you're actually doing:
-- Reading the *combination* as one lived situation, not three separate cards.
+- Reading the *combination* as one lived situation, not separate cards.
 - Naming the emotional tension underneath — what's pulling in two directions.
 - Reflecting back what the user might already half-know but hasn't let themselves say.
-- Leaving them with a moment of recognition, not a verdict.`;
+- Leaving them with a moment of recognition, not a verdict.
+
+For deeper readings (4-5 cards), go deeper:
+- The positions tell a story — follow the arc, don't treat them as isolated slots.
+- Name specific patterns, not vague tendencies.
+- For love/emotion readings, be emotionally precise about attachment, longing, and what's being avoided.
+- For direction readings, be honest about what's keeping them stuck — name it.
+- For year reflections, give a high-level view that connects dots.`;
 
 
 Deno.serve(async (req: Request) => {
@@ -57,7 +76,8 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { intention, drawType, cards } = (await req.json()) as Payload;
+    const { intention, drawType, positionLabels, cards } =
+      (await req.json()) as Payload;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -65,14 +85,12 @@ Deno.serve(async (req: Request) => {
     }
 
     const isMulti = cards.length > 1;
-    const positionLabels = drawType === "three"
-      ? ["Past influence", "Present focus", "Emerging direction"]
-      : ["Today"];
+    const labels = positionLabels ?? (isMulti ? cards.map((_, i) => `Card ${i + 1}`) : ["Today"]);
 
     const cardSummary = cards
       .map(
         (c, i) =>
-          `${positionLabels[i] ?? `Card ${i + 1}`} — ${c.name} (${c.category}, "${c.keyword}")\n  Short: ${c.shortMeaning}\n  Underlying pattern: ${c.deeperMeaning}`,
+          `${labels[i]} — ${c.name} (${c.category}, "${c.keyword}")\n  Short: ${c.shortMeaning}\n  Underlying pattern: ${c.deeperMeaning}`,
       )
       .join("\n\n");
 
@@ -80,16 +98,19 @@ Deno.serve(async (req: Request) => {
       ? `What they shared:\n"${intention.trim()}"\n\n`
       : `They didn't share a specific intention. Speak to common human experience that fits this combination.\n\n`;
 
+    const readingDesc =
+      READING_DESCRIPTIONS[drawType] ?? `a ${cards.length}-card reading`;
+
     const multiInstructions = isMulti
       ? `
-- "theme": ONE sentence. Name what this moment in their life is actually about. Specific, recognizable, never a definition. Example: "You're trying to make a decision your body has already made."
-- "tension": ONE or TWO sentences. The real friction between these cards as a lived feeling — not a definition. Example: "You're holding on to something you also know you need to release. Both feelings are true, and that's why it hurts."
-- "combined": 2–3 sentences. Read the *combination* as one situation. Don't restate the cards.`
+- "theme": ONE sentence. Name what this moment in their life is actually about. Specific, recognizable, never a definition.
+- "tension": ONE or TWO sentences. The real friction between these cards as a lived feeling — not a definition.
+- "combined": 2–4 sentences. Read the *combination* as one situation. Follow the arc of the positions — they tell a story. Don't restate the cards.`
       : `
 - "theme": ONE sentence. Name what this card is pointing to in their actual life right now. Specific, not a definition.
 - "combined": 2–3 sentences. A grounded interpretation of how this card meets their current moment.`;
 
-    // Rotate opening, rhythm, closing, and tonal lean so each reading feels alive
+    // Rotate opening, rhythm, closing, and tonal lean
     const openings = [
       "Open with a quiet observation about what's happening underneath.",
       "Open with the tension itself, named directly in one line.",
@@ -127,10 +148,17 @@ Deno.serve(async (req: Request) => {
       lean: pick(leans),
       close: pick(closings),
     };
-    // Small entropy nudge so the model doesn't fall into a groove across calls
     const entropy = Math.random().toString(36).slice(2, 8);
 
-    const userPrompt = `${intentionLine}They drew ${drawType === "three" ? "a 3-card insight (past influence → present focus → emerging direction)" : "a single daily card"}.
+    // Deeper readings get more reflection space
+    const reflectionLength =
+      cards.length >= 5
+        ? "6–8 sentences"
+        : cards.length >= 4
+          ? "5–7 sentences"
+          : "4–6 sentences";
+
+    const userPrompt = `${intentionLine}They drew ${readingDesc}.
 
 ${cardSummary}
 
@@ -145,11 +173,10 @@ Forbidden recycled phrases (do NOT use any of these, even slightly reworded): "t
 Leave a little room for interpretation. Not everything has to be explained. Allow one small ambiguity if it makes the reading feel more honest.
 
 Respond in JSON with these fields:${multiInstructions}
-- "reflection": 4–6 sentences. Reflect their situation back to them. Name what they may already half-feel but haven't said. Slightly confronting, never harsh.
+- "reflection": ${reflectionLength}. Reflect their situation back to them. Follow the arc of the card positions — they tell a story from beginning to end. Name what they may already half-feel but haven't said. Slightly confronting, never harsh.
 
 Variation token: ${entropy} (ignore — only here to keep readings fresh).
 Sound written in the moment, not assembled. Return only valid JSON. No markdown, no preamble.`;
-
 
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
@@ -176,7 +203,8 @@ Sound written in the moment, not assembled. Return only valid JSON. No markdown,
       if (response.status === 429) {
         return new Response(
           JSON.stringify({
-            error: "Too many requests. Please pause for a moment and try again.",
+            error:
+              "Too many requests. Please pause for a moment and try again.",
           }),
           {
             status: 429,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
+import { getReadingType } from "@/data/readingTypes";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,7 +13,7 @@ import { Loader2, Check } from "lucide-react";
 interface InsightRow {
   id: string;
   intention: string | null;
-  draw_type: "daily" | "three";
+  draw_type: string;
   cards: { id: string; name: string }[];
   combined_insight: string | null;
   ai_reflection: string | null;
@@ -91,10 +92,8 @@ const Insight = () => {
     .map((c) => getCardById(c.id))
     .filter(Boolean) as NonNullable<ReturnType<typeof getCardById>>[];
 
-  const labels =
-    insight.draw_type === "three"
-      ? ["Past influence", "Present focus", "Emerging"]
-      : ["Today"];
+  const reading = getReadingType(insight.draw_type);
+  const labels = reading?.positionLabels ?? ["Today"];
 
   return (
     <AppShell showBack backTo="/">

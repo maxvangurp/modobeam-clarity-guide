@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { getReadingType } from "@/data/readingTypes";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
@@ -11,7 +12,7 @@ import { toast } from "sonner";
 interface Row {
   id: string;
   intention: string | null;
-  draw_type: "daily" | "three";
+  draw_type: string;
   cards: { id: string; name: string }[];
   combined_insight: string | null;
   created_at: string;
@@ -180,7 +181,8 @@ const LoadingSkeleton = () => (
 /* ── Timeline Entry ── */
 
 const TimelineEntry = ({ r }: { r: Row }) => {
-  const isThree = r.draw_type === "three";
+  const reading = getReadingType(r.draw_type);
+  const isMulti = (reading?.cardCount ?? 1) > 1;
   const preview = getPreview(r);
   return (
     <li>
@@ -188,14 +190,14 @@ const TimelineEntry = ({ r }: { r: Row }) => {
         to={`/insight/${r.id}`}
         className="group block rounded-2xl bg-card/70 backdrop-blur border border-border/60 shadow-soft hover:shadow-card transition-smooth overflow-hidden"
       >
-        <div className={isThree ? "p-5" : "px-5 py-4"}>
+        <div className={isMulti ? "p-5" : "px-5 py-4"}>
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
               <span
                 className={`h-1.5 w-1.5 rounded-full ${categoryDot[r.draw_type] ?? "bg-muted-foreground"}`}
               />
               <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
-                {isThree ? "3-card reading" : "Daily card"}
+                {reading?.label ?? r.draw_type}
               </span>
             </div>
             <time className="text-[10px] text-muted-foreground/70 tabular-nums">
@@ -203,7 +205,7 @@ const TimelineEntry = ({ r }: { r: Row }) => {
             </time>
           </div>
           <p
-            className={`font-display font-medium text-foreground mb-1 ${isThree ? "text-[17px]" : "text-[15px]"}`}
+            className={`font-display font-medium text-foreground mb-1 ${isMulti ? "text-[17px]" : "text-[15px]"}`}
           >
             {r.cards.map((c) => c.name).join("  ·  ")}
           </p>
