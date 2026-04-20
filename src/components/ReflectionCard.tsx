@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { OracleCard } from "@/data/deck";
+import { getCardArt } from "@/data/cardArt";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -25,6 +26,7 @@ export const ReflectionCard = ({
 }: Props) => {
   const [internal, setInternal] = useState(false);
   const revealed = controlled ?? internal;
+  const art = getCardArt(card.id);
 
   const handleClick = () => {
     if (revealed) return;
@@ -70,25 +72,36 @@ export const ReflectionCard = ({
 
         {/* Front */}
         <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[1.5rem] bg-gradient-card shadow-card overflow-hidden border border-border/60">
-          <div className="absolute inset-0 bg-gradient-beam opacity-40" />
-          <div className="absolute inset-3 rounded-[1.25rem] border border-foreground/5" />
-          <div className="relative h-full flex flex-col items-center justify-between p-5 text-center">
-            <span className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-medium">
-              {card.category}
-            </span>
+          {art ? (
+            <img
+              src={art}
+              alt={`${card.name} card`}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-gradient-beam opacity-40" />
+              <div className="absolute inset-3 rounded-[1.25rem] border border-foreground/5" />
+              <div className="relative h-full flex flex-col items-center justify-between p-5 text-center">
+                <span className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-medium">
+                  {card.category}
+                </span>
 
-            <div className="flex flex-col items-center gap-2">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-beam-soft to-beam/80 shadow-glow mb-2 animate-float-soft" />
-              <h3 className="font-display text-2xl font-medium text-foreground">
-                {card.name}
-              </h3>
-              <p className="text-sm text-muted-foreground italic">
-                {card.keyword}
-              </p>
-            </div>
+                <div className="flex flex-col items-center gap-2">
+                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-beam-soft to-beam/80 shadow-glow mb-2 animate-float-soft" />
+                  <h3 className="font-display text-2xl font-medium text-foreground">
+                    {card.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground italic">
+                    {card.keyword}
+                  </p>
+                </div>
 
-            <div className="h-px w-12 bg-foreground/10" />
-          </div>
+                <div className="h-px w-12 bg-foreground/10" />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </button>
