@@ -82,21 +82,35 @@ Deno.serve(async (req: Request) => {
 
     const multiInstructions = isMulti
       ? `
-- "theme": ONE sentence. Name what this moment in their life is actually about. Specific, not generic. Example: "You're trying to make a decision your body has already made."
-- "tension": ONE or TWO sentences. Name the real friction between these cards as a lived situation — not a definition. Example: "You're holding on to something you also know you need to release. Both feelings are true, and that's why it hurts."
-- "combined": 2–3 sentences. Connect the cards into one coherent reading of their current pattern. Do NOT restate each card. Interpret the *combination*.`
+- "theme": ONE sentence. Name what this moment in their life is actually about. Specific, recognizable, never a definition. Example: "You're trying to make a decision your body has already made."
+- "tension": ONE or TWO sentences. The real friction between these cards as a lived feeling — not a definition. Example: "You're holding on to something you also know you need to release. Both feelings are true, and that's why it hurts."
+- "combined": 2–3 sentences. Read the *combination* as one situation. Don't restate the cards.`
       : `
 - "theme": ONE sentence. Name what this card is pointing to in their actual life right now. Specific, not a definition.
 - "combined": 2–3 sentences. A grounded interpretation of how this card meets their current moment.`;
+
+    // Rotate opening style + voice seed so readings don't sound the same
+    const openingStyles = [
+      "Open with a quiet observation about what's happening underneath.",
+      "Open with the tension itself, named directly in one line.",
+      "Open with a soft, grounded metaphor or small image.",
+      "Open with a short question that lands the theme.",
+      "Open with a single declarative sentence — flat, honest, no warm-up.",
+      "Open by naming a feeling the user might be sitting with but not saying.",
+    ];
+    const voiceSeed = openingStyles[Math.floor(Math.random() * openingStyles.length)];
 
     const userPrompt = `${intentionLine}They drew ${drawType === "three" ? "a 3-card insight (past influence → present focus → emerging direction)" : "a single daily card"}.
 
 ${cardSummary}
 
-Respond in JSON with these fields:${multiInstructions}
-- "reflection": 4–6 sentences. A personal, grounded reflection that lands the theme in their life. Be slightly confronting but supportive — name the thing they may be avoiding. End with ONE open question that invites honest self-inquiry (no rhetorical questions).
+Voice direction for THIS reading: ${voiceSeed}
+Vary sentence length. Don't follow a template. Let it breathe.
 
-Make it feel like it was written for THIS person and THIS combination — not a horoscope. Return only valid JSON. No markdown, no preamble.`;
+Respond in JSON with these fields:${multiInstructions}
+- "reflection": 4–6 sentences. Reflect their situation back to them. Name what they may already half-feel but haven't said. Slightly confronting, never harsh. End with ONE honest open question (not rhetorical).
+
+Make this sound written, not generated. For THIS combination, not a horoscope. Return only valid JSON. No markdown, no preamble.`;
 
 
     const response = await fetch(
@@ -113,6 +127,7 @@ Make it feel like it was written for THIS person and THIS combination — not a 
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: userPrompt },
           ],
+          temperature: 0.95,
           response_format: { type: "json_object" },
         }),
       },
