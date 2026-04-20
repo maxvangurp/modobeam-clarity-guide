@@ -4,19 +4,25 @@ import { AppShell } from "@/components/AppShell";
 import { ReflectionCard } from "@/components/ReflectionCard";
 import { Button } from "@/components/ui/button";
 import { drawCards, type OracleCard } from "@/data/deck";
+import { getReadingType, type DrawType } from "@/data/readingTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
 const Draw = () => {
-  const { type } = useParams<{ type: "daily" | "three" }>();
+  const { type } = useParams<{ type: string }>();
   const [searchParams] = useSearchParams();
   const intention = searchParams.get("q") ?? "";
   const navigate = useNavigate();
 
-  const count = type === "three" ? 3 : 1;
-  const cards = useMemo<OracleCard[]>(() => drawCards(count as 1 | 3), [type]);
+  const reading = getReadingType(type ?? "");
+
+  const count = reading?.cardCount ?? 1;
+  const cards = useMemo<OracleCard[]>(
+    () => drawCards(count),
+    [type],
+  );
 
   const [revealed, setRevealed] = useState<boolean[]>(
     Array(count).fill(false),
@@ -36,8 +42,12 @@ const Draw = () => {
   const revealAll = () => setRevealed(Array(count).fill(true));
 
   useEffect(() => {
-    if (!type || (type !== "daily" && type !== "three")) navigate("/");
-  }, [type, navigate]);
+    if (!reading) navigate("/");
+  }, [reading, navigate]);
+
+  if (!reading) return null;
+
+  const labels = reading.positionLabels;
 
   const continueToInsight = async () => {
     setLoading(true);
@@ -46,6 +56,7 @@ const Draw = () => {
         body: {
           intention,
           drawType: type,
+          positionLabels: labels,
           cards: cards.map((c) => ({
             name: c.name,
             keyword: c.keyword,
@@ -70,7 +81,7 @@ const Draw = () => {
         .insert({
           session_id,
           intention: intention || null,
-          draw_type: type as "daily" | "three",
+          draw_type: type!,
           cards: cards.map((c) => ({ id: c.id, name: c.name })),
           combined_insight: combinedPayload,
           ai_reflection: (data as any).reflection ?? "",
@@ -88,14 +99,21 @@ const Draw = () => {
     }
   };
 
-  const labels =
-    count === 3 ? ["Past influence", "Present focus", "Emerging"] : ["Today"];
+  // Layout: 1 card = centered, 3 = row of 3, 4 = 2×2 grid, 5 = 3+2
+  const gridClass =
+    count === 1
+      ? "flex justify-center"
+      : count === 3
+        ? "grid grid-cols-3 gap-2 justify-items-center"
+        : count === 4
+          ? "grid grid-cols-2 gap-3 justify-items-center max-w-[280px] mx-auto"
+          : "grid grid-cols-3 gap-2 justify-items-center";
 
   return (
     <AppShell showBack backTo="/">
       <div className="text-center pt-2 pb-8 animate-fade-up">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-3">
-          {count === 3 ? "Three-card insight" : "Daily clarity"}
+          {reading.label}
         </p>
         <h1 className="font-display text-2xl font-light text-foreground">
           {allRevealed ? "Sit with what you see." : "Tap each card when ready."}
@@ -107,24 +125,18 @@ const Draw = () => {
         )}
       </div>
 
-      <div
-        className={
-          count === 3
-            ? "grid grid-cols-3 gap-2 justify-items-center animate-fade-up [animation-delay:120ms]"
-            : "flex justify-center animate-fade-up [animation-delay:120ms]"
-        }
-      >
+      <div className={`${gridClass} animate-fade-up [animation-delay:120ms]`}>
         {cards.map((card, i) => (
           <div key={card.id} className="flex flex-col items-center gap-2">
             <ReflectionCard
               card={card}
               index={i}
-              size={count === 3 ? "sm" : "lg"}
+              size={count >= 4 ? "sm" : count === 3 ? "sm" : "lg"}
               revealed={revealed[i]}
               onReveal={() => reveal(i)}
             />
-            {count === 3 && (
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">
+            {count > 1 && (
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground text-center max-w-[90px] leading-tight">
                 {labels[i]}
               </span>
             )}

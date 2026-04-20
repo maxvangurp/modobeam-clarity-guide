@@ -3,17 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Sparkles, Layers } from "lucide-react";
+import { READING_TYPES, type DrawType } from "@/data/readingTypes";
 
 const Index = () => {
   const navigate = useNavigate();
   const [intention, setIntention] = useState("");
 
-  const start = (type: "daily" | "three") => {
+  const start = (type: DrawType) => {
     const params = new URLSearchParams();
     if (intention.trim()) params.set("q", intention.trim());
     navigate(`/draw/${type}${params.toString() ? `?${params}` : ""}`);
   };
+
+  const featured = READING_TYPES.filter((r) => r.featured);
+  const more = READING_TYPES.filter((r) => !r.featured);
 
   return (
     <AppShell>
@@ -49,56 +52,98 @@ const Index = () => {
         </p>
       </section>
 
+      {/* Featured readings */}
       <section className="mt-6 grid gap-3 animate-fade-up [animation-delay:240ms]">
-        <Button
-          size="lg"
-          onClick={() => start("daily")}
-          className="h-auto py-5 px-5 rounded-2xl bg-gradient-button text-primary-foreground hover:opacity-95 shadow-soft justify-between group"
-        >
-          <span className="flex items-center gap-3">
-            <span className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center">
-              <Sparkles className="h-4 w-4" />
-            </span>
-            <span className="text-left">
-              <span className="block font-display text-base font-medium">
-                Daily clarity
+        {featured.map((r, i) => {
+          const Icon = r.icon;
+          const isPrimary = i === 0;
+          return (
+            <Button
+              key={r.id}
+              size="lg"
+              variant={isPrimary ? "default" : "outline"}
+              onClick={() => start(r.id)}
+              className={`h-auto py-5 px-5 rounded-2xl justify-between group ${
+                isPrimary
+                  ? "bg-gradient-button text-primary-foreground hover:opacity-95 shadow-soft"
+                  : "bg-card/70 backdrop-blur border-border/70 hover:bg-card"
+              }`}
+            >
+              <span className="flex items-center gap-3">
+                <span
+                  className={`h-9 w-9 rounded-full flex items-center justify-center ${
+                    isPrimary ? "bg-white/10" : "bg-secondary"
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                </span>
+                <span className="text-left">
+                  <span className="block font-display text-base font-medium">
+                    {r.label}
+                  </span>
+                  <span
+                    className={`block text-xs font-body ${
+                      isPrimary ? "opacity-70" : "text-muted-foreground"
+                    }`}
+                  >
+                    {r.subtitle}
+                  </span>
+                </span>
               </span>
-              <span className="block text-xs opacity-70 font-body">
-                One card · one focus
+              <span
+                className={`text-xl group-hover:translate-x-0.5 transition-smooth ${
+                  isPrimary ? "opacity-60" : "text-muted-foreground"
+                }`}
+              >
+                →
               </span>
-            </span>
-          </span>
-          <span className="text-xl opacity-60 group-hover:translate-x-0.5 transition-smooth">
-            →
-          </span>
-        </Button>
-
-        <Button
-          size="lg"
-          variant="outline"
-          onClick={() => start("three")}
-          className="h-auto py-5 px-5 rounded-2xl bg-card/70 backdrop-blur border-border/70 hover:bg-card justify-between group"
-        >
-          <span className="flex items-center gap-3">
-            <span className="h-9 w-9 rounded-full bg-secondary flex items-center justify-center">
-              <Layers className="h-4 w-4" />
-            </span>
-            <span className="text-left">
-              <span className="block font-display text-base font-medium">
-                3-card insight
-              </span>
-              <span className="block text-xs text-muted-foreground font-body">
-                Past · present · direction
-              </span>
-            </span>
-          </span>
-          <span className="text-xl text-muted-foreground group-hover:translate-x-0.5 transition-smooth">
-            →
-          </span>
-        </Button>
+            </Button>
+          );
+        })}
       </section>
 
-      <section className="mt-12 rounded-3xl bg-card/50 backdrop-blur border border-border/50 p-5 animate-fade-up [animation-delay:360ms]">
+      {/* Deeper readings */}
+      <section className="mt-8 animate-fade-up [animation-delay:360ms]">
+        <h2 className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3 pl-1">
+          Deeper readings
+        </h2>
+        <div className="grid gap-2.5">
+          {more.map((r) => {
+            const Icon = r.icon;
+            return (
+              <button
+                key={r.id}
+                onClick={() => start(r.id)}
+                className="group w-full text-left rounded-2xl bg-card/60 backdrop-blur border border-border/50 px-5 py-4 hover:bg-card/80 transition-smooth"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
+                    <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-display text-[15px] font-medium text-foreground">
+                        {r.label}
+                      </span>
+                      <span className="text-[11px] text-muted-foreground/50 shrink-0">
+                        {r.cardCount} cards
+                      </span>
+                    </div>
+                    <p className="text-[12px] text-muted-foreground leading-relaxed mt-0.5">
+                      {r.description}
+                    </p>
+                  </div>
+                  <span className="text-muted-foreground/40 group-hover:text-muted-foreground group-hover:translate-x-0.5 transition-smooth">
+                    →
+                  </span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="mt-10 rounded-3xl bg-card/50 backdrop-blur border border-border/50 p-5 animate-fade-up [animation-delay:480ms]">
         <h2 className="font-display text-sm font-medium text-foreground mb-1.5">
           A note on how this works
         </h2>
