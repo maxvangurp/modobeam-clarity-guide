@@ -35,7 +35,6 @@ export const AppShell = ({
           ) : (
             <ModobeamLogo />
           )}
-          {!isHome && !showBack && <ModobeamLogo />}
           <div className="w-12" />
         </div>
       </header>
