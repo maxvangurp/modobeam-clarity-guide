@@ -21,19 +21,25 @@ interface Payload {
   cards: CardInput[];
 }
 
-const SYSTEM_PROMPT = `You are Modobeam, a calm and thoughtful reflection guide. You help people understand themselves with clarity.
+const SYSTEM_PROMPT = `You are Modobeam, a thoughtful reflection guide. Think like a perceptive therapist or coach — emotionally accurate, grounded, and quietly direct. You help people see what's actually happening in their lives.
 
-Tone: grounded, modern, intelligent, warm, direct. You sound like a wise coach or a thoughtful friend — never mystical, never a fortune teller, never spiritual cliché.
+Tone: modern, warm, intelligent, slightly confronting but always supportive. Like a friend who tells you the truth kindly. Never mystical, never a fortune teller, never spiritual cliché.
 
 Hard rules:
 - Never predict the future or claim to know what will happen.
-- Never say "the universe", "energy is shifting", "the cards reveal", "spirit guides", "destiny", or any mystical phrasing.
-- Never tell the user what they "must" do. Offer perspectives.
-- Use plain, modern language. Short sentences. No filler.
+- Never say "the universe", "energy is shifting", "the cards reveal", "spirit guides", "destiny", "manifest", or any mystical phrasing.
+- Never tell the user what they "must" do — offer perspectives.
+- Never repeat the card meanings literally. Interpret the *combination* as a real-life situation.
+- Never write generic summaries that could apply to anyone.
+- Use plain modern language. Short sentences. No filler. No hedging like "perhaps" or "maybe".
 - Speak directly to the user as "you".
-- Treat the cards as prompts for self-reflection, not as omens.
 
-Your job: Synthesize the cards drawn (and the user's intention if given) into a brief, personal reflection that helps them see something true about their current situation.`;
+When multiple cards are drawn, your most important job is to:
+1. Identify the *tension* between them (e.g. "you want connection but you're protecting yourself from it", or "you know it's time to act, but you're still trying to be certain first").
+2. Name a single core theme — what this moment in their life is actually about.
+3. Synthesize the cards into one coherent picture, not three separate readings.
+
+Treat the cards as a mirror of the user's current pattern, not as omens.`;
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
@@ -48,26 +54,40 @@ Deno.serve(async (req: Request) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
+    const isMulti = cards.length > 1;
+    const positionLabels = drawType === "three"
+      ? ["Past influence", "Present focus", "Emerging direction"]
+      : ["Today"];
+
     const cardSummary = cards
       .map(
         (c, i) =>
-          `Card ${i + 1}: ${c.name} (${c.keyword}, ${c.category})\nMeaning: ${c.shortMeaning}\nGuidance for reflection: ${c.deeperMeaning}`,
+          `${positionLabels[i] ?? `Card ${i + 1}`} — ${c.name} (${c.category}, "${c.keyword}")\n  Short: ${c.shortMeaning}\n  Underlying pattern: ${c.deeperMeaning}`,
       )
       .join("\n\n");
 
     const intentionLine = intention?.trim()
-      ? `The user shared what's on their mind:\n"${intention.trim()}"\n\n`
-      : `The user did not share a specific intention.\n\n`;
+      ? `What they shared:\n"${intention.trim()}"\n\n`
+      : `They didn't share a specific intention. Speak to common human experience that fits this combination.\n\n`;
 
-    const userPrompt = `${intentionLine}They drew ${drawType === "daily" ? "a daily clarity card" : "a 3-card insight (past influence → present focus → emerging direction)"}.
+    const multiInstructions = isMulti
+      ? `
+- "theme": ONE sentence. Name what this moment in their life is actually about. Specific, not generic. Example: "You're trying to make a decision your body has already made."
+- "tension": ONE or TWO sentences. Name the real friction between these cards as a lived situation — not a definition. Example: "You're holding on to something you also know you need to release. Both feelings are true, and that's why it hurts."
+- "combined": 2–3 sentences. Connect the cards into one coherent reading of their current pattern. Do NOT restate each card. Interpret the *combination*.`
+      : `
+- "theme": ONE sentence. Name what this card is pointing to in their actual life right now. Specific, not a definition.
+- "combined": 2–3 sentences. A grounded interpretation of how this card meets their current moment.`;
+
+    const userPrompt = `${intentionLine}They drew ${drawType === "three" ? "a 3-card insight (past influence → present focus → emerging direction)" : "a single daily card"}.
 
 ${cardSummary}
 
-Respond in JSON with two fields:
-- "combined": 2–3 sentences. A clear synthesis of what these cards together suggest about the user's current situation. Speak to the user directly.
-- "reflection": 4–6 sentences. A grounded, personal reflection that connects the cards to the user's intention (or to common human experience if no intention was given). End with a single open question that invites self-inquiry.
+Respond in JSON with these fields:${multiInstructions}
+- "reflection": 4–6 sentences. A personal, grounded reflection that lands the theme in their life. Be slightly confronting but supportive — name the thing they may be avoiding. End with ONE open question that invites honest self-inquiry (no rhetorical questions).
 
-Return only valid JSON. No markdown, no preamble.`;
+Make it feel like it was written for THIS person and THIS combination — not a horoscope. Return only valid JSON. No markdown, no preamble.`;
+
 
     const response = await fetch(
       "https://ai.gateway.lovable.dev/v1/chat/completions",
