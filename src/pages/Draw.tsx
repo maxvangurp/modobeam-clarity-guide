@@ -60,6 +60,11 @@ const Draw = () => {
       if ((data as any)?.error) throw new Error((data as any).error);
 
       const session_id = getSessionId();
+      const combinedPayload = JSON.stringify({
+        theme: (data as any).theme ?? "",
+        tension: (data as any).tension ?? "",
+        combined: (data as any).combined ?? "",
+      });
       const { data: inserted, error: insertErr } = await supabase
         .from("insights")
         .insert({
@@ -67,7 +72,7 @@ const Draw = () => {
           intention: intention || null,
           draw_type: type as "daily" | "three",
           cards: cards.map((c) => ({ id: c.id, name: c.name })),
-          combined_insight: (data as any).combined ?? "",
+          combined_insight: combinedPayload,
           ai_reflection: (data as any).reflection ?? "",
         })
         .select("id")
