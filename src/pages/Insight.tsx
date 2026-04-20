@@ -140,17 +140,57 @@ const Insight = () => {
         ))}
       </section>
 
-      {/* Combined insight */}
-      {insight.combined_insight && (
-        <section className="mt-6 rounded-3xl bg-gradient-dawn border border-border/40 p-6 shadow-soft animate-fade-up [animation-delay:160ms]">
-          <h2 className="font-display text-sm uppercase tracking-[0.2em] text-ink-soft mb-3">
-            Together
-          </h2>
-          <p className="text-[15px] leading-relaxed text-foreground">
-            {insight.combined_insight}
-          </p>
-        </section>
-      )}
+      {/* Combined insight: theme + tension + synthesis */}
+      {insight.combined_insight &&
+        (() => {
+          let theme = "";
+          let tension = "";
+          let combined = insight.combined_insight;
+          try {
+            const parsed = JSON.parse(insight.combined_insight);
+            if (parsed && typeof parsed === "object") {
+              theme = parsed.theme ?? "";
+              tension = parsed.tension ?? "";
+              combined = parsed.combined ?? "";
+            }
+          } catch {
+            // legacy plain-text rows
+          }
+          return (
+            <section className="mt-6 space-y-4 animate-fade-up [animation-delay:160ms]">
+              {theme && (
+                <div className="rounded-3xl bg-gradient-dawn border border-border/40 p-6 shadow-soft">
+                  <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-ink-soft mb-2">
+                    Core theme
+                  </h2>
+                  <p className="font-display text-lg leading-snug text-foreground">
+                    {theme}
+                  </p>
+                </div>
+              )}
+              {tension && cards.length > 1 && (
+                <div className="rounded-3xl bg-card/70 backdrop-blur border border-border/60 p-6 shadow-soft">
+                  <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+                    The tension
+                  </h2>
+                  <p className="text-[15px] leading-relaxed text-foreground/90">
+                    {tension}
+                  </p>
+                </div>
+              )}
+              {combined && (
+                <div className="rounded-3xl bg-card/70 backdrop-blur border border-border/60 p-6 shadow-soft">
+                  <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+                    Together
+                  </h2>
+                  <p className="text-[15px] leading-relaxed text-foreground/90">
+                    {combined}
+                  </p>
+                </div>
+              )}
+            </section>
+          );
+        })()}
 
       {/* AI reflection */}
       {insight.ai_reflection && (
