@@ -89,28 +89,66 @@ Deno.serve(async (req: Request) => {
 - "theme": ONE sentence. Name what this card is pointing to in their actual life right now. Specific, not a definition.
 - "combined": 2–3 sentences. A grounded interpretation of how this card meets their current moment.`;
 
-    // Rotate opening style + voice seed so readings don't sound the same
-    const openingStyles = [
+    // Rotate opening, rhythm, closing, and tonal lean so each reading feels alive
+    const openings = [
       "Open with a quiet observation about what's happening underneath.",
       "Open with the tension itself, named directly in one line.",
       "Open with a soft, grounded metaphor or small image.",
       "Open with a short question that lands the theme.",
       "Open with a single declarative sentence — flat, honest, no warm-up.",
       "Open by naming a feeling the user might be sitting with but not saying.",
+      "Open with something the user already knows but hasn't admitted out loud.",
+      "Open mid-thought, like you're continuing a conversation already in motion.",
     ];
-    const voiceSeed = openingStyles[Math.floor(Math.random() * openingStyles.length)];
+    const rhythms = [
+      "Mostly short sentences. Let pauses do the work.",
+      "Mix one long, winding sentence with two or three short ones.",
+      "Use mostly medium-length sentences with one sharp short line for emphasis.",
+      "Let the rhythm wander — uneven, the way real thinking sounds.",
+    ];
+    const leans = [
+      "Lean slightly more reflective than direct.",
+      "Lean slightly more direct than reflective.",
+      "Lean curious — more questions than statements.",
+      "Lean observational — more noticing than interpreting.",
+      "Lean intuitive — allow one soft, suggestive line.",
+    ];
+    const closings = [
+      "End with one honest open question.",
+      "End with a quiet observation, no question at all.",
+      "End with a small, grounded image or metaphor that lingers.",
+      "End with a single short sentence that lands like a held breath.",
+      "End with an invitation to notice something specific in their day.",
+    ];
+    const pick = <T,>(a: T[]) => a[Math.floor(Math.random() * a.length)];
+    const voice = {
+      open: pick(openings),
+      rhythm: pick(rhythms),
+      lean: pick(leans),
+      close: pick(closings),
+    };
+    // Small entropy nudge so the model doesn't fall into a groove across calls
+    const entropy = Math.random().toString(36).slice(2, 8);
 
     const userPrompt = `${intentionLine}They drew ${drawType === "three" ? "a 3-card insight (past influence → present focus → emerging direction)" : "a single daily card"}.
 
 ${cardSummary}
 
-Voice direction for THIS reading: ${voiceSeed}
-Vary sentence length. Don't follow a template. Let it breathe.
+Voice direction for THIS reading (follow these — don't acknowledge them):
+- ${voice.open}
+- ${voice.rhythm}
+- ${voice.lean}
+- ${voice.close}
+
+Forbidden recycled phrases (do NOT use any of these, even slightly reworded): "trust the process", "lean into", "hold space", "sit with", "honor your", "let go and", "the answer lies", "deep down you know", "you are exactly where you need to be".
+
+Leave a little room for interpretation. Not everything has to be explained. Allow one small ambiguity if it makes the reading feel more honest.
 
 Respond in JSON with these fields:${multiInstructions}
-- "reflection": 4–6 sentences. Reflect their situation back to them. Name what they may already half-feel but haven't said. Slightly confronting, never harsh. End with ONE honest open question (not rhetorical).
+- "reflection": 4–6 sentences. Reflect their situation back to them. Name what they may already half-feel but haven't said. Slightly confronting, never harsh.
 
-Make this sound written, not generated. For THIS combination, not a horoscope. Return only valid JSON. No markdown, no preamble.`;
+Variation token: ${entropy} (ignore — only here to keep readings fresh).
+Sound written in the moment, not assembled. Return only valid JSON. No markdown, no preamble.`;
 
 
     const response = await fetch(
@@ -127,7 +165,8 @@ Make this sound written, not generated. For THIS combination, not a horoscope. R
             { role: "system", content: SYSTEM_PROMPT },
             { role: "user", content: userPrompt },
           ],
-          temperature: 0.95,
+          temperature: 1.05,
+          top_p: 0.95,
           response_format: { type: "json_object" },
         }),
       },
