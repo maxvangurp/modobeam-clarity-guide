@@ -380,7 +380,7 @@ export const DECK: OracleCard[] = [
   },
 ];
 
-export function drawCards(count: 1 | 3): OracleCard[] {
+export function drawCards(count: number): OracleCard[] {
   const shuffled = [...DECK].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
