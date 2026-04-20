@@ -19,11 +19,6 @@ interface InsightRow {
   created_at: string;
 }
 
-const REFLECTION_QUESTIONS = [
-  "What part of this resonates most — and why?",
-  "If you trusted this perspective today, what would you do differently?",
-  "What's one small, honest step you could take this week?",
-];
 
 const Insight = () => {
   const { id } = useParams<{ id: string }>();
