@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { getReadingType } from "@/data/readingTypes";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
@@ -11,7 +12,7 @@ import { toast } from "sonner";
 interface Row {
   id: string;
   intention: string | null;
-  draw_type: "daily" | "three";
+  draw_type: string;
   cards: { id: string; name: string }[];
   combined_insight: string | null;
   created_at: string;
