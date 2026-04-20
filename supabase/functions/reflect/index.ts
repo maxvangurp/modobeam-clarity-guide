@@ -143,7 +143,12 @@ Make it feel like it was written for THIS person and THIS combination — not a 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content ?? "{}";
 
-    let parsed: { combined?: string; reflection?: string } = {};
+    let parsed: {
+      theme?: string;
+      tension?: string;
+      combined?: string;
+      reflection?: string;
+    } = {};
     try {
       parsed = JSON.parse(content);
     } catch {
@@ -152,6 +157,8 @@ Make it feel like it was written for THIS person and THIS combination — not a 
 
     return new Response(
       JSON.stringify({
+        theme: parsed.theme ?? "",
+        tension: parsed.tension ?? "",
         combined: parsed.combined ?? "",
         reflection: parsed.reflection ?? "",
       }),
