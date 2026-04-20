@@ -133,6 +133,9 @@ const Insight = () => {
             <p className="text-[15px] leading-relaxed text-foreground/90">
               {card.shortMeaning}
             </p>
+            <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+              {card.deeperMeaning}
+            </p>
           </article>
         ))}
       </section>
