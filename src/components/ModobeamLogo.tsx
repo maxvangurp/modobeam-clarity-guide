@@ -7,5 +7,8 @@ export const ModobeamLogo = ({ className }: { className?: string }) => (
       <div className="absolute inset-[5px] rounded-full bg-gradient-to-br from-beam-soft to-beam opacity-90" />
       <div className="absolute inset-0 rounded-full bg-gradient-beam animate-beam" />
     </div>
+    <span className="font-display text-xl font-semibold tracking-tight">
+      Modobeam
+    </span>
   </div>
 );
