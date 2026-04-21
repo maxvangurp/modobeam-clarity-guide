@@ -7,6 +7,7 @@ import { drawCards, type OracleCard } from "@/data/deck";
 import { getReadingType, type DrawType } from "@/data/readingTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
+import { getProfile, GUIDANCE_LABELS, INTENT_LABELS, STATE_LABELS } from "@/lib/profile";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -14,7 +15,9 @@ const Draw = () => {
   const { type } = useParams<{ type: string }>();
   const [searchParams] = useSearchParams();
   const intention = searchParams.get("q") ?? "";
+  const fromOnboarding = searchParams.get("from") === "onboarding";
   const navigate = useNavigate();
+  const profile = getProfile();
 
   const reading = getReadingType(type ?? "");
 
@@ -64,6 +67,19 @@ const Draw = () => {
             shortMeaning: c.shortMeaning,
             deeperMeaning: c.deeperMeaning,
           })),
+          profile: profile
+            ? {
+                firstName: profile.firstName ?? null,
+                intent: profile.intent
+                  ? INTENT_LABELS[profile.intent]
+                  : null,
+                state: profile.state ? STATE_LABELS[profile.state] : null,
+                guidance: profile.guidance
+                  ? GUIDANCE_LABELS[profile.guidance]
+                  : null,
+                guidanceKey: profile.guidance ?? null,
+              }
+            : null,
         },
       });
 
@@ -111,6 +127,24 @@ const Draw = () => {
 
   return (
     <AppShell showBack backTo="/">
+      {fromOnboarding && profile?.intent && !allRevealed && (
+        <div className="mb-6 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-5 animate-fade-up">
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+            Based on what you shared
+          </p>
+          <p className="text-[15px] leading-relaxed text-foreground/90">
+            {profile.firstName ? `${profile.firstName}, here's ` : "Here's "}
+            a first card to ground your focus on{" "}
+            <span className="italic">
+              {INTENT_LABELS[profile.intent].toLowerCase()}
+            </span>
+            {profile.state
+              ? `, while you're ${STATE_LABELS[profile.state].toLowerCase()}`
+              : ""}
+            .
+          </p>
+        </div>
+      )}
       <div className="text-center pt-2 pb-8 animate-fade-up">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-3">
           {reading.label}
