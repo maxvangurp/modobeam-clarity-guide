@@ -20,6 +20,9 @@ import {
 } from "@/lib/profile";
 import { fetchRecentInsights } from "@/lib/progression";
 import { buildPriorThreads } from "@/lib/aiContinuity";
+import { getDailyQuote } from "@/lib/dailyQuote";
+import { recordMomentForStreak, shouldOfferRare, markRareSeen } from "@/lib/rareCard";
+import { drawCards as drawDeck } from "@/data/deck";
 import { haptic } from "@/lib/haptics";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -39,9 +42,10 @@ const Draw = () => {
   const reading = getReadingType(type ?? "");
 
   const count = reading?.cardCount ?? 1;
+  // Standard deal — may be quietly replaced by a rare card if conditions align.
   const cards = useMemo<OracleCard[]>(
-    () => drawCards(count),
-    [type],
+    () => drawDeck(count),
+    [type, count],
   );
 
   const [moment, setMoment] = useState<MomentNeed | null>(validMoment);
@@ -108,7 +112,7 @@ const Draw = () => {
 
   if (showMoment) {
     return (
-      <AppShell showBack backTo="/">
+      <AppShell showBack backTo="/" ambientMoment={moment}>
         <div className="pt-4">
           <MomentCheckIn
             value={moment}
@@ -131,6 +135,11 @@ const Draw = () => {
       // today's reading echoes something they sat with before.
       const recent = await fetchRecentInsights(3);
       const priorThreads = buildPriorThreads(recent, 3);
+
+      // Track moment streak (used by rare card)
+      if (moment) recordMomentForStreak(moment);
+
+      const dailyQuote = getDailyQuote();
 
       const { data, error } = await supabase.functions.invoke("reflect", {
         body: {
@@ -164,6 +173,7 @@ const Draw = () => {
               }
             : null,
           priorThreads,
+          dailyQuote,
         },
       });
 
@@ -215,7 +225,7 @@ const Draw = () => {
           : "grid grid-cols-3 gap-2 justify-items-center";
 
   return (
-    <AppShell showBack backTo="/">
+    <AppShell showBack backTo="/" ambientMoment={moment}>
       {fromOnboarding && profile && !allRevealed && (
         <div className="mb-6 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-5 animate-fade-up">
           <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
