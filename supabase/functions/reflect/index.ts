@@ -23,12 +23,18 @@ interface ProfileInput {
   guidanceKey?: "direct" | "calm" | "deep" | null;
 }
 
+interface MomentInput {
+  key?: "clarity" | "calm" | "uncertain" | "direction" | "reflect" | null;
+  label?: string | null;
+}
+
 interface Payload {
   intention?: string;
   drawType: string;
   positionLabels?: string[];
   cards: CardInput[];
   profile?: ProfileInput | null;
+  moment?: MomentInput | null;
 }
 
 const READING_DESCRIPTIONS: Record<string, string> = {

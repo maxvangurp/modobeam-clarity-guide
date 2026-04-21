@@ -52,6 +52,36 @@ const Index = () => {
         </h1>
       </section>
 
+      {showNudge && (
+        <section className="mb-6 rounded-2xl bg-card/60 backdrop-blur border border-border/50 px-5 py-4 flex items-start gap-3 animate-fade-up">
+          <div className="flex-1 min-w-0">
+            <p className="text-[14px] text-foreground/90 leading-relaxed">
+              Has something changed in how you want to use Modobeam?
+            </p>
+            <Link
+              to="/preferences"
+              onClick={() => {
+                dismissPreferencesNudge();
+                setShowNudge(false);
+              }}
+              className="inline-block mt-1.5 text-[12px] uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-smooth"
+            >
+              Update preferences →
+            </Link>
+          </div>
+          <button
+            onClick={() => {
+              dismissPreferencesNudge();
+              setShowNudge(false);
+            }}
+            aria-label="Dismiss"
+            className="text-muted-foreground hover:text-foreground transition-smooth -mr-1 -mt-0.5"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </section>
+      )}
+
       <section className="space-y-3 animate-fade-up [animation-delay:120ms]">
         <label
           htmlFor="intention"
