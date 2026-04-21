@@ -3,6 +3,8 @@
 
 const KEY = "modobeam_profile_v1";
 const COMPLETE_KEY = "modobeam_onboarding_complete_v1";
+const LAST_REVISIT_KEY = "modobeam_prefs_last_revisit_v1";
+const NUDGE_DISMISSED_KEY = "modobeam_prefs_nudge_dismissed_v1";
 
 export type UsageMode =
   | "daily"
@@ -25,6 +27,14 @@ export type Rhythm =
   | "when-needed"
   | "figuring-out";
 
+// Moment-based — per session, overrides baseline for one reading
+export type MomentNeed =
+  | "clarity"
+  | "calm"
+  | "uncertain"
+  | "direction"
+  | "reflect";
+
 export interface UserProfile {
   usage?: UsageMode;
   lookingFor?: LookingFor;
@@ -33,6 +43,7 @@ export interface UserProfile {
   firstName?: string;
   birthday?: string; // ISO yyyy-mm-dd
   createdAt?: string;
+  updatedAt?: string;
 }
 
 export function getProfile(): UserProfile | null {
@@ -51,13 +62,18 @@ export function saveProfile(profile: UserProfile): void {
     ...existing,
     ...profile,
     createdAt: existing.createdAt ?? new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
   };
   localStorage.setItem(KEY, JSON.stringify(merged));
+  // Any save counts as a fresh revisit — silence the nudge for a while
+  markPreferencesRevisited();
 }
 
 export function clearProfile(): void {
   localStorage.removeItem(KEY);
   localStorage.removeItem(COMPLETE_KEY);
+  localStorage.removeItem(LAST_REVISIT_KEY);
+  localStorage.removeItem(NUDGE_DISMISSED_KEY);
 }
 
 export function isOnboardingComplete(): boolean {
@@ -66,6 +82,35 @@ export function isOnboardingComplete(): boolean {
 
 export function markOnboardingComplete(): void {
   localStorage.setItem(COMPLETE_KEY, "true");
+  markPreferencesRevisited();
+}
+
+export function markPreferencesRevisited(): void {
+  localStorage.setItem(LAST_REVISIT_KEY, new Date().toISOString());
+  localStorage.removeItem(NUDGE_DISMISSED_KEY);
+}
+
+export function dismissPreferencesNudge(): void {
+  localStorage.setItem(NUDGE_DISMISSED_KEY, new Date().toISOString());
+}
+
+// Show a quiet nudge if it's been > 21 days since they last touched prefs
+// AND the nudge hasn't been dismissed in the last 14 days.
+export function shouldShowPreferencesNudge(): boolean {
+  if (!isOnboardingComplete()) return false;
+  const last = localStorage.getItem(LAST_REVISIT_KEY);
+  if (!last) return false;
+  const daysSince =
+    (Date.now() - new Date(last).getTime()) / (1000 * 60 * 60 * 24);
+  if (daysSince < 21) return false;
+
+  const dismissed = localStorage.getItem(NUDGE_DISMISSED_KEY);
+  if (dismissed) {
+    const daysSinceDismiss =
+      (Date.now() - new Date(dismissed).getTime()) / (1000 * 60 * 60 * 24);
+    if (daysSinceDismiss < 14) return false;
+  }
+  return true;
 }
 
 // Human-readable labels — used in UI and sent to AI as context
@@ -95,4 +140,26 @@ export const RHYTHM_LABELS: Record<Rhythm, string> = {
   "few-times-week": "A few times a week",
   "when-needed": "Whenever I need it",
   "figuring-out": "I'm still figuring that out",
+};
+
+export const MOMENT_LABELS: Record<MomentNeed, string> = {
+  clarity: "I want clarity",
+  calm: "I need calm",
+  uncertain: "I feel uncertain",
+  direction: "I want direction",
+  reflect: "I just want to reflect",
+};
+
+// Map a moment to AI guidance shaping
+export const MOMENT_TONE: Record<MomentNeed, string> = {
+  clarity:
+    "They want clarity right now — be precise and grounded. Cut to what matters.",
+  calm:
+    "They need calm right now — slow the pacing, soften the edges, leave space.",
+  uncertain:
+    "They feel uncertain right now — don't add more weight. Acknowledge ambiguity gently and offer one thing to hold onto.",
+  direction:
+    "They want direction right now — name what's actually pulling them, and what the honest next thing might be.",
+  reflect:
+    "They just want to reflect — stay observational, low-pressure, no push.",
 };

@@ -23,12 +23,18 @@ interface ProfileInput {
   guidanceKey?: "direct" | "calm" | "deep" | null;
 }
 
+interface MomentInput {
+  key?: "clarity" | "calm" | "uncertain" | "direction" | "reflect" | null;
+  label?: string | null;
+}
+
 interface Payload {
   intention?: string;
   drawType: string;
   positionLabels?: string[];
   cards: CardInput[];
   profile?: ProfileInput | null;
+  moment?: MomentInput | null;
 }
 
 const READING_DESCRIPTIONS: Record<string, string> = {
@@ -85,7 +91,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { intention, drawType, positionLabels, cards, profile } =
+    const { intention, drawType, positionLabels, cards, profile, moment } =
       (await req.json()) as Payload;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -128,6 +134,23 @@ Deno.serve(async (req: Request) => {
     };
     const guidanceLine = profile?.guidanceKey
       ? `\n${guidanceTone[profile.guidanceKey]}\n`
+      : "";
+
+    // Moment-based input — overrides baseline for this single reading
+    const momentTone: Record<string, string> = {
+      clarity:
+        "Right now they want clarity — be precise and grounded. Cut to what matters. No hedging.",
+      calm:
+        "Right now they need calm — slow the pacing, soften the edges, leave breath between sentences.",
+      uncertain:
+        "Right now they feel uncertain — don't add weight. Acknowledge ambiguity gently. Offer one steady thing to hold.",
+      direction:
+        "Right now they want direction — name what's actually pulling them, and what an honest next step might look like.",
+      reflect:
+        "Right now they just want to reflect — stay observational and low-pressure. No push, no fix.",
+    };
+    const momentLine = moment?.key
+      ? `\nMoment-of preference (this overrides baseline tone for THIS reading): ${momentTone[moment.key]}\n`
       : "";
 
     const readingDesc =
@@ -193,7 +216,7 @@ Deno.serve(async (req: Request) => {
     const userPrompt = `${profileBlock}${intentionLine}They drew ${readingDesc}.
 
 ${cardSummary}
-${guidanceLine}
+${guidanceLine}${momentLine}
 Voice direction for THIS reading (follow these — don't acknowledge them):
 - ${voice.open}
 - ${voice.rhythm}
