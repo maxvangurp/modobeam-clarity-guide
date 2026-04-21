@@ -10,6 +10,7 @@ import { getSessionId } from "@/lib/session";
 import { recordReflectionSaved, MOMENT_LABELS, type MomentNeed } from "@/lib/profile";
 import { getInsightMoment } from "@/lib/insightMoment";
 import { getMomentTint } from "@/lib/momentTint";
+import { haptic } from "@/lib/haptics";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -160,8 +161,14 @@ const Insight = () => {
       return;
     }
     setSaved(true);
+    haptic("save");
     const { count, isNewDay } = recordReflectionSaved();
-    if (isNewDay && count > 1) {
+    // Quietly recognize depth without scoring it visibly.
+    const wordCount = journal.trim().split(/\s+/).filter(Boolean).length;
+    const landed = wordCount >= 80;
+    if (landed) {
+      toast.success("That landed");
+    } else if (isNewDay && count > 1) {
       toast.success(`Saved · ${count} days in a row`);
     } else if (isNewDay && count === 1) {
       toast.success("Saved · a quiet start");
