@@ -145,9 +145,34 @@ const Readings = () => {
             );
           }
 
+          if (section.key === "coming") {
+            return (
+              <section
+                key={section.key}
+                className="animate-fade-up"
+                style={{ animationDelay: `${120 + sectionIdx * 80}ms` }}
+              >
+                <SectionHeader title={section.title} hint={section.hint} />
+                <div className="mt-3 space-y-2.5">
+                  {featuredComing.map((m) => (
+                    <ReadingPreviewCard
+                      key={m.id}
+                      label={m.label}
+                      subtitle={m.subtitle}
+                      description={m.description}
+                      cardCount={m.cardCount}
+                      icon={m.icon}
+                      category={m.category}
+                      state="coming-soon"
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          }
+
           const real = readingsByGroup(section.key);
-          const coming = comingByGroup(section.key);
-          if (real.length === 0 && coming.length === 0) return null;
+          if (real.length === 0) return null;
 
           return (
             <section
@@ -175,18 +200,6 @@ const Readings = () => {
                     />
                   );
                 })}
-                {coming.map((m) => (
-                  <ReadingPreviewCard
-                    key={m.id}
-                    label={m.label}
-                    subtitle={m.subtitle}
-                    description={m.description}
-                    cardCount={m.cardCount}
-                    icon={m.icon}
-                    category={m.category}
-                    state="coming-soon"
-                  />
-                ))}
               </div>
             </section>
           );
