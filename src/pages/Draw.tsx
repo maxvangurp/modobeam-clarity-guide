@@ -18,10 +18,10 @@ import {
   USAGE_LABELS,
   type MomentNeed,
 } from "@/lib/profile";
-import { fetchRecentInsights } from "@/lib/progression";
+import { fetchRecentInsights, detectRecentThemes } from "@/lib/progression";
 import { buildPriorThreads } from "@/lib/aiContinuity";
 import { getDailyQuote } from "@/lib/dailyQuote";
-import { recordMomentForStreak, shouldOfferRare } from "@/lib/rareCard";
+import { recordMomentForStreak, shouldOfferRare, explainRareCard } from "@/lib/rareCard";
 import { drawCards as drawDeck } from "@/data/deck";
 import { haptic } from "@/lib/haptics";
 import { toast } from "sonner";
