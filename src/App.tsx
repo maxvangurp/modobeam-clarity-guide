@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import Draw from "./pages/Draw.tsx";
+import Reading from "./pages/Reading.tsx";
 import Insight from "./pages/Insight.tsx";
 import History from "./pages/History.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/preferences" element={<Preferences />} />
           <Route path="/readings" element={<Readings />} />
           <Route path="/draw/:type" element={<Draw />} />
+          <Route path="/reading/:id" element={<Reading />} />
           <Route path="/insight/:id" element={<Insight />} />
           <Route path="/history" element={<History />} />
           <Route path="/life-areas" element={<LifeAreas />} />

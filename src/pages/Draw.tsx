@@ -298,7 +298,7 @@ const Draw = () => {
         const { setInsightMoment } = await import("@/lib/insightMoment");
         setInsightMoment(inserted.id, moment);
       }
-      navigate(`/insight/${inserted.id}`);
+      navigate(`/reading/${inserted.id}`);
     } catch (e: any) {
       console.error(e);
       toast.error(e.message || "Couldn't generate reflection. Try again.");
