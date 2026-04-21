@@ -18,6 +18,9 @@ import {
   USAGE_LABELS,
   type MomentNeed,
 } from "@/lib/profile";
+import { fetchRecentInsights } from "@/lib/progression";
+import { buildPriorThreads } from "@/lib/aiContinuity";
+import { haptic } from "@/lib/haptics";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -63,6 +66,15 @@ const Draw = () => {
     Array(count).fill(false),
   );
   const [loading, setLoading] = useState(false);
+  // Brief shuffle beat before the cards become tappable.
+  // Adds anticipation; turns the reveal into an event, not a mechanic.
+  const [shuffling, setShuffling] = useState(true);
+
+  useEffect(() => {
+    setShuffling(true);
+    const t = setTimeout(() => setShuffling(false), 1400);
+    return () => clearTimeout(t);
+  }, [type]);
 
   const allRevealed = revealed.every(Boolean);
 
@@ -74,7 +86,17 @@ const Draw = () => {
     });
   };
 
-  const revealAll = () => setRevealed(Array(count).fill(true));
+  // Reveal all — but staged, one card at a time, so the reading still
+  // breathes even when the user taps "Reveal all".
+  const revealAll = () => {
+    haptic("flip");
+    revealed.forEach((r, i) => {
+      if (r) return;
+      setTimeout(() => {
+        reveal(i);
+      }, i * 380);
+    });
+  };
 
   useEffect(() => {
     if (!reading) navigate("/");
