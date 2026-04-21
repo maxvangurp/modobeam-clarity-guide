@@ -487,7 +487,7 @@ const Index = () => {
       </section>
 
       {/* Soft suggestion — only when something newly unlocked */}
-      {suggestion && !suggestionDismissed && (
+      {suggestion && !suggestionDismissed && !readingHint && (
         <section className="mt-8 animate-fade-up [animation-delay:320ms]">
           <div className="rounded-2xl bg-card/50 backdrop-blur border border-border/40 px-5 py-4 flex items-start gap-3">
             <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
