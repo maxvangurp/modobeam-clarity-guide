@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.know-you]
 verify_jwt = false
+
+[functions.geocode-birthplace]
+verify_jwt = false

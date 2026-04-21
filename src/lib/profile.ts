@@ -102,6 +102,12 @@ export interface UserProfile {
   rhythm?: Rhythm;
   firstName?: string;
   birthday?: string; // ISO yyyy-mm-dd
+  // Optional astrology layer — used as a soft lens, never required.
+  birthTime?: string | null; // HH:MM, 24h, local at birth place
+  birthPlace?: string | null; // human-readable city/region (display only)
+  birthLat?: number | null;
+  birthLon?: number | null;
+  birthTzOffsetMin?: number | null; // historical offset at birth moment
   createdAt?: string;
   updatedAt?: string;
 }
