@@ -190,10 +190,10 @@ Deno.serve(async (req: Request) => {
           ? "5–7 sentences"
           : "4–6 sentences";
 
-    const userPrompt = `${intentionLine}They drew ${readingDesc}.
+    const userPrompt = `${profileBlock}${intentionLine}They drew ${readingDesc}.
 
 ${cardSummary}
-
+${guidanceLine}
 Voice direction for THIS reading (follow these — don't acknowledge them):
 - ${voice.open}
 - ${voice.rhythm}
