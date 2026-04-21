@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
 import { getSessionId } from "@/lib/session";
+import { recordReflectionSaved } from "@/lib/profile";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -149,7 +150,14 @@ const Insight = () => {
       return;
     }
     setSaved(true);
-    toast.success("Saved");
+    const { count, isNewDay } = recordReflectionSaved();
+    if (isNewDay && count > 1) {
+      toast.success(`Saved · ${count} days in a row`);
+    } else if (isNewDay && count === 1) {
+      toast.success("Saved · a quiet start");
+    } else {
+      toast.success("Saved");
+    }
     fetchSummary(journal);
   };
 

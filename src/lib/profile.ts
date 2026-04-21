@@ -6,6 +6,65 @@ const COMPLETE_KEY = "modobeam_onboarding_complete_v1";
 const LAST_REVISIT_KEY = "modobeam_prefs_last_revisit_v1";
 const NUDGE_DISMISSED_KEY = "modobeam_prefs_nudge_dismissed_v1";
 const LAST_MOMENT_PROMPT_KEY = "modobeam_moment_last_prompt_v1";
+const STREAK_KEY = "modobeam_streak_v1";
+
+interface StreakState {
+  count: number;
+  lastDay: string; // YYYY-MM-DD (local)
+}
+
+function todayKey(d = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function readStreak(): StreakState | null {
+  try {
+    const raw = localStorage.getItem(STREAK_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as StreakState;
+  } catch {
+    return null;
+  }
+}
+
+// Returns the current streak as the user would see it *today*.
+// If their last save was before yesterday, the streak has lapsed → 0.
+// Non-judgmental: a missed day just means the count rests at 0.
+export function getStreak(): { count: number; savedToday: boolean } {
+  const s = readStreak();
+  if (!s) return { count: 0, savedToday: false };
+  const today = todayKey();
+  if (s.lastDay === today) return { count: s.count, savedToday: true };
+
+  const yesterday = todayKey(new Date(Date.now() - 24 * 60 * 60 * 1000));
+  if (s.lastDay === yesterday) {
+    // Still alive — they just haven't saved yet today
+    return { count: s.count, savedToday: false };
+  }
+  // Lapsed — quietly reset to 0
+  return { count: 0, savedToday: false };
+}
+
+// Call once per save (multiple saves the same day don't re-count).
+// Returns the new streak so callers can show a soft confirmation.
+export function recordReflectionSaved(): { count: number; isNewDay: boolean } {
+  const today = todayKey();
+  const s = readStreak();
+
+  if (s?.lastDay === today) {
+    return { count: s.count, isNewDay: false };
+  }
+
+  const yesterday = todayKey(new Date(Date.now() - 24 * 60 * 60 * 1000));
+  const nextCount = s?.lastDay === yesterday ? s.count + 1 : 1;
+
+  const next: StreakState = { count: nextCount, lastDay: today };
+  localStorage.setItem(STREAK_KEY, JSON.stringify(next));
+  return { count: nextCount, isNewDay: true };
+}
 
 export type UsageMode =
   | "daily"
@@ -75,6 +134,7 @@ export function clearProfile(): void {
   localStorage.removeItem(COMPLETE_KEY);
   localStorage.removeItem(LAST_REVISIT_KEY);
   localStorage.removeItem(NUDGE_DISMISSED_KEY);
+  localStorage.removeItem(STREAK_KEY);
 }
 
 export function isOnboardingComplete(): boolean {
