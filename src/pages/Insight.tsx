@@ -332,69 +332,6 @@ const Insight = () => {
         </section>
       )}
 
-      {/* Cards */}
-      <section className="space-y-3 animate-fade-up [animation-delay:80ms]">
-        {cards.map((card, i) => (
-          <article
-            key={card.id}
-            className="rounded-3xl bg-card/70 backdrop-blur border border-border/60 p-5 shadow-soft"
-          >
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-1">
-                  {labels[i]} · {card.category}
-                </p>
-                <h3 className="font-display text-xl font-medium">
-                  {card.name}
-                </h3>
-                <p className="text-sm text-muted-foreground italic">
-                  {card.keyword}
-                </p>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-beam-soft to-beam/70 shadow-glow shrink-0" />
-            </div>
-            <p className="text-[15px] leading-relaxed text-foreground/90">
-              {card.shortMeaning}
-            </p>
-            <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-              {card.deeperMeaning}
-            </p>
-          </article>
-        ))}
-      </section>
-
-      {/* The insight layer — emotional pattern lifted up */}
-      {(combined.theme || combined.tension || combined.combined) && (
-        <section className="mt-7 animate-fade-up [animation-delay:160ms]">
-          <div className="rounded-3xl bg-gradient-dawn border border-border/40 p-6 shadow-soft">
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles
-                className="h-3.5 w-3.5 text-ink-soft"
-                strokeWidth={1.8}
-              />
-              <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-ink-soft">
-                What's underneath
-              </h2>
-            </div>
-
-            {combined.tension ? (
-              <p className="font-display text-[17px] leading-snug text-foreground">
-                {combined.tension}
-              </p>
-            ) : combined.theme ? (
-              <p className="font-display text-[17px] leading-snug text-foreground">
-                {combined.theme}
-              </p>
-            ) : null}
-
-            {combined.combined && (
-              <p className="mt-4 text-[14px] leading-relaxed text-foreground/80">
-                {combined.combined}
-              </p>
-            )}
-          </div>
-        </section>
-      )}
 
       {/* AI reflection */}
       {insight.ai_reflection && (
