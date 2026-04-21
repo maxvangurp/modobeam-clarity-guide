@@ -275,6 +275,7 @@ const Draw = () => {
         theme: (data as any).theme ?? "",
         tension: (data as any).tension ?? "",
         combined: (data as any).combined ?? "",
+        focus: (data as any).focusArea ?? null,
       });
       const { data: inserted, error: insertErr } = await supabase
         .from("insights")
