@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import { X, Download, Loader2 } from "lucide-react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { ModobeamLogo } from "@/components/ModobeamLogo";
 import { getMomentTint } from "@/lib/momentTint";
 import { haptic } from "@/lib/haptics";
 import { toast } from "sonner";
