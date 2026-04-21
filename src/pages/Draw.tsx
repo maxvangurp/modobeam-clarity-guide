@@ -346,7 +346,7 @@ const Draw = () => {
         className={`${gridClass} animate-fade-up [animation-delay:120ms] transition-opacity duration-700`}
         style={{ opacity: shuffling ? 0.55 : 1 }}
       >
-        {cards.map((card, i) => (
+        {cardsToShow.map((card, i) => (
           <div
             key={card.id}
             className="flex flex-col items-center gap-2"
@@ -372,6 +372,18 @@ const Draw = () => {
           </div>
         ))}
       </div>
+
+      {/* Quiet recognition when a rare card has surfaced — only after reveal */}
+      {rareCardId && allRevealed && (
+        <div className="mt-6 text-center animate-fade-up">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground/80">
+            ✦ A rare card today
+          </p>
+          <p className="text-[12px] text-muted-foreground mt-1.5 italic max-w-xs mx-auto leading-relaxed">
+            Some cards only arrive at certain moments. Sit with this one.
+          </p>
+        </div>
+      )}
 
       <div className="mt-10 flex flex-col items-center gap-3 animate-fade-up [animation-delay:300ms]">
         {!allRevealed ? (
