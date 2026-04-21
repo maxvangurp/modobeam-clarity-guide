@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
 import { getSessionId } from "@/lib/session";
-import { recordReflectionSaved, MOMENT_LABELS, type MomentNeed } from "@/lib/profile";
+import { recordReflectionSaved, MOMENT_LABELS, isAstroLensEnabled, type MomentNeed } from "@/lib/profile";
 import { getInsightMoment } from "@/lib/insightMoment";
 import { getMomentTint } from "@/lib/momentTint";
 import { haptic } from "@/lib/haptics";
