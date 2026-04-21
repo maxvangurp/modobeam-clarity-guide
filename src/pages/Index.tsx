@@ -65,6 +65,11 @@ const Index = () => {
   const [quote, setQuote] = useState(() => getDailyQuote());
   const [suggestion, setSuggestion] = useState<ReadingType | null>(null);
   const [themes, setThemes] = useState<ThemeInsight[]>([]);
+  const [readingHint, setReadingHint] = useState<{
+    hint: ReadingHint;
+    reading: ReadingType;
+  } | null>(null);
+  const [hintDismissed, setHintDismissed] = useState(false);
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
   const [activeTheme, setActiveTheme] = useState<string | null>(null);
   const [returnGap, setReturnGap] = useState<number | null>(null);
