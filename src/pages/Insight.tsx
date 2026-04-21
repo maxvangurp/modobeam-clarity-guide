@@ -529,9 +529,51 @@ const Insight = () => {
                 Mirror this back to me
               </button>
             )}
+
+            {/* Quiet actions on the AI mirror */}
+            {summary && !summaryLoading && (
+              <div className="mt-5 pt-4 border-t border-border/40 flex items-center gap-4 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic("select");
+                    setKeepOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-smooth"
+                >
+                  <ImageIcon className="h-3 w-3" strokeWidth={1.8} />
+                  Keep this
+                </button>
+                <span className="text-muted-foreground/30 text-[10px]">·</span>
+                <button
+                  type="button"
+                  onClick={() => setShowNotQuite((v) => !v)}
+                  className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-smooth"
+                >
+                  That's not quite it →
+                </button>
+              </div>
+            )}
+
+            {showNotQuite && summary && (
+              <NotQuiteIt
+                open={showNotQuite}
+                onClose={() => setShowNotQuite(false)}
+                originalSummary={summary}
+                cards={cards.map((c) => ({ name: c.name, keyword: c.keyword }))}
+                onRevised={(revised) => setSummary(revised)}
+              />
+            )}
           </div>
         </section>
       )}
+
+      <KeepThisCard
+        open={keepOpen}
+        onOpenChange={setKeepOpen}
+        summary={summary}
+        moment={moment}
+      />
 
       {/* Soft next steps — never an end */}
       {showNextSteps && (
