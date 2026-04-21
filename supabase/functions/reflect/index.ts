@@ -188,6 +188,26 @@ Deno.serve(async (req: Request) => {
 - "theme": ONE sentence. Name what this card is pointing to in their actual life right now. Specific, not a definition.
 - "combined": 2–3 sentences. A grounded interpretation of how this card meets their current moment.`;
 
+    // Response modes — the AI rotates between distinct emotional registers
+    // so each reflection feels like a different state of attention, not a
+    // template. Modes are chosen by context, not announced.
+    type Mode = "mirror" | "question" | "story" | "witness" | "challenge";
+    const allModes: Mode[] = ["mirror", "question", "story", "witness"];
+    if (profile?.guidanceKey === "direct") allModes.push("challenge", "challenge");
+    const mode: Mode = allModes[Math.floor(Math.random() * allModes.length)];
+    const modeInstruction: Record<Mode, string> = {
+      mirror:
+        "MODE — MIRROR: reflect back what they said, sharper. Name what they almost named. Don't add new ideas; sharpen theirs.",
+      question:
+        "MODE — QUESTION: lead with one open, honest question. Then a brief observation. Then quiet. Don't answer your own question.",
+      story:
+        "MODE — STORY: open with a one-line image or metaphor that holds the situation. Then a short interpretation. Be evocative, not poetic for its own sake.",
+      witness:
+        "MODE — WITNESS: very short. Mostly acknowledgment. Don't try to interpret. The whole reflection can be 3–4 sentences total.",
+      challenge:
+        "MODE — CHALLENGE: name what they're avoiding, kindly but directly. No softening clauses. End with a single direct observation, not a question.",
+    };
+
     // Rotate opening, rhythm, closing, and tonal lean
     const openings = [
       "Open with a quiet observation about what's happening underneath.",
@@ -227,6 +247,11 @@ Deno.serve(async (req: Request) => {
       close: pick(closings),
     };
     const entropy = Math.random().toString(36).slice(2, 8);
+
+    // Daily quote — only weave it in if it genuinely matches; otherwise ignore.
+    const quoteHint = dailyQuote?.text
+      ? `\n\nToday's quote (only weave a brief, organic allusion if it genuinely matches the reading — otherwise ignore completely; never quote it verbatim, never name the author): "${dailyQuote.text}"${dailyQuote.author ? ` — ${dailyQuote.author}` : ""}`
+      : "";
 
     // Deeper readings get more reflection space
     const reflectionLength =
