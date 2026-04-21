@@ -28,6 +28,13 @@ interface MomentInput {
   label?: string | null;
 }
 
+interface PriorThread {
+  date: string;
+  theme?: string;
+  tension?: string;
+  cards?: string[];
+}
+
 interface Payload {
   intention?: string;
   drawType: string;
@@ -35,6 +42,7 @@ interface Payload {
   cards: CardInput[];
   profile?: ProfileInput | null;
   moment?: MomentInput | null;
+  priorThreads?: PriorThread[] | null;
 }
 
 const READING_DESCRIPTIONS: Record<string, string> = {
@@ -91,7 +99,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { intention, drawType, positionLabels, cards, profile, moment } =
+    const { intention, drawType, positionLabels, cards, profile, moment, priorThreads } =
       (await req.json()) as Payload;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -151,6 +159,20 @@ Deno.serve(async (req: Request) => {
     };
     const momentLine = moment?.key
       ? `\nMoment-of preference (this overrides baseline tone for THIS reading): ${momentTone[moment.key]}\n`
+      : "";
+
+    // Continuity — let the AI quietly know the user's recent threads.
+    // Used sparingly: instruction below tells the model not to reference
+    // them every time, only when something genuinely echoes.
+    const priorBlock = priorThreads && priorThreads.length
+      ? `\nThis person's last few reflections (for context only — do not list, summarize, or reference these directly unless something in TODAY's reading genuinely echoes one of them; if it does, you may make ONE brief, specific allusion like "this thread isn't new for you" or "you sat near this last week"):\n${priorThreads
+          .map((t, i) => {
+            const cardsLine = t.cards?.length ? ` — cards: ${t.cards.join(", ")}` : "";
+            const themeLine = t.theme ? ` theme: "${t.theme}"` : "";
+            const tensionLine = t.tension ? ` · tension: "${t.tension}"` : "";
+            return `  ${i + 1}. ${t.date}:${themeLine}${tensionLine}${cardsLine}`;
+          })
+          .join("\n")}\n`
       : "";
 
     const readingDesc =
@@ -216,7 +238,7 @@ Deno.serve(async (req: Request) => {
     const userPrompt = `${profileBlock}${intentionLine}They drew ${readingDesc}.
 
 ${cardSummary}
-${guidanceLine}${momentLine}
+${guidanceLine}${momentLine}${priorBlock}
 Voice direction for THIS reading (follow these — don't acknowledge them):
 - ${voice.open}
 - ${voice.rhythm}
