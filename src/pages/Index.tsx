@@ -44,6 +44,10 @@ const Index = () => {
   const [showNudge, setShowNudge] = useState(false);
   const [last, setLast] = useState<LastReflection | null>(null);
   const [moment, setMoment] = useState<MomentNeed | null>(null);
+  const [streak, setStreak] = useState<{ count: number; savedToday: boolean }>({
+    count: 0,
+    savedToday: false,
+  });
 
   useEffect(() => {
     if (!isOnboardingComplete()) {
@@ -51,6 +55,7 @@ const Index = () => {
       return;
     }
     setShowNudge(shouldShowPreferencesNudge());
+    setStreak(getStreak());
 
     // Fetch the most recent reflection for continuity ("Last time you reflected on…")
     (async () => {
