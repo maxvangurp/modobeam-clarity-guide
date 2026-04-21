@@ -126,6 +126,22 @@ const Insight = () => {
       .filter(Boolean) as NonNullable<ReturnType<typeof getCardById>>[];
   }, [insight]);
 
+  // Map this reading to one Life Area card. Prefer the astrology focus key
+  // (already saved on the insight); fall back to a light keyword scan of
+  // the combined reflection text. Returns null when neither produces a fit.
+  const lifeArea = useMemo<LifeAreaCardType | null>(() => {
+    if (combined.focus?.key) {
+      const fromKey = lifeAreaForFocusKey(combined.focus.key);
+      if (fromKey) return fromKey;
+    }
+    const text = [combined.theme, combined.tension, combined.combined]
+      .filter(Boolean)
+      .join(" ");
+    if (!text) return null;
+    return inferLifeAreaFromText(text);
+  }, [combined]);
+  const [lifeAreaOpen, setLifeAreaOpen] = useState(false);
+
   const reading = insight ? getReadingType(insight.draw_type) : null;
   const labels = reading?.positionLabels ?? ["Today"];
   const moment: MomentNeed | null = id ? getInsightMoment(id) : null;
