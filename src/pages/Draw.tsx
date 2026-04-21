@@ -127,6 +127,24 @@ const Draw = () => {
 
   return (
     <AppShell showBack backTo="/">
+      {fromOnboarding && profile?.intent && !allRevealed && (
+        <div className="mb-6 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-5 animate-fade-up">
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+            Based on what you shared
+          </p>
+          <p className="text-[15px] leading-relaxed text-foreground/90">
+            {profile.firstName ? `${profile.firstName}, here's ` : "Here's "}
+            a first card to ground your focus on{" "}
+            <span className="italic">
+              {INTENT_LABELS[profile.intent].toLowerCase()}
+            </span>
+            {profile.state
+              ? `, while you're ${STATE_LABELS[profile.state].toLowerCase()}`
+              : ""}
+            .
+          </p>
+        </div>
+      )}
       <div className="text-center pt-2 pb-8 animate-fade-up">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-3">
           {reading.label}
