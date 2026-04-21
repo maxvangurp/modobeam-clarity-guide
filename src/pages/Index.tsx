@@ -131,9 +131,33 @@ const Index = () => {
 
       {/* 1. Welcome + continuity */}
       <section className="pt-6 pb-8 animate-fade-up">
-        <p className="text-sm text-muted-foreground tracking-wide">
-          {greeting}
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground tracking-wide">
+            {greeting}
+          </p>
+          {streak.count > 0 && (
+            <div
+              className="inline-flex items-center gap-1.5 rounded-full bg-card/60 backdrop-blur border border-border/50 px-2.5 py-1"
+              title={
+                streak.savedToday
+                  ? "You've reflected today"
+                  : "Your gentle rhythm so far"
+              }
+            >
+              <Flame
+                className={`h-3 w-3 ${
+                  streak.savedToday
+                    ? "text-beam"
+                    : "text-muted-foreground/60"
+                }`}
+                strokeWidth={1.8}
+              />
+              <span className="text-[11px] tabular-nums text-foreground/80">
+                {streak.count} {streak.count === 1 ? "day" : "days"}
+              </span>
+            </div>
+          )}
+        </div>
         <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground mt-2">
           Take a breath.
           <br />
