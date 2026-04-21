@@ -20,7 +20,7 @@ import {
 import { LifeAreaCard as LifeAreaCardView } from "@/components/LifeAreaCard";
 import {
   inferLifeAreaFromText,
-  lifeAreaForHouse,
+  lifeAreaForFocusKey,
   type LifeAreaCard as LifeAreaCardType,
 } from "@/data/lifeAreas";
 import { KeepThisCard } from "@/components/KeepThisCard";
