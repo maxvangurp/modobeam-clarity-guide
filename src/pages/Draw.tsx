@@ -67,6 +67,19 @@ const Draw = () => {
             shortMeaning: c.shortMeaning,
             deeperMeaning: c.deeperMeaning,
           })),
+          profile: profile
+            ? {
+                firstName: profile.firstName ?? null,
+                intent: profile.intent
+                  ? INTENT_LABELS[profile.intent]
+                  : null,
+                state: profile.state ? STATE_LABELS[profile.state] : null,
+                guidance: profile.guidance
+                  ? GUIDANCE_LABELS[profile.guidance]
+                  : null,
+                guidanceKey: profile.guidance ?? null,
+              }
+            : null,
         },
       });
 
