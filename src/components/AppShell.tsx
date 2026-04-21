@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 import { BottomNav } from "./BottomNav";
 import { ModobeamLogo } from "./ModobeamLogo";
-import { Link, useLocation } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ChevronLeft, Settings2 } from "lucide-react";
 
 interface Props {
   children: ReactNode;
@@ -17,9 +17,6 @@ export const AppShell = ({
   showBack = false,
   backTo,
 }: Props) => {
-  const location = useLocation();
-  const isHome = location.pathname === "/";
-
   return (
     <div className="min-h-screen flex flex-col">
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/70 border-b border-border/40">
@@ -35,7 +32,13 @@ export const AppShell = ({
           ) : (
             <ModobeamLogo />
           )}
-          <div className="w-12" />
+          <Link
+            to="/preferences"
+            aria-label="Preferences"
+            className="text-muted-foreground hover:text-foreground transition-smooth p-2 -mr-2"
+          >
+            <Settings2 className="h-[18px] w-[18px]" strokeWidth={1.6} />
+          </Link>
         </div>
       </header>
 
