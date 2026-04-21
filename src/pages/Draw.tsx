@@ -162,6 +162,11 @@ const Draw = () => {
         .single();
 
       if (insertErr) throw insertErr;
+      // Remember the moment for this insight so the next screen can tint itself
+      if (moment && inserted?.id) {
+        const { setInsightMoment } = await import("@/lib/insightMoment");
+        setInsightMoment(inserted.id, moment);
+      }
       navigate(`/insight/${inserted.id}`);
     } catch (e: any) {
       console.error(e);
