@@ -24,6 +24,11 @@ import { getDailyQuote } from "@/lib/dailyQuote";
 import { recordMomentForStreak, shouldOfferRare, explainRareCard } from "@/lib/rareCard";
 import { drawCards as drawDeck } from "@/data/deck";
 import { haptic } from "@/lib/haptics";
+import {
+  buildAstroContext,
+  getCachedChart,
+  inferFocusArea,
+} from "@/lib/astrology";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -240,6 +245,25 @@ const Draw = () => {
             : null,
           priorThreads,
           dailyQuote,
+          astroContext: (() => {
+            if (!profile?.birthday) return null;
+            const chart = getCachedChart({
+              date: profile.birthday,
+              time: profile.birthTime ?? null,
+              lat: profile.birthLat ?? null,
+              lon: profile.birthLon ?? null,
+              tzOffsetMin: profile.birthTzOffsetMin ?? null,
+            });
+            const text = cardsToShow
+              .map((c) => `${c.name} ${c.keyword} ${c.shortMeaning}`)
+              .join(" ");
+            const focus = inferFocusArea({
+              text,
+              cardCategories: cardsToShow.map((c) => c.category),
+              chart,
+            });
+            return buildAstroContext(chart, focus);
+          })(),
         },
       });
 
