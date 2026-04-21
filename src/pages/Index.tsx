@@ -49,6 +49,13 @@ const Index = () => {
     count: 0,
     savedToday: false,
   });
+  const [quote, setQuote] = useState(() => getDailyQuote());
+
+  // Refresh the quote at local midnight if the app stays open
+  useEffect(() => {
+    const t = setTimeout(() => setQuote(getDailyQuote()), msUntilNextMidnight());
+    return () => clearTimeout(t);
+  }, [quote]);
 
   useEffect(() => {
     if (!isOnboardingComplete()) {
