@@ -247,7 +247,7 @@ const Draw = () => {
           session_id,
           intention: intention || null,
           draw_type: type!,
-          cards: cards.map((c) => ({ id: c.id, name: c.name })),
+          cards: cardsToShow.map((c) => ({ id: c.id, name: c.name })),
           combined_insight: combinedPayload,
           ai_reflection: (data as any).reflection ?? "",
         })
