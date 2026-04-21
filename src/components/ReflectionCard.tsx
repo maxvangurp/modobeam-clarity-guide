@@ -137,6 +137,7 @@ export const ReflectionCard = ({
             </>
           )}
         </div>
+        </div>
       </div>
     </button>
   );
