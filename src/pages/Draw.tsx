@@ -7,6 +7,7 @@ import { drawCards, type OracleCard } from "@/data/deck";
 import { getReadingType, type DrawType } from "@/data/readingTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
+import { getProfile, GUIDANCE_LABELS, INTENT_LABELS, STATE_LABELS } from "@/lib/profile";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -14,7 +15,9 @@ const Draw = () => {
   const { type } = useParams<{ type: string }>();
   const [searchParams] = useSearchParams();
   const intention = searchParams.get("q") ?? "";
+  const fromOnboarding = searchParams.get("from") === "onboarding";
   const navigate = useNavigate();
+  const profile = getProfile();
 
   const reading = getReadingType(type ?? "");
 
