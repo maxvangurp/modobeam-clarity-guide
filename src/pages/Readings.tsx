@@ -20,7 +20,7 @@ import {
 import { Compass } from "lucide-react";
 
 interface SectionDef {
-  key: "quick" | "deeper" | "lens" | "context";
+  key: "quick" | "deeper" | "context" | "coming";
   title: string;
   hint: string;
 }
@@ -37,19 +37,19 @@ const SECTIONS: SectionDef[] = [
     hint: "When something is asking for more time",
   },
   {
-    key: "lens",
-    title: "A different lens",
-    hint: "Other ways to come at the same question",
+    key: "context",
+    title: "Context & layers",
+    hint: "The wider map your reflections live inside",
   },
   {
-    key: "context",
-    title: "Context",
-    hint: "The wider map your reflections live inside",
+    key: "coming",
+    title: "Coming soon",
+    hint: "New ways to reflect, on the way",
   },
 ];
 
 // Where each existing reading type belongs in the library.
-const READING_GROUP: Record<string, "quick" | "deeper" | "lens"> = {
+const READING_GROUP: Record<string, "quick" | "deeper"> = {
   daily: "quick",
   three: "quick",
   direction: "deeper",
@@ -57,6 +57,13 @@ const READING_GROUP: Record<string, "quick" | "deeper" | "lens"> = {
   "next-phase": "deeper",
   year: "deeper",
 };
+
+// The 3 coming-soon previews we surface as a dedicated section.
+const COMING_SOON_FEATURED_IDS = [
+  "ask-for-friend",
+  "this-or-that",
+  "whats-going-on",
+] as const;
 
 const Readings = () => {
   const navigate = useNavigate();
