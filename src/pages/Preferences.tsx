@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ChoiceCard } from "@/components/onboarding/ChoiceCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Constellation } from "@/components/Constellation";
 import { toast } from "sonner";
 import {
   GUIDANCE_LABELS,
@@ -17,6 +18,9 @@ import {
   type Rhythm,
   type UsageMode,
 } from "@/lib/profile";
+import { fetchRecentInsights, type InsightLite } from "@/lib/progression";
+import { readKnowYou, shouldRegenerate, writeKnowYou } from "@/lib/aiKnowYou";
+import { supabase } from "@/integrations/supabase/client";
 
 const Preferences = () => {
   const navigate = useNavigate();
@@ -32,6 +36,66 @@ const Preferences = () => {
   const [rhythm, setRhythm] = useState<Rhythm | null>(existing.rhythm ?? null);
   const [firstName, setFirstName] = useState(existing.firstName ?? "");
   const [birthday, setBirthday] = useState(existing.birthday ?? "");
+
+  const [insights, setInsights] = useState<InsightLite[]>([]);
+  const [knowYouText, setKnowYouText] = useState<string>(
+    () => readKnowYou()?.text ?? "",
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const recent = await fetchRecentInsights(60);
+      if (cancelled) return;
+      setInsights(recent);
+
+      // Refresh the AI's "how I'm starting to know you" note every ~10 reflections.
+      if (shouldRegenerate(recent.length)) {
+        try {
+          const reflections = recent.slice(0, 20).map((r) => {
+            let theme = "";
+            let tension = "";
+            if (r.combined_insight) {
+              try {
+                const p = JSON.parse(r.combined_insight);
+                theme = p.theme ?? "";
+                tension = p.tension ?? "";
+              } catch {
+                /* noop */
+              }
+            }
+            return {
+              date: r.created_at,
+              draw_type: r.draw_type,
+              cards: r.cards.map((c) => c.name),
+              theme,
+              tension,
+            };
+          });
+          const { data, error } = await supabase.functions.invoke("know-you", {
+            body: { reflections, firstName: existing.firstName ?? null },
+          });
+          if (!error) {
+            const note = (data as { note?: string })?.note?.trim() ?? "";
+            if (note) {
+              writeKnowYou({
+                text: note,
+                generatedAtCount: recent.length,
+                generatedAt: new Date().toISOString(),
+              });
+              setKnowYouText(note);
+            }
+          }
+        } catch {
+          /* silent — note is a quiet bonus */
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const save = () => {
     saveProfile({
@@ -60,6 +124,36 @@ const Preferences = () => {
           moment-of choices still come first.
         </p>
       </section>
+
+      {/* Constellation — long-arc portrait of presence over time */}
+      {insights.length >= 3 && (
+        <section className="mb-2 animate-fade-up">
+          <div className="rounded-3xl bg-card/50 backdrop-blur border border-border/50 px-5 pt-5 pb-3 shadow-soft">
+            <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+              Your field of presence
+            </p>
+            <Constellation insights={insights} className="mt-2 -mx-1" />
+            <p className="text-[11px] text-muted-foreground/70 mt-1 italic">
+              {insights.length} {insights.length === 1 ? "moment" : "moments"} —
+              gently arranged.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* "How I'm starting to know you" — quiet AI-observed note */}
+      {knowYouText && (
+        <section className="mb-2 animate-fade-up">
+          <div className="rounded-3xl bg-gradient-dawn border border-border/50 px-5 py-4 shadow-soft">
+            <p className="text-[11px] uppercase tracking-[0.25em] text-ink-soft/80 mb-2">
+              How I'm starting to know you
+            </p>
+            <p className="text-[14px] leading-relaxed text-foreground/90 italic">
+              {knowYouText}
+            </p>
+          </div>
+        </section>
+      )}
 
       <Section
         kicker="How you use it"

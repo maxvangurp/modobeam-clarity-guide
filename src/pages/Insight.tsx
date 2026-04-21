@@ -11,6 +11,14 @@ import { recordReflectionSaved, MOMENT_LABELS, type MomentNeed } from "@/lib/pro
 import { getInsightMoment } from "@/lib/insightMoment";
 import { getMomentTint } from "@/lib/momentTint";
 import { haptic } from "@/lib/haptics";
+import {
+  recordMood,
+  getMoodForInsight,
+  MOOD_LABELS,
+  type MoodSnap,
+} from "@/lib/moodSnapshot";
+import { KeepThisCard } from "@/components/KeepThisCard";
+import { NotQuiteIt } from "@/components/NotQuiteIt";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -20,6 +28,8 @@ import {
   CalendarDays,
   Sunrise,
   ArrowRight,
+  Image as ImageIcon,
+  ChevronRight,
 } from "lucide-react";
 
 interface InsightRow {
@@ -49,6 +59,10 @@ const Insight = () => {
   const [summary, setSummary] = useState<string>("");
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [skippedJournal, setSkippedJournal] = useState(false);
+  const [savedMood, setSavedMood] = useState<MoodSnap | null>(null);
+  const [activePromptIdx, setActivePromptIdx] = useState(0);
+  const [keepOpen, setKeepOpen] = useState(false);
+  const [showNotQuite, setShowNotQuite] = useState(false);
 
   const summaryRef = useRef<HTMLDivElement | null>(null);
   const nextStepsRef = useRef<HTMLDivElement | null>(null);
@@ -80,6 +94,9 @@ const Insight = () => {
         setSaved(true);
         // Don't auto-fetch summary on reload; user can re-trigger if they edit.
       }
+      // Restore any prior mood snapshot for this insight
+      const existingMood = id ? getMoodForInsight(id) : null;
+      if (existingMood) setSavedMood(existingMood);
       setLoading(false);
     })();
   }, [id, navigate]);
@@ -180,12 +197,22 @@ const Insight = () => {
 
   const skipJournal = () => {
     setSkippedJournal(true);
+    // No auto-scroll — let the mood snapshot affordance bloom in place
+    // and only nudge after they tap (or skip) it.
+  };
+
+  const pickMood = (m: MoodSnap) => {
+    if (!id) return;
+    haptic("select");
+    recordMood(id, m);
+    setSavedMood(m);
+    toast.success("Noted softly");
     setTimeout(() => {
       nextStepsRef.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
-    }, 60);
+    }, 80);
   };
 
   if (loading || !insight) {
@@ -365,19 +392,30 @@ const Insight = () => {
         </p>
 
         {prompts.length > 0 && (
-          <ul className="mt-5 space-y-2.5">
-            {prompts.map((q, i) => (
-              <li
-                key={i}
-                className="flex gap-3 text-[14px] text-foreground/85 leading-relaxed"
+          <div className="mt-5 rounded-2xl bg-card/40 backdrop-blur border border-border/40 px-4 py-4">
+            <div className="flex items-start gap-3">
+              <span className="font-display text-muted-foreground/70 tabular-nums shrink-0 text-[12px] mt-0.5">
+                {String(activePromptIdx + 1).padStart(2, "0")}/{String(prompts.length).padStart(2, "0")}
+              </span>
+              <p
+                key={activePromptIdx}
+                className="text-[15px] text-foreground/90 leading-relaxed flex-1 animate-fade-up"
               >
-                <span className="font-display text-muted-foreground/70 tabular-nums shrink-0">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span>{q}</span>
-              </li>
-            ))}
-          </ul>
+                {prompts[activePromptIdx]}
+              </p>
+            </div>
+            {prompts.length > 1 && (
+              <button
+                type="button"
+                onClick={() =>
+                  setActivePromptIdx((i) => (i + 1) % prompts.length)
+                }
+                className="mt-3 inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-smooth"
+              >
+                Try another <ChevronRight className="h-3 w-3" />
+              </button>
+            )}
+          </div>
         )}
 
         <Textarea
@@ -396,7 +434,8 @@ const Insight = () => {
           <button
             onClick={skipJournal}
             type="button"
-            className="text-sm text-muted-foreground hover:text-foreground transition-smooth"
+            disabled={skippedJournal || saved}
+            className="text-sm text-muted-foreground hover:text-foreground transition-smooth disabled:opacity-50"
           >
             Not right now
           </button>
@@ -416,6 +455,42 @@ const Insight = () => {
             )}
           </Button>
         </div>
+
+        {/* Mood snapshot — appears when the user skips. One quiet tap. */}
+        {skippedJournal && !saved && (
+          <div className="mt-5 rounded-2xl bg-card/50 backdrop-blur border border-border/50 px-5 py-4 animate-fade-up">
+            {savedMood ? (
+              <p className="text-[13px] text-foreground/80 leading-relaxed">
+                Noted —{" "}
+                <span className="italic text-foreground">
+                  {MOOD_LABELS[savedMood].toLowerCase()}
+                </span>
+                . That's enough for today.
+              </p>
+            ) : (
+              <>
+                <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
+                  How does today feel?
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {(Object.keys(MOOD_LABELS) as MoodSnap[]).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => pickMood(m)}
+                      className="px-3.5 py-1.5 rounded-full text-[12px] bg-card/70 text-foreground/80 border border-border/60 hover:bg-card hover:text-foreground transition-smooth backdrop-blur"
+                    >
+                      {MOOD_LABELS[m]}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2.5 text-[11px] text-muted-foreground/70">
+                  One tap is enough. No words needed.
+                </p>
+              </>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Personal AI summary — appears after journaling */}
@@ -454,9 +529,51 @@ const Insight = () => {
                 Mirror this back to me
               </button>
             )}
+
+            {/* Quiet actions on the AI mirror */}
+            {summary && !summaryLoading && (
+              <div className="mt-5 pt-4 border-t border-border/40 flex items-center gap-4 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    haptic("select");
+                    setKeepOpen(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 text-[11px] uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-smooth"
+                >
+                  <ImageIcon className="h-3 w-3" strokeWidth={1.8} />
+                  Keep this
+                </button>
+                <span className="text-muted-foreground/30 text-[10px]">·</span>
+                <button
+                  type="button"
+                  onClick={() => setShowNotQuite((v) => !v)}
+                  className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-smooth"
+                >
+                  That's not quite it →
+                </button>
+              </div>
+            )}
+
+            {showNotQuite && summary && (
+              <NotQuiteIt
+                open={showNotQuite}
+                onClose={() => setShowNotQuite(false)}
+                originalSummary={summary}
+                cards={cards.map((c) => ({ name: c.name, keyword: c.keyword }))}
+                onRevised={(revised) => setSummary(revised)}
+              />
+            )}
           </div>
         </section>
       )}
+
+      <KeepThisCard
+        open={keepOpen}
+        onOpenChange={setKeepOpen}
+        summary={summary}
+        moment={moment}
+      />
 
       {/* Soft next steps — never an end */}
       {showNextSteps && (

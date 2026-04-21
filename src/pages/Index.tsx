@@ -21,6 +21,7 @@ import {
   type InsightLite,
   type ThemeInsight,
 } from "@/lib/progression";
+import { inferReadingHint, type ReadingHint } from "@/lib/themeUnlocks";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
 import { Layers, Pause, Sparkles, Waypoints, X } from "lucide-react";
 import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
@@ -64,6 +65,11 @@ const Index = () => {
   const [quote, setQuote] = useState(() => getDailyQuote());
   const [suggestion, setSuggestion] = useState<ReadingType | null>(null);
   const [themes, setThemes] = useState<ThemeInsight[]>([]);
+  const [readingHint, setReadingHint] = useState<{
+    hint: ReadingHint;
+    reading: ReadingType;
+  } | null>(null);
+  const [hintDismissed, setHintDismissed] = useState(false);
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
   const [activeTheme, setActiveTheme] = useState<string | null>(null);
   const [returnGap, setReturnGap] = useState<number | null>(null);
@@ -99,7 +105,19 @@ const Index = () => {
       setInsights(recent);
 
       // Pattern awareness — recurring themes across last week of reflections
-      setThemes(detectRecentThemes(recent));
+      const detected = detectRecentThemes(recent);
+      setThemes(detected);
+
+      // Theme-driven reading hint — only when themes naturally point somewhere.
+      const hint = inferReadingHint(detected);
+      if (hint) {
+        const reading = getReadingType(hint.type);
+        const triedTypes = new Set(recent.map((r) => r.draw_type));
+        // Only nudge toward something they haven't already tried.
+        if (reading && !triedTypes.has(hint.type)) {
+          setReadingHint({ hint, reading });
+        }
+      }
 
       // Weekly synthesis — fresh on weekend window OR cached any other day.
       const offer = shouldOfferWeeklySynthesis(recent);
@@ -292,6 +310,52 @@ const Index = () => {
             </p>
           </div>
         )}
+
+        {/* Theme-driven reading hint — surfaces when a recurring thread
+            naturally points to a deeper reading they haven't opened yet. */}
+        {readingHint && !hintDismissed && (
+          <div className="mt-4 rounded-2xl bg-gradient-dawn border border-border/50 px-4 py-3.5 flex items-start gap-3 animate-fade-up shadow-soft">
+            <span className="h-8 w-8 rounded-full bg-background/40 flex items-center justify-center shrink-0">
+              <readingHint.reading.icon
+                className="h-3.5 w-3.5 text-foreground/80"
+                strokeWidth={1.8}
+              />
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-ink-soft/80">
+                Something in your reflections
+              </p>
+              <p className="text-[13px] text-foreground/90 leading-relaxed mt-1">
+                <span className="italic">"{readingHint.hint.matchedTheme}"</span>{" "}
+                keeps surfacing. A{" "}
+                <span className="font-medium">
+                  {readingHint.reading.label.toLowerCase()}
+                </span>{" "}
+                reading might meet it.
+              </p>
+              <button
+                onClick={() => {
+                  haptic("select");
+                  const params = new URLSearchParams();
+                  if (moment) params.set("moment", moment);
+                  navigate(
+                    `/draw/${readingHint.reading.id}${params.toString() ? `?${params}` : ""}`,
+                  );
+                }}
+                className="mt-2 text-[11px] uppercase tracking-[0.2em] text-foreground/80 hover:text-foreground transition-smooth"
+              >
+                Try it →
+              </button>
+            </div>
+            <button
+              onClick={() => setHintDismissed(true)}
+              aria-label="Dismiss"
+              className="text-muted-foreground/60 hover:text-foreground transition-smooth -mr-1 -mt-0.5"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
       </section>
 
       <ThemeReflectionsSheet
@@ -423,7 +487,7 @@ const Index = () => {
       </section>
 
       {/* Soft suggestion — only when something newly unlocked */}
-      {suggestion && !suggestionDismissed && (
+      {suggestion && !suggestionDismissed && !readingHint && (
         <section className="mt-8 animate-fade-up [animation-delay:320ms]">
           <div className="rounded-2xl bg-card/50 backdrop-blur border border-border/40 px-5 py-4 flex items-start gap-3">
             <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">

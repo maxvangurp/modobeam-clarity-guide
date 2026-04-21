@@ -4,8 +4,8 @@ import { AppShell } from "@/components/AppShell";
 import { ReflectionCard } from "@/components/ReflectionCard";
 import { MomentCheckIn } from "@/components/MomentCheckIn";
 import { Button } from "@/components/ui/button";
-import { drawCards, type OracleCard } from "@/data/deck";
-import { getReadingType, type DrawType } from "@/data/readingTypes";
+import { type OracleCard } from "@/data/deck";
+import { getReadingType } from "@/data/readingTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
 import {
@@ -21,7 +21,7 @@ import {
 import { fetchRecentInsights } from "@/lib/progression";
 import { buildPriorThreads } from "@/lib/aiContinuity";
 import { getDailyQuote } from "@/lib/dailyQuote";
-import { recordMomentForStreak, shouldOfferRare, markRareSeen } from "@/lib/rareCard";
+import { recordMomentForStreak, shouldOfferRare } from "@/lib/rareCard";
 import { drawCards as drawDeck } from "@/data/deck";
 import { haptic } from "@/lib/haptics";
 import { toast } from "sonner";
@@ -42,36 +42,83 @@ const Draw = () => {
   const reading = getReadingType(type ?? "");
 
   const count = reading?.cardCount ?? 1;
-  // Standard deal — may be quietly replaced by a rare card if conditions align.
-  const cards = useMemo<OracleCard[]>(
-    () => drawDeck(count),
-    [type, count],
-  );
 
   const [moment, setMoment] = useState<MomentNeed | null>(validMoment);
   // Auto-prompt the moment check-in only when the user's rhythm allows.
-  // - Skip right after onboarding (already a fresh setup moment).
-  // - Skip when a moment was already chosen on the home screen.
-  // - Skip when the user explicitly chose "whenever I need it" — they can
-  //   still open it manually from the chip below.
   const [showMoment, setShowMoment] = useState<boolean>(
     !fromOnboarding && !validMoment && shouldPromptMoment(profile?.rhythm),
   );
 
-  // Mark the prompt as shown the first time we surface it, so the
-  // rhythm-based cooldown starts ticking.
+  // Mark the prompt as shown the first time we surface it
   useEffect(() => {
     if (showMoment) markMomentPromptShown();
-    // We only want to mark it on the initial auto-show, not on manual reopens.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Track whether a rare card was woven into today's deal so we can mark
+  // it seen on reveal and surface it with quiet reverence.
+  const [rareCardId, setRareCardId] = useState<string | null>(null);
+  const [contextReady, setContextReady] = useState(false);
+
+  // Standard deal — may be quietly replaced by a rare card if conditions align.
+  const cards = useMemo<OracleCard[]>(() => {
+    const dealt = drawDeck(count);
+    if (!contextReady || type !== "daily" || count !== 1) return dealt;
+
+    // Determine context for rare-card eligibility once we know recent volume.
+    // We read the locally-stamped streaks/return gap synchronously here,
+    // and the caller's effect below decides whether to swap.
+    return dealt;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, count, contextReady]);
+
+  // Resolved deal (cards possibly with one swapped to a rare)
+  const [resolvedCards, setResolvedCards] = useState<OracleCard[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const recent = await fetchRecentInsights(60);
+      if (cancelled) return;
+      const totalReflections = recent.length;
+
+      // Compute days-away from the most recent saved insight (if any).
+      let daysAway: number | null = null;
+      if (recent[0]?.created_at) {
+        const last = new Date(recent[0].created_at).getTime();
+        daysAway = Math.floor((Date.now() - last) / (1000 * 60 * 60 * 24));
+      }
+
+      const { readMomentStreak } = await import("@/lib/rareCard");
+      const momentStreak = readMomentStreak();
+
+      const rare = shouldOfferRare({
+        drawType: type ?? "",
+        totalReflections,
+        daysAway,
+        momentStreak,
+      });
+
+      if (rare && type === "daily" && count === 1) {
+        setResolvedCards([rare]);
+        setRareCardId(rare.id);
+      } else {
+        setResolvedCards(cards);
+      }
+      setContextReady(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, count]);
+
+  const cardsToShow = resolvedCards ?? cards;
 
   const [revealed, setRevealed] = useState<boolean[]>(
     Array(count).fill(false),
   );
   const [loading, setLoading] = useState(false);
-  // Brief shuffle beat before the cards become tappable.
-  // Adds anticipation; turns the reveal into an event, not a mechanic.
   const [shuffling, setShuffling] = useState(true);
 
   useEffect(() => {
@@ -79,6 +126,14 @@ const Draw = () => {
     const t = setTimeout(() => setShuffling(false), 1400);
     return () => clearTimeout(t);
   }, [type]);
+
+  // When a rare card is revealed, mark it seen so it goes into cooldown.
+  useEffect(() => {
+    if (!rareCardId) return;
+    if (revealed[0]) {
+      import("@/lib/rareCard").then((m) => m.markRareSeen(rareCardId));
+    }
+  }, [rareCardId, revealed]);
 
   const allRevealed = revealed.every(Boolean);
 
@@ -146,7 +201,7 @@ const Draw = () => {
           intention,
           drawType: type,
           positionLabels: labels,
-          cards: cards.map((c) => ({
+          cards: cardsToShow.map((c) => ({
             name: c.name,
             keyword: c.keyword,
             category: c.category,
@@ -192,7 +247,7 @@ const Draw = () => {
           session_id,
           intention: intention || null,
           draw_type: type!,
-          cards: cards.map((c) => ({ id: c.id, name: c.name })),
+          cards: cardsToShow.map((c) => ({ id: c.id, name: c.name })),
           combined_insight: combinedPayload,
           ai_reflection: (data as any).reflection ?? "",
         })
@@ -291,7 +346,7 @@ const Draw = () => {
         className={`${gridClass} animate-fade-up [animation-delay:120ms] transition-opacity duration-700`}
         style={{ opacity: shuffling ? 0.55 : 1 }}
       >
-        {cards.map((card, i) => (
+        {cardsToShow.map((card, i) => (
           <div
             key={card.id}
             className="flex flex-col items-center gap-2"
@@ -317,6 +372,18 @@ const Draw = () => {
           </div>
         ))}
       </div>
+
+      {/* Quiet recognition when a rare card has surfaced — only after reveal */}
+      {rareCardId && allRevealed && (
+        <div className="mt-6 text-center animate-fade-up">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground/80">
+            ✦ A rare card today
+          </p>
+          <p className="text-[12px] text-muted-foreground mt-1.5 italic max-w-xs mx-auto leading-relaxed">
+            Some cards only arrive at certain moments. Sit with this one.
+          </p>
+        </div>
+      )}
 
       <div className="mt-10 flex flex-col items-center gap-3 animate-fade-up [animation-delay:300ms]">
         {!allRevealed ? (
