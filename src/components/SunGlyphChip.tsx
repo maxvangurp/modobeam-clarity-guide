@@ -4,7 +4,7 @@
 // only appears when the user has opted in.
 
 import { useMemo } from "react";
-import { getProfile } from "@/lib/profile";
+import { getProfile, isAstroLensEnabled } from "@/lib/profile";
 import { getCachedChart, SIGN_GLYPHS } from "@/lib/astrology";
 
 interface Props {
@@ -15,8 +15,9 @@ interface Props {
 
 export const SunGlyphChip = ({ showName = true, className = "" }: Props) => {
   const profile = getProfile();
+  const enabled = isAstroLensEnabled(profile);
   const chart = useMemo(() => {
-    if (!profile?.birthday) return null;
+    if (!enabled || !profile?.birthday) return null;
     return getCachedChart({
       date: profile.birthday,
       time: profile.birthTime ?? null,
@@ -25,6 +26,7 @@ export const SunGlyphChip = ({ showName = true, className = "" }: Props) => {
       tzOffsetMin: profile.birthTzOffsetMin ?? null,
     });
   }, [
+    enabled,
     profile?.birthday,
     profile?.birthTime,
     profile?.birthLat,
