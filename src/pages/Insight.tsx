@@ -392,19 +392,30 @@ const Insight = () => {
         </p>
 
         {prompts.length > 0 && (
-          <ul className="mt-5 space-y-2.5">
-            {prompts.map((q, i) => (
-              <li
-                key={i}
-                className="flex gap-3 text-[14px] text-foreground/85 leading-relaxed"
+          <div className="mt-5 rounded-2xl bg-card/40 backdrop-blur border border-border/40 px-4 py-4">
+            <div className="flex items-start gap-3">
+              <span className="font-display text-muted-foreground/70 tabular-nums shrink-0 text-[12px] mt-0.5">
+                {String(activePromptIdx + 1).padStart(2, "0")}/{String(prompts.length).padStart(2, "0")}
+              </span>
+              <p
+                key={activePromptIdx}
+                className="text-[15px] text-foreground/90 leading-relaxed flex-1 animate-fade-up"
               >
-                <span className="font-display text-muted-foreground/70 tabular-nums shrink-0">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span>{q}</span>
-              </li>
-            ))}
-          </ul>
+                {prompts[activePromptIdx]}
+              </p>
+            </div>
+            {prompts.length > 1 && (
+              <button
+                type="button"
+                onClick={() =>
+                  setActivePromptIdx((i) => (i + 1) % prompts.length)
+                }
+                className="mt-3 inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-smooth"
+              >
+                Try another <ChevronRight className="h-3 w-3" />
+              </button>
+            )}
+          </div>
         )}
 
         <Textarea
@@ -423,7 +434,8 @@ const Insight = () => {
           <button
             onClick={skipJournal}
             type="button"
-            className="text-sm text-muted-foreground hover:text-foreground transition-smooth"
+            disabled={skippedJournal || saved}
+            className="text-sm text-muted-foreground hover:text-foreground transition-smooth disabled:opacity-50"
           >
             Not right now
           </button>
@@ -443,6 +455,42 @@ const Insight = () => {
             )}
           </Button>
         </div>
+
+        {/* Mood snapshot — appears when the user skips. One quiet tap. */}
+        {skippedJournal && !saved && (
+          <div className="mt-5 rounded-2xl bg-card/50 backdrop-blur border border-border/50 px-5 py-4 animate-fade-up">
+            {savedMood ? (
+              <p className="text-[13px] text-foreground/80 leading-relaxed">
+                Noted —{" "}
+                <span className="italic text-foreground">
+                  {MOOD_LABELS[savedMood].toLowerCase()}
+                </span>
+                . That's enough for today.
+              </p>
+            ) : (
+              <>
+                <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
+                  How does today feel?
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {(Object.keys(MOOD_LABELS) as MoodSnap[]).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => pickMood(m)}
+                      className="px-3.5 py-1.5 rounded-full text-[12px] bg-card/70 text-foreground/80 border border-border/60 hover:bg-card hover:text-foreground transition-smooth backdrop-blur"
+                    >
+                      {MOOD_LABELS[m]}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2.5 text-[11px] text-muted-foreground/70">
+                  One tap is enough. No words needed.
+                </p>
+              </>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Personal AI summary — appears after journaling */}
