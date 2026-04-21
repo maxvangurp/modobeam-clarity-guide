@@ -26,6 +26,10 @@ const Draw = () => {
   const [searchParams] = useSearchParams();
   const intention = searchParams.get("q") ?? "";
   const fromOnboarding = searchParams.get("from") === "onboarding";
+  // Moment can be preselected from the home screen via ?moment=…
+  const presetMoment = searchParams.get("moment") as MomentNeed | null;
+  const validMoment =
+    presetMoment && presetMoment in MOMENT_LABELS ? presetMoment : null;
   const navigate = useNavigate();
   const profile = getProfile();
 
@@ -37,13 +41,14 @@ const Draw = () => {
     [type],
   );
 
-  const [moment, setMoment] = useState<MomentNeed | null>(null);
+  const [moment, setMoment] = useState<MomentNeed | null>(validMoment);
   // Auto-prompt the moment check-in only when the user's rhythm allows.
   // - Skip right after onboarding (already a fresh setup moment).
+  // - Skip when a moment was already chosen on the home screen.
   // - Skip when the user explicitly chose "whenever I need it" — they can
   //   still open it manually from the chip below.
   const [showMoment, setShowMoment] = useState<boolean>(
-    !fromOnboarding && shouldPromptMoment(profile?.rhythm),
+    !fromOnboarding && !validMoment && shouldPromptMoment(profile?.rhythm),
   );
 
   // Mark the prompt as shown the first time we surface it, so the
