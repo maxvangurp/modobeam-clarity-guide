@@ -201,7 +201,7 @@ const Draw = () => {
           intention,
           drawType: type,
           positionLabels: labels,
-          cards: cards.map((c) => ({
+          cards: cardsToShow.map((c) => ({
             name: c.name,
             keyword: c.keyword,
             category: c.category,
