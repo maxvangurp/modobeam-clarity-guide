@@ -8,6 +8,7 @@ import {
 } from "@/components/onboarding/BirthDetailsForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Constellation } from "@/components/Constellation";
 import { toast } from "sonner";
 import {
