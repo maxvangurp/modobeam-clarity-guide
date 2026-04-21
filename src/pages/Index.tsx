@@ -1,13 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { READING_TYPES, type DrawType } from "@/data/readingTypes";
+import { getProfile, isOnboardingComplete } from "@/lib/profile";
 
 const Index = () => {
   const navigate = useNavigate();
   const [intention, setIntention] = useState("");
+
+  useEffect(() => {
+    if (!isOnboardingComplete()) {
+      navigate("/welcome", { replace: true });
+    }
+  }, [navigate]);
+
+  const profile = getProfile();
+  const greeting = profile?.firstName
+    ? `Hello, ${profile.firstName}.`
+    : "A quiet moment with yourself.";
 
   const start = (type: DrawType) => {
     const params = new URLSearchParams();
