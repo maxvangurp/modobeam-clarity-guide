@@ -136,6 +136,29 @@ export interface ThemeInsight {
   words: string[];
 }
 
+// Returns true if a given insight contains the theme word in its theme,
+// tension, or card names. Used to power "tap a theme to see related reflections".
+export function insightMatchesTheme(
+  insight: InsightLite,
+  themeWord: string,
+): boolean {
+  const target = themeWord.toLowerCase();
+  let theme = "";
+  let tension = "";
+  if (insight.combined_insight) {
+    try {
+      const p = JSON.parse(insight.combined_insight);
+      theme = p.theme ?? "";
+      tension = p.tension ?? "";
+    } catch {
+      theme = insight.combined_insight;
+    }
+  }
+  const cardWords = insight.cards.map((c) => c.name).join(" ");
+  const text = `${theme} ${tension} ${cardWords}`;
+  return tokenize(text).includes(target);
+}
+
 // Lightweight heuristic: extract themes from the AI-generated `theme` and
 // `tension` fields across the last `recentN` reflections, find words that
 // appear in 2+ reflections, and group them.
