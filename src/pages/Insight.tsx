@@ -348,7 +348,7 @@ const Insight = () => {
                   What's underneath
                 </h2>
               </div>
-              {combined.focus?.label && (
+              {combined.focus?.label && isAstroLensEnabled() && (
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] border bg-card/40 backdrop-blur"
                   style={{
