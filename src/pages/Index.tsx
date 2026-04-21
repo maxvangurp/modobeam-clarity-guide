@@ -24,6 +24,9 @@ import {
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
 import { Flame, Layers, Sparkles, Waypoints, X } from "lucide-react";
 import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
+import { WeekProgress } from "@/components/WeekProgress";
+import { buildWeek } from "@/lib/weekProgress";
+import { getMomentTint, MOMENT_TINTS } from "@/lib/momentTint";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
