@@ -7,7 +7,12 @@ import { drawCards, type OracleCard } from "@/data/deck";
 import { getReadingType, type DrawType } from "@/data/readingTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
-import { getProfile, GUIDANCE_LABELS, INTENT_LABELS, STATE_LABELS } from "@/lib/profile";
+import {
+  getProfile,
+  GUIDANCE_LABELS,
+  LOOKING_FOR_LABELS,
+  USAGE_LABELS,
+} from "@/lib/profile";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -70,10 +75,10 @@ const Draw = () => {
           profile: profile
             ? {
                 firstName: profile.firstName ?? null,
-                intent: profile.intent
-                  ? INTENT_LABELS[profile.intent]
+                usage: profile.usage ? USAGE_LABELS[profile.usage] : null,
+                lookingFor: profile.lookingFor
+                  ? LOOKING_FOR_LABELS[profile.lookingFor]
                   : null,
-                state: profile.state ? STATE_LABELS[profile.state] : null,
                 guidance: profile.guidance
                   ? GUIDANCE_LABELS[profile.guidance]
                   : null,
@@ -127,19 +132,16 @@ const Draw = () => {
 
   return (
     <AppShell showBack backTo="/">
-      {fromOnboarding && profile?.intent && !allRevealed && (
+      {fromOnboarding && profile && !allRevealed && (
         <div className="mb-6 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-5 animate-fade-up">
           <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
-            Based on what you shared
+            Let's begin with a simple check-in
           </p>
           <p className="text-[15px] leading-relaxed text-foreground/90">
-            {profile.firstName ? `${profile.firstName}, here's ` : "Here's "}
-            a first card to ground your focus on{" "}
-            <span className="italic">
-              {INTENT_LABELS[profile.intent].toLowerCase()}
-            </span>
-            {profile.state
-              ? `, while you're ${STATE_LABELS[profile.state].toLowerCase()}`
+            {profile.firstName ? `${profile.firstName}, take ` : "Take "}
+            a breath. One card to settle into the moment
+            {profile.lookingFor
+              ? ` — a little ${LOOKING_FOR_LABELS[profile.lookingFor].toLowerCase()}`
               : ""}
             .
           </p>

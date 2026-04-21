@@ -17,8 +17,8 @@ interface CardInput {
 
 interface ProfileInput {
   firstName?: string | null;
-  intent?: string | null;
-  state?: string | null;
+  usage?: string | null;
+  lookingFor?: string | null;
   guidance?: string | null;
   guidanceKey?: "direct" | "calm" | "deep" | null;
 }
@@ -110,11 +110,11 @@ Deno.serve(async (req: Request) => {
     // Personalization context from onboarding
     const profileLines: string[] = [];
     if (profile?.firstName) profileLines.push(`Name: ${profile.firstName}`);
-    if (profile?.intent) profileLines.push(`Wants clarity on: ${profile.intent}`);
-    if (profile?.state) profileLines.push(`Currently: ${profile.state}`);
+    if (profile?.usage) profileLines.push(`How they use Modobeam: ${profile.usage}`);
+    if (profile?.lookingFor) profileLines.push(`What they look for in reflection: ${profile.lookingFor}`);
     if (profile?.guidance) profileLines.push(`Prefers tone: ${profile.guidance}`);
     const profileBlock = profileLines.length
-      ? `About this person (from their onboarding — use as context, never quote back literally):\n${profileLines.join("\n")}\n\nWeave this awareness in subtly. You may use their name once, sparingly. Let their focus area and current state shape *what you notice*, not what you announce.\n\n`
+      ? `About this person (from their onboarding — use as context, never quote back literally):\n${profileLines.join("\n")}\n\nWeave this awareness in subtly. You may use their name once, sparingly. Let what they're looking for shape *what you notice*, not what you announce. Don't assume anything is wrong — meet them as someone showing up for a calm, ordinary moment of reflection.\n\n`
       : "";
 
     // Map guidance preference → tone shaping

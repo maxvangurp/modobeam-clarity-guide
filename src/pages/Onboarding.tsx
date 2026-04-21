@@ -6,13 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   GUIDANCE_LABELS,
-  INTENT_LABELS,
-  STATE_LABELS,
+  LOOKING_FOR_LABELS,
+  RHYTHM_LABELS,
+  USAGE_LABELS,
   markOnboardingComplete,
   saveProfile,
-  type ClarityIntent,
-  type CurrentState,
   type GuidanceStyle,
+  type LookingFor,
+  type Rhythm,
+  type UsageMode,
 } from "@/lib/profile";
 
 const TOTAL_STEPS = 5;
@@ -21,9 +23,10 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
 
-  const [intent, setIntent] = useState<ClarityIntent | null>(null);
-  const [state, setState] = useState<CurrentState | null>(null);
+  const [usage, setUsage] = useState<UsageMode | null>(null);
+  const [lookingFor, setLookingFor] = useState<LookingFor | null>(null);
   const [guidance, setGuidance] = useState<GuidanceStyle | null>(null);
+  const [rhythm, setRhythm] = useState<Rhythm | null>(null);
   const [firstName, setFirstName] = useState("");
   const [birthday, setBirthday] = useState("");
 
@@ -32,22 +35,23 @@ const Onboarding = () => {
 
   const finish = () => {
     saveProfile({
-      intent: intent ?? undefined,
-      state: state ?? undefined,
+      usage: usage ?? undefined,
+      lookingFor: lookingFor ?? undefined,
       guidance: guidance ?? undefined,
+      rhythm: rhythm ?? undefined,
       firstName: firstName.trim() || undefined,
       birthday: birthday || undefined,
     });
     markOnboardingComplete();
-    // Send them straight into a personalized first reading
+    // Send them straight into a soft first check-in
     navigate("/draw/daily?from=onboarding");
   };
 
   const canContinue =
-    (step === 1 && !!intent) ||
-    (step === 2 && !!state) ||
+    (step === 1 && !!usage) ||
+    (step === 2 && !!lookingFor) ||
     (step === 3 && !!guidance) ||
-    step === 4 ||
+    (step === 4 && !!rhythm) ||
     step === 5;
 
   return (
@@ -59,17 +63,17 @@ const Onboarding = () => {
       <div key={step} className="flex-1 flex flex-col animate-fade-up">
         {step === 1 && (
           <Step
-            kicker="A quiet check-in"
-            title="What do you want more clarity on?"
-            hint="Choose what feels closest right now."
+            kicker="Welcome"
+            title="How would you like to use Modobeam?"
+            hint="Choose what feels closest. You can always shift later."
           >
             <div className="grid gap-2.5">
-              {(Object.keys(INTENT_LABELS) as ClarityIntent[]).map((id) => (
+              {(Object.keys(USAGE_LABELS) as UsageMode[]).map((id) => (
                 <ChoiceCard
                   key={id}
-                  label={INTENT_LABELS[id]}
-                  selected={intent === id}
-                  onClick={() => setIntent(id)}
+                  label={USAGE_LABELS[id]}
+                  selected={usage === id}
+                  onClick={() => setUsage(id)}
                 />
               ))}
             </div>
@@ -78,17 +82,17 @@ const Onboarding = () => {
 
         {step === 2 && (
           <Step
-            kicker="Right now"
-            title="What feels most true today?"
-            hint="There's no wrong answer — pick the one that lands."
+            kicker="A small intention"
+            title="What are you usually looking for in a reflection moment?"
+            hint="Pick the one that fits most often."
           >
             <div className="grid gap-2.5">
-              {(Object.keys(STATE_LABELS) as CurrentState[]).map((id) => (
+              {(Object.keys(LOOKING_FOR_LABELS) as LookingFor[]).map((id) => (
                 <ChoiceCard
                   key={id}
-                  label={STATE_LABELS[id]}
-                  selected={state === id}
-                  onClick={() => setState(id)}
+                  label={LOOKING_FOR_LABELS[id]}
+                  selected={lookingFor === id}
+                  onClick={() => setLookingFor(id)}
                 />
               ))}
             </div>
@@ -98,7 +102,7 @@ const Onboarding = () => {
         {step === 3 && (
           <Step
             kicker="Your tone"
-            title="How do you prefer to be reflected back to?"
+            title="What kind of guidance feels right to you?"
             hint="This shapes how Modobeam writes for you."
           >
             <div className="grid gap-2.5">
@@ -126,9 +130,28 @@ const Onboarding = () => {
 
         {step === 4 && (
           <Step
+            kicker="Your rhythm"
+            title="How often would you like to check in?"
+            hint="No pressure — this just helps shape gentle nudges later."
+          >
+            <div className="grid gap-2.5">
+              {(Object.keys(RHYTHM_LABELS) as Rhythm[]).map((id) => (
+                <ChoiceCard
+                  key={id}
+                  label={RHYTHM_LABELS[id]}
+                  selected={rhythm === id}
+                  onClick={() => setRhythm(id)}
+                />
+              ))}
+            </div>
+          </Step>
+        )}
+
+        {step === 5 && (
+          <Step
             kicker="Almost there"
             title="Let's make this feel a little more personal."
-            hint="This helps shape reflections that fit you better. Skip anything you'd rather not share."
+            hint="This helps make your experience feel a little more personal. Skip anything you'd rather not share."
           >
             <div className="grid gap-4 mt-2">
               <div className="grid gap-1.5">
@@ -162,28 +185,17 @@ const Onboarding = () => {
                 />
               </div>
             </div>
-          </Step>
-        )}
 
-        {step === 5 && (
-          <Step
-            kicker="Ready"
-            title={
-              firstName.trim()
-                ? `Welcome, ${firstName.trim()}.`
-                : "You're all set."
-            }
-            hint="Your first reflection is waiting. Take a breath, then begin."
-          >
-            <div className="mt-6 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-5 space-y-3">
-              {intent && (
-                <Summary label="Focus" value={INTENT_LABELS[intent]} />
-              )}
-              {state && (
-                <Summary label="Right now" value={STATE_LABELS[state]} />
+            <div className="mt-7 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-5 space-y-3">
+              {usage && <Summary label="Use" value={USAGE_LABELS[usage]} />}
+              {lookingFor && (
+                <Summary label="Looking for" value={LOOKING_FOR_LABELS[lookingFor]} />
               )}
               {guidance && (
                 <Summary label="Tone" value={GUIDANCE_LABELS[guidance]} />
+              )}
+              {rhythm && (
+                <Summary label="Rhythm" value={RHYTHM_LABELS[rhythm]} />
               )}
             </div>
             <p className="text-[12px] text-muted-foreground mt-5 leading-relaxed">
@@ -209,12 +221,12 @@ const Onboarding = () => {
               onClick={finish}
               className="w-full rounded-full bg-gradient-button text-primary-foreground h-14 text-base shadow-soft"
             >
-              Begin your first reflection
+              Begin with a simple check-in
             </Button>
           )}
-          {step === 4 && (
+          {step === 5 && (
             <button
-              onClick={next}
+              onClick={finish}
               className="w-full text-center text-[13px] text-muted-foreground hover:text-foreground transition-smooth mt-3"
             >
               Skip for now
