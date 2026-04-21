@@ -59,6 +59,7 @@ const Draw = () => {
   // it seen on reveal and surface it with quiet reverence.
   const [rareCardId, setRareCardId] = useState<string | null>(null);
   const [rareReason, setRareReason] = useState<string | null>(null);
+  const [rareThemes, setRareThemes] = useState<string[]>([]);
   const [contextReady, setContextReady] = useState(false);
 
   // Standard deal — may be quietly replaced by a rare card if conditions align.
