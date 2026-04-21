@@ -5,6 +5,7 @@ const KEY = "modobeam_profile_v1";
 const COMPLETE_KEY = "modobeam_onboarding_complete_v1";
 const LAST_REVISIT_KEY = "modobeam_prefs_last_revisit_v1";
 const NUDGE_DISMISSED_KEY = "modobeam_prefs_nudge_dismissed_v1";
+const LAST_MOMENT_PROMPT_KEY = "modobeam_moment_last_prompt_v1";
 
 export type UsageMode =
   | "daily"
@@ -113,6 +114,39 @@ export function shouldShowPreferencesNudge(): boolean {
   return true;
 }
 
+// Track when the moment check-in was last shown so we can space it
+// according to the user's rhythm preference.
+export function markMomentPromptShown(): void {
+  localStorage.setItem(LAST_MOMENT_PROMPT_KEY, new Date().toISOString());
+}
+
+// Decide whether to surface the moment check-in before a reading.
+// Rhythm controls cadence:
+//  - daily            → at most once per calendar day
+//  - few-times-week   → at most once every ~2.5 days
+//  - when-needed      → never auto-prompt (user can open it manually)
+//  - figuring-out     → light cadence, ~once every 2 days
+//  - undefined        → safe default: once per day
+// Forced opens (user taps "Change" / "Set moment") bypass this and are
+// handled by the caller — this function is only for the auto-prompt.
+export function shouldPromptMoment(rhythm?: Rhythm): boolean {
+  if (rhythm === "when-needed") return false;
+
+  const last = localStorage.getItem(LAST_MOMENT_PROMPT_KEY);
+  if (!last) return true;
+
+  const hoursSince =
+    (Date.now() - new Date(last).getTime()) / (1000 * 60 * 60);
+
+  const minHours: Record<Rhythm, number> = {
+    daily: 20,
+    "few-times-week": 60,
+    "when-needed": Number.POSITIVE_INFINITY,
+    "figuring-out": 44,
+  };
+  const threshold = rhythm ? minHours[rhythm] : 20;
+  return hoursSince >= threshold;
+}
 // Human-readable labels — used in UI and sent to AI as context
 export const USAGE_LABELS: Record<UsageMode, string> = {
   daily: "As a daily check-in",
