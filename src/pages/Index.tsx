@@ -22,11 +22,19 @@ import {
   type ThemeInsight,
 } from "@/lib/progression";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
-import { Layers, Sparkles, Waypoints, X } from "lucide-react";
+import { Layers, Pause, Sparkles, Waypoints, X } from "lucide-react";
 import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
 import { WeekProgress } from "@/components/WeekProgress";
+import { WeeklySynthesisCard } from "@/components/WeeklySynthesisCard";
+import { JustBeHere } from "@/components/JustBeHere";
 import { buildWeek } from "@/lib/weekProgress";
 import { getMomentTint, MOMENT_TINTS } from "@/lib/momentTint";
+import {
+  readCachedSynthesis,
+  shouldOfferWeeklySynthesis,
+} from "@/lib/weeklySynthesis";
+import { checkReturnAndStamp } from "@/lib/returnGap";
+import { haptic } from "@/lib/haptics";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
@@ -58,6 +66,12 @@ const Index = () => {
   const [themes, setThemes] = useState<ThemeInsight[]>([]);
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
   const [activeTheme, setActiveTheme] = useState<string | null>(null);
+  const [returnGap, setReturnGap] = useState<number | null>(null);
+  const [weeklyOffer, setWeeklyOffer] = useState<
+    { weekId: string; recent: InsightLite[] } | null
+  >(null);
+  const [weeklyDismissed, setWeeklyDismissed] = useState(false);
+  const [breathing, setBreathing] = useState(false);
 
   // Refresh the quote at local midnight if the app stays open
   useEffect(() => {
@@ -73,12 +87,27 @@ const Index = () => {
     setShowNudge(shouldShowPreferencesNudge());
     setStreak(getStreak());
 
+    // Detect a meaningful gap since last visit (≥ 3 days). Stamps the
+    // visit timestamp so subsequent renders this session don't re-trigger.
+    const gap = checkReturnAndStamp();
+    if (gap.isReturning && gap.daysAway !== null) {
+      setReturnGap(gap.daysAway);
+    }
+
     (async () => {
       const recent = await fetchRecentInsights(14);
       setInsights(recent);
 
       // Pattern awareness — recurring themes across last week of reflections
       setThemes(detectRecentThemes(recent));
+
+      // Weekly synthesis — fresh on weekend window OR cached any other day.
+      const offer = shouldOfferWeeklySynthesis(recent);
+      const cached = readCachedSynthesis();
+      const sameWeekCached = cached?.weekId === offer.weekId ? cached : null;
+      if (offer.offer || sameWeekCached) {
+        setWeeklyOffer({ weekId: offer.weekId, recent: offer.recent });
+      }
 
       // Suggestion — surface a reading they've just unlocked but haven't tried
       const sug = pickSuggestion(recent);
@@ -96,13 +125,24 @@ const Index = () => {
   const tint = getMomentTint(moment);
 
   const greeting = useMemo(() => {
-    if (profile?.firstName) {
-      return isReturning
-        ? `Welcome back, ${profile.firstName}.`
-        : `Hello, ${profile.firstName}.`;
+    const name = profile?.firstName;
+    // Soft acknowledgment when returning after a meaningful gap.
+    // No "you broke a streak" — the absence is part of the rhythm.
+    if (returnGap !== null && returnGap >= 3) {
+      if (returnGap >= 14) {
+        return name
+          ? `It's been a while, ${name}. Glad you're here.`
+          : "It's been a while. Glad you're here.";
+      }
+      return name
+        ? `Welcome back, ${name}. Some space was good.`
+        : "Welcome back. Some space was good.";
+    }
+    if (name) {
+      return isReturning ? `Welcome back, ${name}.` : `Hello, ${name}.`;
     }
     return isReturning ? "Welcome back." : "A quiet moment with yourself.";
-  }, [profile?.firstName, isReturning]);
+  }, [profile?.firstName, isReturning, returnGap]);
 
   const lastCardName = last?.cards?.[0]?.name?.toLowerCase();
   const lastReading = last ? getReadingType(last.draw_type) : null;
@@ -194,6 +234,15 @@ const Index = () => {
           </div>
         )}
 
+        {/* Weekly synthesis — once per week, only when there's enough material */}
+        {weeklyOffer && !weeklyDismissed && (
+          <WeeklySynthesisCard
+            weekId={weeklyOffer.weekId}
+            recent={weeklyOffer.recent}
+            onDismiss={() => setWeeklyDismissed(true)}
+          />
+        )}
+
         <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground mt-4">
           Take a breath.
           <br />
@@ -281,7 +330,10 @@ const Index = () => {
             return (
               <button
                 key={id}
-                onClick={() => setMoment(selected ? null : id)}
+                onClick={() => {
+                  haptic("select");
+                  setMoment(selected ? null : id);
+                }}
                 style={
                   selected
                     ? {
@@ -303,9 +355,22 @@ const Index = () => {
             );
           })}
         </div>
-        <p className="text-[11px] text-muted-foreground/70 mt-2">
-          Optional — shapes this reading only.
-        </p>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <p className="text-[11px] text-muted-foreground/70">
+            Optional — shapes this reading only.
+          </p>
+          {/* Soft escape hatch for hard days — no card, no ask, no streak penalty */}
+          <button
+            onClick={() => {
+              haptic("warm");
+              setBreathing(true);
+            }}
+            className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground/80 hover:text-foreground transition-smooth"
+          >
+            <Pause className="h-3 w-3" strokeWidth={1.6} />
+            Just be here
+          </button>
+        </div>
       </section>
 
       {/* 3. Primary action — one clear CTA */}
@@ -407,6 +472,12 @@ const Index = () => {
           Explore deeper readings
         </Link>
       </section>
+
+      <JustBeHere
+        open={breathing}
+        onClose={() => setBreathing(false)}
+        closingLine={quote.text ? `"${quote.text}"` : undefined}
+      />
     </AppShell>
   );
 };

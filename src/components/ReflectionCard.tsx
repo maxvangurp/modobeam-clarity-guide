@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { OracleCard } from "@/data/deck";
 import { getCardArt } from "@/data/cardArt";
+import { CardSigil } from "@/components/CardSigil";
+import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -31,6 +33,7 @@ export const ReflectionCard = ({
 
   const handleClick = () => {
     if (revealed) return;
+    haptic("flip");
     setInternal(true);
     onReveal?.();
   };
@@ -116,6 +119,10 @@ export const ReflectionCard = ({
           ) : (
             <>
               <div className="absolute inset-0 bg-gradient-beam opacity-40" />
+              {/* Generative sigil — gives every card its own quiet motif */}
+              <div className="absolute inset-0 flex items-center justify-center text-foreground/45 pointer-events-none">
+                <CardSigil card={card} className="h-[78%] w-[78%]" />
+              </div>
               <div className="absolute inset-3 rounded-[1.25rem] border border-foreground/5" />
               <div className="relative h-full flex flex-col items-center justify-between p-5 text-center">
                 <span className="text-[10px] tracking-[0.25em] uppercase text-muted-foreground font-medium">
@@ -123,7 +130,6 @@ export const ReflectionCard = ({
                 </span>
 
                 <div className="flex flex-col items-center gap-2">
-                  <div className="h-12 w-12 rounded-full bg-gradient-to-br from-beam-soft to-beam/80 shadow-glow mb-2 animate-float-soft" />
                   <h3 className="font-display text-2xl font-medium text-foreground">
                     {card.name}
                   </h3>

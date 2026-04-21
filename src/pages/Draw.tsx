@@ -18,6 +18,9 @@ import {
   USAGE_LABELS,
   type MomentNeed,
 } from "@/lib/profile";
+import { fetchRecentInsights } from "@/lib/progression";
+import { buildPriorThreads } from "@/lib/aiContinuity";
+import { haptic } from "@/lib/haptics";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -63,6 +66,15 @@ const Draw = () => {
     Array(count).fill(false),
   );
   const [loading, setLoading] = useState(false);
+  // Brief shuffle beat before the cards become tappable.
+  // Adds anticipation; turns the reveal into an event, not a mechanic.
+  const [shuffling, setShuffling] = useState(true);
+
+  useEffect(() => {
+    setShuffling(true);
+    const t = setTimeout(() => setShuffling(false), 1400);
+    return () => clearTimeout(t);
+  }, [type]);
 
   const allRevealed = revealed.every(Boolean);
 
@@ -74,7 +86,17 @@ const Draw = () => {
     });
   };
 
-  const revealAll = () => setRevealed(Array(count).fill(true));
+  // Reveal all — but staged, one card at a time, so the reading still
+  // breathes even when the user taps "Reveal all".
+  const revealAll = () => {
+    haptic("flip");
+    revealed.forEach((r, i) => {
+      if (r) return;
+      setTimeout(() => {
+        reveal(i);
+      }, i * 380);
+    });
+  };
 
   useEffect(() => {
     if (!reading) navigate("/");
@@ -105,6 +127,11 @@ const Draw = () => {
   const continueToInsight = async () => {
     setLoading(true);
     try {
+      // Pull the user's recent threads so the AI can quietly notice when
+      // today's reading echoes something they sat with before.
+      const recent = await fetchRecentInsights(3);
+      const priorThreads = buildPriorThreads(recent, 3);
+
       const { data, error } = await supabase.functions.invoke("reflect", {
         body: {
           intention,
@@ -136,6 +163,7 @@ const Draw = () => {
                 label: MOMENT_LABELS[moment],
               }
             : null,
+          priorThreads,
         },
       });
 
@@ -236,7 +264,11 @@ const Draw = () => {
           {reading.label}
         </p>
         <h1 className="font-display text-2xl font-light text-foreground">
-          {allRevealed ? "Sit with what you see." : "Tap each card when ready."}
+          {shuffling
+            ? "Settling…"
+            : allRevealed
+              ? "Sit with what you see."
+              : "Tap each card when ready."}
         </h1>
         {intention && (
           <p className="mt-3 text-sm text-muted-foreground italic max-w-xs mx-auto">
@@ -245,9 +277,21 @@ const Draw = () => {
         )}
       </div>
 
-      <div className={`${gridClass} animate-fade-up [animation-delay:120ms]`}>
+      <div
+        className={`${gridClass} animate-fade-up [animation-delay:120ms] transition-opacity duration-700`}
+        style={{ opacity: shuffling ? 0.55 : 1 }}
+      >
         {cards.map((card, i) => (
-          <div key={card.id} className="flex flex-col items-center gap-2">
+          <div
+            key={card.id}
+            className="flex flex-col items-center gap-2"
+            style={{
+              transform: shuffling
+                ? `translateY(${(i % 2 === 0 ? -1 : 1) * 4}px) rotate(${(i - (count - 1) / 2) * 1.5}deg)`
+                : "translateY(0) rotate(0deg)",
+              transition: "transform 700ms cubic-bezier(0.32, 0.72, 0, 1)",
+            }}
+          >
             <ReflectionCard
               card={card}
               index={i}
