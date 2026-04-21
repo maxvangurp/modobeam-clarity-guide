@@ -11,6 +11,14 @@ import { recordReflectionSaved, MOMENT_LABELS, type MomentNeed } from "@/lib/pro
 import { getInsightMoment } from "@/lib/insightMoment";
 import { getMomentTint } from "@/lib/momentTint";
 import { haptic } from "@/lib/haptics";
+import {
+  recordMood,
+  getMoodForInsight,
+  MOOD_LABELS,
+  type MoodSnap,
+} from "@/lib/moodSnapshot";
+import { KeepThisCard } from "@/components/KeepThisCard";
+import { NotQuiteIt } from "@/components/NotQuiteIt";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -20,6 +28,8 @@ import {
   CalendarDays,
   Sunrise,
   ArrowRight,
+  Image as ImageIcon,
+  ChevronRight,
 } from "lucide-react";
 
 interface InsightRow {
