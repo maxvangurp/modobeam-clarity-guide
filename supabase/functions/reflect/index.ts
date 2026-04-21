@@ -381,6 +381,9 @@ Sound written in the moment, not assembled. Return only valid JSON. No markdown,
         tension: parsed.tension ?? "",
         combined: parsed.combined ?? "",
         reflection: parsed.reflection ?? "",
+        // Echo back the focus area (if any) so the client can render a
+        // small "Focus: …" chip and persist it with the insight.
+        focusArea: astroContext?.focusArea ?? null,
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
