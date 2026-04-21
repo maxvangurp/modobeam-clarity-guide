@@ -4,8 +4,8 @@ import { AppShell } from "@/components/AppShell";
 import { ReflectionCard } from "@/components/ReflectionCard";
 import { MomentCheckIn } from "@/components/MomentCheckIn";
 import { Button } from "@/components/ui/button";
-import { drawCards, type OracleCard } from "@/data/deck";
-import { getReadingType, type DrawType } from "@/data/readingTypes";
+import { type OracleCard } from "@/data/deck";
+import { getReadingType } from "@/data/readingTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
 import {
@@ -21,7 +21,7 @@ import {
 import { fetchRecentInsights } from "@/lib/progression";
 import { buildPriorThreads } from "@/lib/aiContinuity";
 import { getDailyQuote } from "@/lib/dailyQuote";
-import { recordMomentForStreak, shouldOfferRare, markRareSeen } from "@/lib/rareCard";
+import { recordMomentForStreak, shouldOfferRare } from "@/lib/rareCard";
 import { drawCards as drawDeck } from "@/data/deck";
 import { haptic } from "@/lib/haptics";
 import { toast } from "sonner";
