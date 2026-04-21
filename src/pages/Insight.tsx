@@ -103,8 +103,14 @@ const Insight = () => {
 
   const reading = insight ? getReadingType(insight.draw_type) : null;
   const labels = reading?.positionLabels ?? ["Today"];
-
-  const fetchSummary = async (text: string) => {
+  const moment: MomentNeed | null = id ? getInsightMoment(id) : null;
+  const tint = getMomentTint(moment);
+  const tintedSoftBg = tint ? `hsl(${tint.bg} / 0.55)` : undefined;
+  const tintedRing = tint ? `hsl(${tint.ring})` : undefined;
+  const tintedAccentBg = tint
+    ? `linear-gradient(135deg, hsl(${tint.bg}) 0%, hsl(${tint.hsl} / 0.85) 100%)`
+    : undefined;
+  const tintedGlow = tint ? `0 0 28px hsl(${tint.hsl} / 0.35)` : undefined;
     if (!text.trim() || !insight) return;
     setSummaryLoading(true);
     try {
