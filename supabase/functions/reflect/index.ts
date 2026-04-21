@@ -216,7 +216,7 @@ Deno.serve(async (req: Request) => {
     const userPrompt = `${profileBlock}${intentionLine}They drew ${readingDesc}.
 
 ${cardSummary}
-${guidanceLine}
+${guidanceLine}${momentLine}
 Voice direction for THIS reading (follow these — don't acknowledge them):
 - ${voice.open}
 - ${voice.rhythm}
