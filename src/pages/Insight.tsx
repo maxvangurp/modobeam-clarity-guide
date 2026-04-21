@@ -94,6 +94,9 @@ const Insight = () => {
         setSaved(true);
         // Don't auto-fetch summary on reload; user can re-trigger if they edit.
       }
+      // Restore any prior mood snapshot for this insight
+      const existingMood = id ? getMoodForInsight(id) : null;
+      if (existingMood) setSavedMood(existingMood);
       setLoading(false);
     })();
   }, [id, navigate]);
