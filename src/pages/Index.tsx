@@ -125,13 +125,24 @@ const Index = () => {
   const tint = getMomentTint(moment);
 
   const greeting = useMemo(() => {
-    if (profile?.firstName) {
-      return isReturning
-        ? `Welcome back, ${profile.firstName}.`
-        : `Hello, ${profile.firstName}.`;
+    const name = profile?.firstName;
+    // Soft acknowledgment when returning after a meaningful gap.
+    // No "you broke a streak" — the absence is part of the rhythm.
+    if (returnGap !== null && returnGap >= 3) {
+      if (returnGap >= 14) {
+        return name
+          ? `It's been a while, ${name}. Glad you're here.`
+          : "It's been a while. Glad you're here.";
+      }
+      return name
+        ? `Welcome back, ${name}. Some space was good.`
+        : "Welcome back. Some space was good.";
+    }
+    if (name) {
+      return isReturning ? `Welcome back, ${name}.` : `Hello, ${name}.`;
     }
     return isReturning ? "Welcome back." : "A quiet moment with yourself.";
-  }, [profile?.firstName, isReturning]);
+  }, [profile?.firstName, isReturning, returnGap]);
 
   const lastCardName = last?.cards?.[0]?.name?.toLowerCase();
   const lastReading = last ? getReadingType(last.draw_type) : null;
