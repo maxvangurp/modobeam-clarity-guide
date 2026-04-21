@@ -13,6 +13,7 @@ import {
   shouldShowPreferencesNudge,
   type MomentNeed,
 } from "@/lib/profile";
+import { getDailyQuote, msUntilNextMidnight } from "@/lib/dailyQuote";
 import { Flame, Layers, Sparkles, X } from "lucide-react";
 
 interface LastReflection {
