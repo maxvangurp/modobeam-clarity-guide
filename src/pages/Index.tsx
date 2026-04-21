@@ -22,8 +22,11 @@ import {
   type ThemeInsight,
 } from "@/lib/progression";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
-import { Flame, Layers, Sparkles, Waypoints, X } from "lucide-react";
+import { Layers, Sparkles, Waypoints, X } from "lucide-react";
 import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
+import { WeekProgress } from "@/components/WeekProgress";
+import { buildWeek } from "@/lib/weekProgress";
+import { getMomentTint, MOMENT_TINTS } from "@/lib/momentTint";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
@@ -89,6 +92,8 @@ const Index = () => {
   const profile = getProfile();
   const last = insights[0] ?? null;
   const isReturning = !!last;
+  const week = useMemo(() => buildWeek(insights), [insights]);
+  const tint = getMomentTint(moment);
 
   const greeting = useMemo(() => {
     if (profile?.firstName) {
@@ -168,19 +173,28 @@ const Index = () => {
                   : "Your gentle rhythm so far"
               }
             >
-              <Flame
-                className={`h-3 w-3 ${
-                  streak.savedToday ? "text-beam" : "text-muted-foreground/60"
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  streak.savedToday
+                    ? "bg-foreground/80 animate-gentle-breathe"
+                    : "bg-muted-foreground/40"
                 }`}
-                strokeWidth={1.8}
               />
               <span className="text-[11px] tabular-nums text-foreground/80">
-                {streak.count} {streak.count === 1 ? "day" : "days"}
+                {streak.count} {streak.count === 1 ? "moment" : "moments"} of reflection
               </span>
             </div>
           )}
         </div>
-        <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground mt-2">
+
+        {/* Soft weekly progress — 7 days, no judgment */}
+        {insights.length > 0 && (
+          <div className="mt-3">
+            <WeekProgress week={week} />
+          </div>
+        )}
+
+        <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground mt-4">
           Take a breath.
           <br />
           <span className="font-medium italic">Begin</span> when you're ready.
@@ -263,13 +277,24 @@ const Index = () => {
         <div className="flex flex-wrap gap-2">
           {MOMENT_ORDER.map((id) => {
             const selected = moment === id;
+            const t = MOMENT_TINTS[id];
             return (
               <button
                 key={id}
                 onClick={() => setMoment(selected ? null : id)}
+                style={
+                  selected
+                    ? {
+                        backgroundColor: `hsl(${t.bg})`,
+                        borderColor: `hsl(${t.ring} / 0.5)`,
+                        color: `hsl(${t.ring})`,
+                        boxShadow: `0 0 0 3px hsl(${t.hsl} / 0.12)`,
+                      }
+                    : undefined
+                }
                 className={`px-4 py-2 rounded-full text-[13px] border transition-smooth backdrop-blur ${
                   selected
-                    ? "bg-foreground text-background border-foreground shadow-soft"
+                    ? "font-medium"
                     : "bg-card/70 text-foreground/80 border-border/60 hover:bg-card hover:text-foreground"
                 }`}
               >
@@ -288,7 +313,12 @@ const Index = () => {
         <Button
           size="lg"
           onClick={startDaily}
-          className="w-full h-auto py-5 px-6 rounded-2xl bg-gradient-button text-primary-foreground hover:opacity-95 shadow-soft justify-between group"
+          style={
+            tint
+              ? { boxShadow: `0 0 0 1px hsl(${tint.hsl} / 0.25), 0 0 32px hsl(${tint.hsl} / 0.18)` }
+              : undefined
+          }
+          className="w-full h-auto py-5 px-6 rounded-2xl bg-gradient-button text-primary-foreground hover:opacity-95 shadow-soft justify-between group transition-smooth"
         >
           <span className="flex items-center gap-3">
             <span className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center">
