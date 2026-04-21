@@ -42,43 +42,78 @@ const Draw = () => {
   const reading = getReadingType(type ?? "");
 
   const count = reading?.cardCount ?? 1;
-  // Standard deal — may be quietly replaced by a rare card if conditions align.
-  const cards = useMemo<OracleCard[]>(
-    () => drawDeck(count),
-    [type, count],
-  );
 
   const [moment, setMoment] = useState<MomentNeed | null>(validMoment);
   // Auto-prompt the moment check-in only when the user's rhythm allows.
-  // - Skip right after onboarding (already a fresh setup moment).
-  // - Skip when a moment was already chosen on the home screen.
-  // - Skip when the user explicitly chose "whenever I need it" — they can
-  //   still open it manually from the chip below.
   const [showMoment, setShowMoment] = useState<boolean>(
     !fromOnboarding && !validMoment && shouldPromptMoment(profile?.rhythm),
   );
 
-  // Mark the prompt as shown the first time we surface it, so the
-  // rhythm-based cooldown starts ticking.
+  // Mark the prompt as shown the first time we surface it
   useEffect(() => {
     if (showMoment) markMomentPromptShown();
-    // We only want to mark it on the initial auto-show, not on manual reopens.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [revealed, setRevealed] = useState<boolean[]>(
-    Array(count).fill(false),
-  );
-  const [loading, setLoading] = useState(false);
-  // Brief shuffle beat before the cards become tappable.
-  // Adds anticipation; turns the reveal into an event, not a mechanic.
-  const [shuffling, setShuffling] = useState(true);
+  // Track whether a rare card was woven into today's deal so we can mark
+  // it seen on reveal and surface it with quiet reverence.
+  const [rareCardId, setRareCardId] = useState<string | null>(null);
+  const [contextReady, setContextReady] = useState(false);
+
+  // Standard deal — may be quietly replaced by a rare card if conditions align.
+  const cards = useMemo<OracleCard[]>(() => {
+    const dealt = drawDeck(count);
+    if (!contextReady || type !== "daily" || count !== 1) return dealt;
+
+    // Determine context for rare-card eligibility once we know recent volume.
+    // We read the locally-stamped streaks/return gap synchronously here,
+    // and the caller's effect below decides whether to swap.
+    return dealt;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, count, contextReady]);
+
+  // Resolved deal (cards possibly with one swapped to a rare)
+  const [resolvedCards, setResolvedCards] = useState<OracleCard[] | null>(null);
 
   useEffect(() => {
-    setShuffling(true);
-    const t = setTimeout(() => setShuffling(false), 1400);
-    return () => clearTimeout(t);
-  }, [type]);
+    let cancelled = false;
+    (async () => {
+      const recent = await fetchRecentInsights(60);
+      if (cancelled) return;
+      const totalReflections = recent.length;
+
+      // Compute days-away from the most recent saved insight (if any).
+      let daysAway: number | null = null;
+      if (recent[0]?.created_at) {
+        const last = new Date(recent[0].created_at).getTime();
+        daysAway = Math.floor((Date.now() - last) / (1000 * 60 * 60 * 24));
+      }
+
+      const { readMomentStreak } = await import("@/lib/rareCard");
+      const momentStreak = readMomentStreak();
+
+      const rare = shouldOfferRare({
+        drawType: type ?? "",
+        totalReflections,
+        daysAway,
+        momentStreak,
+      });
+
+      if (rare && type === "daily" && count === 1) {
+        setResolvedCards([rare]);
+        setRareCardId(rare.id);
+      } else {
+        setResolvedCards(cards);
+      }
+      setContextReady(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type, count]);
+
+  const dealt = resolvedCards ?? cards;
 
   const allRevealed = revealed.every(Boolean);
 
