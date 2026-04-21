@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ChoiceCard } from "@/components/onboarding/ChoiceCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Constellation } from "@/components/Constellation";
 import { toast } from "sonner";
 import {
   GUIDANCE_LABELS,
@@ -17,6 +18,9 @@ import {
   type Rhythm,
   type UsageMode,
 } from "@/lib/profile";
+import { fetchRecentInsights, type InsightLite } from "@/lib/progression";
+import { readKnowYou, shouldRegenerate, writeKnowYou } from "@/lib/aiKnowYou";
+import { supabase } from "@/integrations/supabase/client";
 
 const Preferences = () => {
   const navigate = useNavigate();
