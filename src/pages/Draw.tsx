@@ -112,6 +112,7 @@ const Draw = () => {
         setResolvedCards([rare]);
         setRareCardId(rare.id);
         setRareReason(reason);
+        setRareThemes(themes.map((t) => t.label).filter(Boolean).slice(0, 3));
       } else {
         setResolvedCards(cards);
       }
