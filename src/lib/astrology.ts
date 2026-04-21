@@ -472,7 +472,6 @@ const KEYWORD_TO_HOUSE: Record<string, number> = {
   rhythm: 6,
   habit: 6,
   health: 6,
-  body: 6,
   work: 6, // mild — work appears in both 6 (daily) and 10 (career)
   // 7 relationships
   partner: 7,
