@@ -22,11 +22,19 @@ import {
   type ThemeInsight,
 } from "@/lib/progression";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
-import { Layers, Sparkles, Waypoints, X } from "lucide-react";
+import { Layers, Pause, Sparkles, Waypoints, X } from "lucide-react";
 import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
 import { WeekProgress } from "@/components/WeekProgress";
+import { WeeklySynthesisCard } from "@/components/WeeklySynthesisCard";
+import { JustBeHere } from "@/components/JustBeHere";
 import { buildWeek } from "@/lib/weekProgress";
 import { getMomentTint, MOMENT_TINTS } from "@/lib/momentTint";
+import {
+  readCachedSynthesis,
+  shouldOfferWeeklySynthesis,
+} from "@/lib/weeklySynthesis";
+import { checkReturnAndStamp } from "@/lib/returnGap";
+import { haptic } from "@/lib/haptics";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
@@ -58,6 +66,12 @@ const Index = () => {
   const [themes, setThemes] = useState<ThemeInsight[]>([]);
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
   const [activeTheme, setActiveTheme] = useState<string | null>(null);
+  const [returnGap, setReturnGap] = useState<number | null>(null);
+  const [weeklyOffer, setWeeklyOffer] = useState<
+    { weekId: string; recent: InsightLite[] } | null
+  >(null);
+  const [weeklyDismissed, setWeeklyDismissed] = useState(false);
+  const [breathing, setBreathing] = useState(false);
 
   // Refresh the quote at local midnight if the app stays open
   useEffect(() => {
@@ -73,12 +87,27 @@ const Index = () => {
     setShowNudge(shouldShowPreferencesNudge());
     setStreak(getStreak());
 
+    // Detect a meaningful gap since last visit (≥ 3 days). Stamps the
+    // visit timestamp so subsequent renders this session don't re-trigger.
+    const gap = checkReturnAndStamp();
+    if (gap.isReturning && gap.daysAway !== null) {
+      setReturnGap(gap.daysAway);
+    }
+
     (async () => {
       const recent = await fetchRecentInsights(14);
       setInsights(recent);
 
       // Pattern awareness — recurring themes across last week of reflections
       setThemes(detectRecentThemes(recent));
+
+      // Weekly synthesis — fresh on weekend window OR cached any other day.
+      const offer = shouldOfferWeeklySynthesis(recent);
+      const cached = readCachedSynthesis();
+      const sameWeekCached = cached?.weekId === offer.weekId ? cached : null;
+      if (offer.offer || sameWeekCached) {
+        setWeeklyOffer({ weekId: offer.weekId, recent: offer.recent });
+      }
 
       // Suggestion — surface a reading they've just unlocked but haven't tried
       const sug = pickSuggestion(recent);
