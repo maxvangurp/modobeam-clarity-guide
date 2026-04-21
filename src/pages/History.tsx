@@ -511,7 +511,7 @@ const History = () => {
   }, []);
 
   return (
-    <AppShell>
+    <AppShell screenMood="history">
       <section className="pt-6 pb-4 animate-fade-up">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-2">
           Looking back

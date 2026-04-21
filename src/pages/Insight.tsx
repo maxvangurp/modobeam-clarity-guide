@@ -547,7 +547,9 @@ const Insight = () => {
           <Button
             onClick={saveJournal}
             disabled={!journal.trim() || saving || saved}
-            className="rounded-full bg-gradient-button text-primary-foreground px-6"
+            className={`rounded-full bg-gradient-button text-primary-foreground px-6 shadow-cta hover:scale-[1.01] active:scale-[0.99] transition-transform ${
+              saved ? "animate-save-glow" : ""
+            }`}
           >
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin" />
