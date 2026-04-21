@@ -134,6 +134,7 @@ export function clearProfile(): void {
   localStorage.removeItem(COMPLETE_KEY);
   localStorage.removeItem(LAST_REVISIT_KEY);
   localStorage.removeItem(NUDGE_DISMISSED_KEY);
+  localStorage.removeItem(STREAK_KEY);
 }
 
 export function isOnboardingComplete(): boolean {
