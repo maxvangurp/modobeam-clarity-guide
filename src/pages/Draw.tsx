@@ -18,10 +18,10 @@ import {
   USAGE_LABELS,
   type MomentNeed,
 } from "@/lib/profile";
-import { fetchRecentInsights } from "@/lib/progression";
+import { fetchRecentInsights, detectRecentThemes } from "@/lib/progression";
 import { buildPriorThreads } from "@/lib/aiContinuity";
 import { getDailyQuote } from "@/lib/dailyQuote";
-import { recordMomentForStreak, shouldOfferRare } from "@/lib/rareCard";
+import { recordMomentForStreak, shouldOfferRare, explainRareCard } from "@/lib/rareCard";
 import { drawCards as drawDeck } from "@/data/deck";
 import { haptic } from "@/lib/haptics";
 import { toast } from "sonner";
@@ -58,6 +58,7 @@ const Draw = () => {
   // Track whether a rare card was woven into today's deal so we can mark
   // it seen on reveal and surface it with quiet reverence.
   const [rareCardId, setRareCardId] = useState<string | null>(null);
+  const [rareReason, setRareReason] = useState<string | null>(null);
   const [contextReady, setContextReady] = useState(false);
 
   // Standard deal — may be quietly replaced by a rare card if conditions align.
@@ -100,8 +101,16 @@ const Draw = () => {
       });
 
       if (rare && type === "daily" && count === 1) {
+        const themes = detectRecentThemes(recent, 7);
+        const reason = explainRareCard({
+          recentThemes: themes,
+          daysAway,
+          momentStreak,
+          totalReflections,
+        });
         setResolvedCards([rare]);
         setRareCardId(rare.id);
+        setRareReason(reason);
       } else {
         setResolvedCards(cards);
       }
@@ -382,6 +391,16 @@ const Draw = () => {
           <p className="text-[12px] text-muted-foreground mt-1.5 italic max-w-xs mx-auto leading-relaxed">
             Some cards only arrive at certain moments. Sit with this one.
           </p>
+          {rareReason && (
+            <div className="mt-4 max-w-xs mx-auto">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70 mb-1.5">
+                Why this card
+              </p>
+              <p className="text-[12px] text-foreground/80 leading-relaxed">
+                {rareReason}
+              </p>
+            </div>
+          )}
         </div>
       )}
 

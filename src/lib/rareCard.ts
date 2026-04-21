@@ -156,3 +156,39 @@ export function readMomentStreak(): number {
     return 0;
   }
 }
+
+/**
+ * Build a small grounded explainer for *why* a rare card surfaced today.
+ * Strictly retrospective — references recurring themes, recent return, or
+ * sustained moments. Never predictive, never mystical.
+ *
+ * Returns null if there isn't enough signal to say something honest.
+ */
+export function explainRareCard(opts: {
+  recentThemes: { label: string }[];
+  daysAway?: number | null;
+  momentStreak?: number;
+  totalReflections: number;
+}): string | null {
+  const themes = opts.recentThemes
+    .map((t) => t.label?.trim())
+    .filter((t): t is string => Boolean(t))
+    .slice(0, 2);
+
+  if (themes.length >= 2) {
+    return `You've been circling ${themes[0]} and ${themes[1]} lately. This card tends to arrive when those threads start to meet.`;
+  }
+  if (themes.length === 1) {
+    return `${themes[0].charAt(0).toUpperCase() + themes[0].slice(1)} has been showing up across your recent reflections. This card belongs to that thread.`;
+  }
+  if (opts.daysAway !== null && opts.daysAway !== undefined && opts.daysAway >= 3) {
+    return `You came back after ${opts.daysAway} days away. Returns like this tend to surface a different kind of card.`;
+  }
+  if (opts.momentStreak !== undefined && opts.momentStreak >= 3) {
+    return `You've sat in the same kind of moment ${opts.momentStreak} days running. That sustained note is what brought this card forward.`;
+  }
+  if (opts.totalReflections > 0 && opts.totalReflections % 30 === 0) {
+    return `${opts.totalReflections} reflections in. A quiet marker — this card only appears at thresholds like this.`;
+  }
+  return null;
+}
