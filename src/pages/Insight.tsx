@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { getReadingType } from "@/data/readingTypes";
@@ -8,7 +8,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
 import { getSessionId } from "@/lib/session";
 import { toast } from "sonner";
-import { Loader2, Check } from "lucide-react";
+import {
+  Loader2,
+  Check,
+  Sparkles,
+  Bookmark,
+  CalendarDays,
+  Sunrise,
+  ArrowRight,
+} from "lucide-react";
 
 interface InsightRow {
   id: string;
@@ -20,6 +28,11 @@ interface InsightRow {
   created_at: string;
 }
 
+interface Combined {
+  theme?: string;
+  tension?: string;
+  combined?: string;
+}
 
 const Insight = () => {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +42,12 @@ const Insight = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [summary, setSummary] = useState<string>("");
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [skippedJournal, setSkippedJournal] = useState(false);
+
+  const summaryRef = useRef<HTMLDivElement | null>(null);
+  const nextStepsRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -45,7 +64,6 @@ const Insight = () => {
       }
       setInsight(data as unknown as InsightRow);
 
-      // Load any existing journal entry
       const { data: jd } = await supabase
         .from("journal_entries")
         .select("content")
@@ -56,10 +74,66 @@ const Insight = () => {
       if (jd?.content) {
         setJournal(jd.content);
         setSaved(true);
+        // Don't auto-fetch summary on reload; user can re-trigger if they edit.
       }
       setLoading(false);
     })();
   }, [id, navigate]);
+
+  const combined = useMemo<Combined>(() => {
+    if (!insight?.combined_insight) return {};
+    try {
+      const parsed = JSON.parse(insight.combined_insight);
+      if (parsed && typeof parsed === "object") return parsed as Combined;
+    } catch {
+      return { combined: insight.combined_insight };
+    }
+    return {};
+  }, [insight]);
+
+  const cards = useMemo(() => {
+    if (!insight) return [];
+    return insight.cards
+      .map((c) => getCardById(c.id))
+      .filter(Boolean) as NonNullable<ReturnType<typeof getCardById>>[];
+  }, [insight]);
+
+  const reading = insight ? getReadingType(insight.draw_type) : null;
+  const labels = reading?.positionLabels ?? ["Today"];
+
+  const fetchSummary = async (text: string) => {
+    if (!text.trim() || !insight) return;
+    setSummaryLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        "reflect-summary",
+        {
+          body: {
+            journal: text.trim(),
+            cards: cards.map((c) => ({ name: c.name, keyword: c.keyword })),
+            theme: combined.theme,
+            tension: combined.tension,
+            reflection: insight.ai_reflection ?? "",
+          },
+        },
+      );
+      if (error) throw error;
+      const s = (data as { summary?: string })?.summary?.trim() ?? "";
+      setSummary(s);
+      // Soft scroll into view
+      setTimeout(() => {
+        summaryRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }, 60);
+    } catch (e) {
+      console.error(e);
+      // Silent — the journal is already saved, the summary is a bonus.
+    } finally {
+      setSummaryLoading(false);
+    }
+  };
 
   const saveJournal = async () => {
     if (!journal.trim() || !id) return;
@@ -75,7 +149,18 @@ const Insight = () => {
       return;
     }
     setSaved(true);
-    toast.success("Saved to your history");
+    toast.success("Saved");
+    fetchSummary(journal);
+  };
+
+  const skipJournal = () => {
+    setSkippedJournal(true);
+    setTimeout(() => {
+      nextStepsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 60);
   };
 
   if (loading || !insight) {
@@ -88,27 +173,29 @@ const Insight = () => {
     );
   }
 
-  const cards = insight.cards
-    .map((c) => getCardById(c.id))
-    .filter(Boolean) as NonNullable<ReturnType<typeof getCardById>>[];
+  const prompts = Array.from(new Set(cards.flatMap((c) => c.prompts))).slice(
+    0,
+    3,
+  );
 
-  const reading = getReadingType(insight.draw_type);
-  const labels = reading?.positionLabels ?? ["Today"];
+  const showSummarySection = saved || summaryLoading || summary;
+  const showNextSteps = saved || skippedJournal;
 
   return (
     <AppShell showBack backTo="/">
+      {/* Header */}
       <section className="pt-2 pb-6 animate-fade-up">
-        <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-2">
-          Your insight
+        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+          Your reflection
         </p>
         {insight.intention && (
-          <p className="text-sm italic text-muted-foreground mb-4">
+          <p className="text-sm italic text-muted-foreground">
             "{insight.intention}"
           </p>
         )}
       </section>
 
-      {/* Cards summary */}
+      {/* Cards */}
       <section className="space-y-3 animate-fade-up [animation-delay:80ms]">
         {cards.map((card, i) => (
           <article
@@ -139,62 +226,43 @@ const Insight = () => {
         ))}
       </section>
 
-      {/* Combined insight: theme + tension + synthesis */}
-      {insight.combined_insight &&
-        (() => {
-          let theme = "";
-          let tension = "";
-          let combined = insight.combined_insight;
-          try {
-            const parsed = JSON.parse(insight.combined_insight);
-            if (parsed && typeof parsed === "object") {
-              theme = parsed.theme ?? "";
-              tension = parsed.tension ?? "";
-              combined = parsed.combined ?? "";
-            }
-          } catch {
-            // legacy plain-text rows
-          }
-          return (
-            <section className="mt-6 space-y-4 animate-fade-up [animation-delay:160ms]">
-              {theme && (
-                <div className="rounded-3xl bg-gradient-dawn border border-border/40 p-6 shadow-soft">
-                  <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-ink-soft mb-2">
-                    Core theme
-                  </h2>
-                  <p className="font-display text-lg leading-snug text-foreground">
-                    {theme}
-                  </p>
-                </div>
-              )}
-              {tension && cards.length > 1 && (
-                <div className="rounded-3xl bg-card/70 backdrop-blur border border-border/60 p-6 shadow-soft">
-                  <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
-                    The tension
-                  </h2>
-                  <p className="text-[15px] leading-relaxed text-foreground/90">
-                    {tension}
-                  </p>
-                </div>
-              )}
-              {combined && (
-                <div className="rounded-3xl bg-card/70 backdrop-blur border border-border/60 p-6 shadow-soft">
-                  <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
-                    Together
-                  </h2>
-                  <p className="text-[15px] leading-relaxed text-foreground/90">
-                    {combined}
-                  </p>
-                </div>
-              )}
-            </section>
-          );
-        })()}
+      {/* The insight layer — emotional pattern lifted up */}
+      {(combined.theme || combined.tension || combined.combined) && (
+        <section className="mt-7 animate-fade-up [animation-delay:160ms]">
+          <div className="rounded-3xl bg-gradient-dawn border border-border/40 p-6 shadow-soft">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles
+                className="h-3.5 w-3.5 text-ink-soft"
+                strokeWidth={1.8}
+              />
+              <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-ink-soft">
+                What's underneath
+              </h2>
+            </div>
+
+            {combined.tension ? (
+              <p className="font-display text-[17px] leading-snug text-foreground">
+                {combined.tension}
+              </p>
+            ) : combined.theme ? (
+              <p className="font-display text-[17px] leading-snug text-foreground">
+                {combined.theme}
+              </p>
+            ) : null}
+
+            {combined.combined && (
+              <p className="mt-4 text-[14px] leading-relaxed text-foreground/80">
+                {combined.combined}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* AI reflection */}
       {insight.ai_reflection && (
         <section className="mt-4 rounded-3xl bg-card/70 backdrop-blur border border-border/60 p-6 shadow-soft animate-fade-up [animation-delay:220ms]">
-          <h2 className="font-display text-sm uppercase tracking-[0.2em] text-muted-foreground mb-3">
+          <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
             A reflection for you
           </h2>
           <p className="text-[15px] leading-relaxed text-foreground/90 whitespace-pre-line">
@@ -203,47 +271,54 @@ const Insight = () => {
         </section>
       )}
 
-      {/* Reflection journal */}
-      <section className="mt-8 animate-fade-up [animation-delay:280ms]">
-        <h2 className="font-display text-lg font-medium mb-1">Reflect</h2>
-        <p className="text-sm text-muted-foreground mb-4">
-          Take a few minutes. Honesty is the only requirement.
+      {/* Reflection moment */}
+      <section className="mt-10 animate-fade-up [animation-delay:280ms]">
+        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+          A moment with yourself
+        </p>
+        <h2 className="font-display text-[22px] leading-tight font-light text-foreground">
+          Take a moment to <span className="font-medium italic">reflect</span>.
+        </h2>
+        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+          A few honest lines is enough. Nothing has to be polished.
         </p>
 
-        <ul className="space-y-2 mb-4">
-          {Array.from(new Set(cards.flatMap((c) => c.prompts)))
-            .slice(0, 4)
-            .map((q, i) => (
+        {prompts.length > 0 && (
+          <ul className="mt-5 space-y-2.5">
+            {prompts.map((q, i) => (
               <li
                 key={i}
-                className="flex gap-3 text-sm text-foreground/85 leading-relaxed"
+                className="flex gap-3 text-[14px] text-foreground/85 leading-relaxed"
               >
-                <span className="font-display text-muted-foreground tabular-nums">
+                <span className="font-display text-muted-foreground/70 tabular-nums shrink-0">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span>{q}</span>
               </li>
             ))}
-        </ul>
+          </ul>
+        )}
 
         <Textarea
           value={journal}
           onChange={(e) => {
             setJournal(e.target.value);
             setSaved(false);
+            setSummary("");
           }}
-          placeholder="Write freely..."
+          placeholder="Write freely…"
           rows={6}
-          className="resize-none rounded-2xl bg-card/80 border-border/60 backdrop-blur text-base"
+          className="mt-5 resize-none rounded-2xl bg-card/80 border-border/60 backdrop-blur text-base"
         />
 
-        <div className="flex justify-between items-center mt-3">
-          <Link
-            to="/history"
+        <div className="flex justify-between items-center mt-3 gap-3">
+          <button
+            onClick={skipJournal}
+            type="button"
             className="text-sm text-muted-foreground hover:text-foreground transition-smooth"
           >
-            See history
-          </Link>
+            Not right now
+          </button>
           <Button
             onClick={saveJournal}
             disabled={!journal.trim() || saving || saved}
@@ -256,13 +331,125 @@ const Insight = () => {
                 <Check className="h-4 w-4 mr-1.5" /> Saved
               </>
             ) : (
-              "Save entry"
+              "Save reflection"
             )}
           </Button>
         </div>
       </section>
+
+      {/* Personal AI summary — appears after journaling */}
+      {showSummarySection && (
+        <section
+          ref={summaryRef}
+          className="mt-8 animate-fade-up"
+        >
+          <div className="rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-6 shadow-soft">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="h-1.5 w-1.5 rounded-full bg-beam shadow-glow" />
+              <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                What I'm hearing
+              </h2>
+            </div>
+            {summaryLoading ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                Reading what you wrote…
+              </div>
+            ) : summary ? (
+              <p className="font-display text-[17px] leading-snug text-foreground/95 italic">
+                {summary}
+              </p>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Saved. Your words are yours — that's already the work.
+              </p>
+            )}
+            {saved && !summaryLoading && !summary && journal.trim() && (
+              <button
+                type="button"
+                onClick={() => fetchSummary(journal)}
+                className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-smooth underline underline-offset-4"
+              >
+                Mirror this back to me
+              </button>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Soft next steps — never an end */}
+      {showNextSteps && (
+        <section
+          ref={nextStepsRef}
+          className="mt-10 mb-4 animate-fade-up"
+        >
+          <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
+            Where to go from here
+          </p>
+
+          <div className="space-y-2">
+            <NextStepLink
+              to={`/draw/${insight.draw_type}`}
+              icon={<ArrowRight className="h-4 w-4" />}
+              title="Keep reflecting"
+              hint="Pull another card on this thread"
+            />
+            <NextStepLink
+              to="/history"
+              icon={<Bookmark className="h-4 w-4" />}
+              title="Save this moment"
+              hint="It's already in your history"
+            />
+            <NextStepLink
+              to="/history"
+              icon={<CalendarDays className="h-4 w-4" />}
+              title="See your week"
+              hint="Notice what's been recurring"
+            />
+            <NextStepLink
+              to="/"
+              icon={<Sunrise className="h-4 w-4" />}
+              title="Come back tomorrow"
+              hint="Some things land overnight"
+            />
+          </div>
+
+          <p className="text-center text-[12px] text-muted-foreground/70 mt-6 italic">
+            Nothing here ends — it just rests for now.
+          </p>
+        </section>
+      )}
     </AppShell>
   );
 };
+
+interface StepProps {
+  to: string;
+  icon: React.ReactNode;
+  title: string;
+  hint: string;
+}
+
+const NextStepLink = ({ to, icon, title, hint }: StepProps) => (
+  <Link
+    to={to}
+    className="group flex items-center gap-3 rounded-2xl bg-card/50 backdrop-blur border border-border/40 px-4 py-3.5 hover:bg-card/80 hover:border-border/70 transition-smooth"
+  >
+    <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center text-muted-foreground shrink-0 group-hover:text-foreground transition-smooth">
+      {icon}
+    </span>
+    <div className="flex-1 min-w-0">
+      <p className="text-[14px] font-medium text-foreground/90 leading-tight">
+        {title}
+      </p>
+      <p className="text-[12px] text-muted-foreground leading-tight mt-0.5">
+        {hint}
+      </p>
+    </div>
+    <span className="text-muted-foreground/40 group-hover:text-muted-foreground group-hover:translate-x-0.5 transition-smooth">
+      →
+    </span>
+  </Link>
+);
 
 export default Insight;
