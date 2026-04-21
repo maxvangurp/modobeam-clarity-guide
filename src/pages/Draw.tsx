@@ -391,6 +391,16 @@ const Draw = () => {
           <p className="text-[12px] text-muted-foreground mt-1.5 italic max-w-xs mx-auto leading-relaxed">
             Some cards only arrive at certain moments. Sit with this one.
           </p>
+          {rareReason && (
+            <div className="mt-4 max-w-xs mx-auto">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70 mb-1.5">
+                Why this card
+              </p>
+              <p className="text-[12px] text-foreground/80 leading-relaxed">
+                {rareReason}
+              </p>
+            </div>
+          )}
         </div>
       )}
 
