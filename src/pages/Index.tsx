@@ -92,6 +92,8 @@ const Index = () => {
   const profile = getProfile();
   const last = insights[0] ?? null;
   const isReturning = !!last;
+  const week = useMemo(() => buildWeek(insights), [insights]);
+  const tint = getMomentTint(moment);
 
   const greeting = useMemo(() => {
     if (profile?.firstName) {
@@ -171,19 +173,28 @@ const Index = () => {
                   : "Your gentle rhythm so far"
               }
             >
-              <Flame
-                className={`h-3 w-3 ${
-                  streak.savedToday ? "text-beam" : "text-muted-foreground/60"
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  streak.savedToday
+                    ? "bg-foreground/80 animate-gentle-breathe"
+                    : "bg-muted-foreground/40"
                 }`}
-                strokeWidth={1.8}
               />
               <span className="text-[11px] tabular-nums text-foreground/80">
-                {streak.count} {streak.count === 1 ? "day" : "days"}
+                {streak.count} {streak.count === 1 ? "moment" : "moments"} of reflection
               </span>
             </div>
           )}
         </div>
-        <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground mt-2">
+
+        {/* Soft weekly progress — 7 days, no judgment */}
+        {insights.length > 0 && (
+          <div className="mt-3">
+            <WeekProgress week={week} />
+          </div>
+        )}
+
+        <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground mt-4">
           Take a breath.
           <br />
           <span className="font-medium italic">Begin</span> when you're ready.
