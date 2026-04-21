@@ -17,7 +17,7 @@ import {
   MOOD_LABELS,
   type MoodSnap,
 } from "@/lib/moodSnapshot";
-import { LifeAreaCard as LifeAreaCardView } from "@/components/LifeAreaCard";
+import { LifeAreaGlyph } from "@/components/LifeAreaGlyph";
 import {
   inferLifeAreaFromText,
   lifeAreaForFocusKey,
