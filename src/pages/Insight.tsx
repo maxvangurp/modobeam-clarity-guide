@@ -370,27 +370,11 @@ const Insight = () => {
                   What's underneath
                 </h2>
               </div>
-              {combined.focus?.label && isAstroLensEnabled() && (
-                <span
-                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] border bg-card/40 backdrop-blur"
-                  style={{
-                    borderColor: tint
-                      ? `hsl(${tint.ring} / 0.3)`
-                      : "hsl(var(--border) / 0.6)",
-                    color: tint ? tintedRing : "hsl(var(--ink-soft))",
-                  }}
-                  title="A soft life-area lens — never a prediction."
-                >
-                  <span
-                    className="h-1 w-1 rounded-full"
-                    style={{
-                      backgroundColor: tint
-                        ? tintedRing
-                        : "hsl(var(--ink-soft))",
-                    }}
-                  />
-                  Focus · {combined.focus.label}
-                </span>
+              {combined.focus?.label && (
+                <FocusChip
+                  label={combined.focus.label}
+                  tintRing={tint ? `hsl(${tint.ring} / 0.5)` : undefined}
+                />
               )}
             </div>
 
