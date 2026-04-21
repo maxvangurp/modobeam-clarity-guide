@@ -1,14 +1,17 @@
 import { ReactNode } from "react";
 import { BottomNav } from "./BottomNav";
 import { ModobeamLogo } from "./ModobeamLogo";
+import { AmbientBackground } from "./AmbientBackground";
 import { Link } from "react-router-dom";
 import { ChevronLeft, Settings2 } from "lucide-react";
+import type { MomentNeed } from "@/lib/profile";
 
 interface Props {
   children: ReactNode;
   showNav?: boolean;
   showBack?: boolean;
   backTo?: string;
+  ambientMoment?: MomentNeed | null;
 }
 
 export const AppShell = ({
@@ -16,9 +19,11 @@ export const AppShell = ({
   showNav = true,
   showBack = false,
   backTo,
+  ambientMoment = null,
 }: Props) => {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col relative">
+      <AmbientBackground moment={ambientMoment} />
       <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/70 border-b border-border/40">
         <div className="mx-auto max-w-md px-5 h-14 flex items-center justify-between">
           {showBack ? (
@@ -50,3 +55,4 @@ export const AppShell = ({
     </div>
   );
 };
+
