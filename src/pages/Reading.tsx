@@ -17,13 +17,14 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { AppShell } from "@/components/AppShell";
 import { ReflectionCard } from "@/components/ReflectionCard";
 import { LifeAreaGlyph } from "@/components/LifeAreaGlyph";
+import { FocusChip } from "@/components/FocusChip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById, type OracleCard } from "@/data/deck";
 import { getReadingType } from "@/data/readingTypes";
 import { getInsightMoment } from "@/lib/insightMoment";
 import { getMomentTint } from "@/lib/momentTint";
-import { MOMENT_LABELS, isAstroLensEnabled, type MomentNeed } from "@/lib/profile";
+import { MOMENT_LABELS, type MomentNeed } from "@/lib/profile";
 import { haptic } from "@/lib/haptics";
 import { useVerticalSwipe } from "@/hooks/useVerticalSwipe";
 import {
