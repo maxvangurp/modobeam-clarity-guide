@@ -12,6 +12,8 @@ export interface ReadingType {
   positionLabels: string[];
   icon: LucideIcon;
   featured?: boolean;
+  // How many saved reflections before this surfaces in the UI.
+  // Defined centrally in src/lib/progression.ts (UNLOCK_THRESHOLDS).
 }
 
 export const READING_TYPES: ReadingType[] = [
