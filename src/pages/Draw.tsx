@@ -401,6 +401,18 @@ const Draw = () => {
               <p className="text-[12px] text-foreground/80 leading-relaxed">
                 {rareReason}
               </p>
+              {rareThemes.length > 0 && (
+                <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+                  {rareThemes.map((t) => (
+                    <span
+                      key={t}
+                      className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground/90 bg-card/60 backdrop-blur border border-border/50 rounded-full px-2.5 py-1"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
