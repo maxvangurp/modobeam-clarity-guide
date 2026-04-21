@@ -143,6 +143,17 @@ const categoryDot: Record<string, string> = {
   three: "bg-accent/70",
 };
 
+// First card's category drives a quiet accent dot on each timeline entry
+import { getCardById } from "@/data/deck";
+import { getCategoryAccent } from "@/lib/categoryAccent";
+
+function rowAccentHsl(r: Row): string {
+  const first = r.cards?.[0];
+  const card = first ? getCardById(first.id) : null;
+  const accent = getCategoryAccent(card?.category);
+  return accent.hsl;
+}
+
 /* ── AI summary cache + fetcher ── */
 
 interface PeriodSummary {
@@ -185,17 +196,22 @@ const TimelineEntry = ({ r }: { r: Row }) => {
   const reading = getReadingType(r.draw_type);
   const isMulti = (reading?.cardCount ?? 1) > 1;
   const preview = getPreview(r);
+  const accentHsl = rowAccentHsl(r);
   return (
     <li>
       <Link
         to={`/insight/${r.id}`}
         className="group block rounded-2xl bg-card/70 backdrop-blur border border-border/60 shadow-soft hover:shadow-card transition-smooth overflow-hidden"
+        style={{
+          borderLeft: `2px solid hsl(${accentHsl} / 0.35)`,
+        }}
       >
         <div className={isMulti ? "p-5" : "px-5 py-4"}>
           <div className="flex items-center justify-between mb-2.5">
             <div className="flex items-center gap-2">
               <span
-                className={`h-1.5 w-1.5 rounded-full ${categoryDot[r.draw_type] ?? "bg-muted-foreground"}`}
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: `hsl(${accentHsl})` }}
               />
               <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
                 {reading?.label ?? r.draw_type}
