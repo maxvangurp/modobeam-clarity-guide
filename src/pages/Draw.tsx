@@ -101,8 +101,16 @@ const Draw = () => {
       });
 
       if (rare && type === "daily" && count === 1) {
+        const themes = detectRecentThemes(recent, 7);
+        const reason = explainRareCard({
+          recentThemes: themes,
+          daysAway,
+          momentStreak,
+          totalReflections,
+        });
         setResolvedCards([rare]);
         setRareCardId(rare.id);
+        setRareReason(reason);
       } else {
         setResolvedCards(cards);
       }
