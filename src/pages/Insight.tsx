@@ -59,6 +59,10 @@ const Insight = () => {
   const [summary, setSummary] = useState<string>("");
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [skippedJournal, setSkippedJournal] = useState(false);
+  const [savedMood, setSavedMood] = useState<MoodSnap | null>(null);
+  const [activePromptIdx, setActivePromptIdx] = useState(0);
+  const [keepOpen, setKeepOpen] = useState(false);
+  const [showNotQuite, setShowNotQuite] = useState(false);
 
   const summaryRef = useRef<HTMLDivElement | null>(null);
   const nextStepsRef = useRef<HTMLDivElement | null>(null);
