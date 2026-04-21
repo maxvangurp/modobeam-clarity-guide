@@ -472,6 +472,12 @@ const Index = () => {
           Explore deeper readings
         </Link>
       </section>
+
+      <JustBeHere
+        open={breathing}
+        onClose={() => setBreathing(false)}
+        closingLine={quote.text ? `"${quote.text}"` : undefined}
+      />
     </AppShell>
   );
 };
