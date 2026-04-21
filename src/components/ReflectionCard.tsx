@@ -25,6 +25,7 @@ export const ReflectionCard = ({
   size = "md",
 }: Props) => {
   const [internal, setInternal] = useState(false);
+  const [pressing, setPressing] = useState(false);
   const revealed = controlled ?? internal;
   const art = getCardArt(card.id);
 
@@ -38,25 +39,55 @@ export const ReflectionCard = ({
     <button
       type="button"
       onClick={handleClick}
+      onPointerDown={() => !revealed && setPressing(true)}
+      onPointerUp={() => setPressing(false)}
+      onPointerLeave={() => setPressing(false)}
       disabled={revealed}
       className={cn(
-        "relative perspective-1200 group",
+        "relative perspective-1200 group outline-none",
         sizes[size],
         !revealed && "cursor-pointer",
       )}
       style={{ animationDelay: `${index * 120}ms` }}
       aria-label={revealed ? `${card.name} card` : "Tap to reveal"}
     >
+      {/* Subtle floor glow that intensifies during flip */}
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute -inset-6 rounded-[2rem] blur-2xl transition-opacity duration-700",
+          "bg-[radial-gradient(ellipse_at_center,hsl(var(--beam)/0.25),transparent_70%)]",
+          revealed ? "opacity-60" : "opacity-0 group-hover:opacity-30",
+          revealed && "animate-card-glow",
+        )}
+      />
+
       <div
         className={cn(
-          "relative h-full w-full preserve-3d transition-smooth duration-700",
-          revealed && "rotate-y-180",
+          "relative h-full w-full preserve-3d transition-transform",
+          // Premium eased flip — slow, calm, with a tiny lift
+          revealed
+            ? "animate-card-flip"
+            : "duration-700 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)]",
+          // Press feedback before reveal
+          !revealed && pressing && "scale-[0.97]",
+          !revealed && !pressing && "group-hover:-translate-y-1",
         )}
       >
         {/* Back */}
-        <div className="absolute inset-0 backface-hidden rounded-[1.5rem] card-back-pattern shadow-card overflow-hidden">
+        <div
+          className={cn(
+            "absolute inset-0 backface-hidden rounded-[1.5rem] card-back-pattern shadow-card overflow-hidden",
+            !revealed && "animate-card-breathe",
+          )}
+        >
           <div className="absolute inset-0 bg-gradient-beam opacity-60 animate-beam" />
           <div className="absolute inset-3 rounded-[1.25rem] border border-white/10" />
+          {/* Soft sweep highlight invites the tap */}
+          <div
+            aria-hidden
+            className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-[linear-gradient(115deg,transparent_30%,hsl(0_0%_100%/0.08)_50%,transparent_70%)]"
+          />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
               <div className="h-10 w-10 rounded-full bg-beam/60 blur-xl absolute inset-0" />
@@ -71,7 +102,12 @@ export const ReflectionCard = ({
         </div>
 
         {/* Front */}
-        <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[1.5rem] bg-gradient-card shadow-card overflow-hidden border border-border/60">
+        <div
+          className={cn(
+            "absolute inset-0 backface-hidden rotate-y-180 rounded-[1.5rem] bg-gradient-card shadow-card overflow-hidden border border-border/60",
+            revealed && "animate-card-rest [animation-delay:1s]",
+          )}
+        >
           {art ? (
             <img
               src={art}
