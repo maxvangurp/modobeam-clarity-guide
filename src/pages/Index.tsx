@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { READING_TYPES, type DrawType } from "@/data/readingTypes";
-import { getProfile, isOnboardingComplete } from "@/lib/profile";
+import {
+  dismissPreferencesNudge,
+  getProfile,
+  isOnboardingComplete,
+  shouldShowPreferencesNudge,
+} from "@/lib/profile";
+import { X } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
   const [intention, setIntention] = useState("");
+  const [showNudge, setShowNudge] = useState(false);
 
   useEffect(() => {
     if (!isOnboardingComplete()) {
       navigate("/welcome", { replace: true });
+      return;
     }
+    setShowNudge(shouldShowPreferencesNudge());
   }, [navigate]);
 
   const profile = getProfile();
