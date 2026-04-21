@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
 import { ChoiceCard } from "@/components/onboarding/ChoiceCard";
+import {
+  BirthDetailsForm,
+  type BirthDetails,
+} from "@/components/onboarding/BirthDetailsForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,7 +21,7 @@ import {
   type UsageMode,
 } from "@/lib/profile";
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -29,6 +33,13 @@ const Onboarding = () => {
   const [rhythm, setRhythm] = useState<Rhythm | null>(null);
   const [firstName, setFirstName] = useState("");
   const [birthday, setBirthday] = useState("");
+  const [birth, setBirth] = useState<BirthDetails>({
+    birthTime: null,
+    birthPlace: null,
+    birthLat: null,
+    birthLon: null,
+    birthTzOffsetMin: null,
+  });
 
   const next = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS));
   const back = () => setStep((s) => Math.max(s - 1, 1));
@@ -41,6 +52,11 @@ const Onboarding = () => {
       rhythm: rhythm ?? undefined,
       firstName: firstName.trim() || undefined,
       birthday: birthday || undefined,
+      birthTime: birth.birthTime ?? null,
+      birthPlace: birth.birthPlace ?? null,
+      birthLat: birth.birthLat ?? null,
+      birthLon: birth.birthLon ?? null,
+      birthTzOffsetMin: birth.birthTzOffsetMin ?? null,
     });
     markOnboardingComplete();
     // Send them straight into a soft first check-in
@@ -52,7 +68,8 @@ const Onboarding = () => {
     (step === 2 && !!lookingFor) ||
     (step === 3 && !!guidance) ||
     (step === 4 && !!rhythm) ||
-    step === 5;
+    step === 5 ||
+    step === 6;
 
   return (
     <OnboardingShell
@@ -151,7 +168,7 @@ const Onboarding = () => {
           <Step
             kicker="Almost there"
             title="Let's make this feel a little more personal."
-            hint="This helps make your experience feel a little more personal. Skip anything you'd rather not share."
+            hint="Skip anything you'd rather not share."
           >
             <div className="grid gap-4 mt-2">
               <div className="grid gap-1.5">
@@ -185,6 +202,39 @@ const Onboarding = () => {
                 />
               </div>
             </div>
+            <p className="text-[12px] text-muted-foreground mt-5 leading-relaxed">
+              Modobeam doesn't predict the future. It helps you notice what
+              you already know.
+            </p>
+          </Step>
+        )}
+
+        {step === 6 && (
+          <Step
+            kicker="A soft lens · optional"
+            title="A quiet astrological layer, if you'd like."
+            hint="Modobeam can use a gentle astrological lens to add a little more depth — never to predict, never to define you. Skip if it's not for you."
+          >
+            <BirthDetailsForm
+              value={{
+                birthday: birthday || undefined,
+                birthTime: birth.birthTime,
+                birthPlace: birth.birthPlace,
+                birthLat: birth.birthLat,
+                birthLon: birth.birthLon,
+                birthTzOffsetMin: birth.birthTzOffsetMin,
+              }}
+              onChange={(next) => {
+                if (typeof next.birthday === "string") setBirthday(next.birthday);
+                setBirth({
+                  birthTime: next.birthTime ?? null,
+                  birthPlace: next.birthPlace ?? null,
+                  birthLat: next.birthLat ?? null,
+                  birthLon: next.birthLon ?? null,
+                  birthTzOffsetMin: next.birthTzOffsetMin ?? null,
+                });
+              }}
+            />
 
             <div className="mt-7 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-5 space-y-3">
               {usage && <Summary label="Use" value={USAGE_LABELS[usage]} />}
@@ -198,10 +248,6 @@ const Onboarding = () => {
                 <Summary label="Rhythm" value={RHYTHM_LABELS[rhythm]} />
               )}
             </div>
-            <p className="text-[12px] text-muted-foreground mt-5 leading-relaxed">
-              Modobeam doesn't predict the future. It helps you notice what
-              you already know.
-            </p>
           </Step>
         )}
 
@@ -224,7 +270,7 @@ const Onboarding = () => {
               Begin with a simple check-in
             </Button>
           )}
-          {step === 5 && (
+          {(step === 5 || step === 6) && (
             <button
               onClick={finish}
               className="w-full text-center text-[13px] text-muted-foreground hover:text-foreground transition-smooth mt-3"

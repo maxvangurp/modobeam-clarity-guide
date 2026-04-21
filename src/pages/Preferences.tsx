@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ChoiceCard } from "@/components/onboarding/ChoiceCard";
+import {
+  BirthDetailsForm,
+  type BirthDetails,
+} from "@/components/onboarding/BirthDetailsForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Constellation } from "@/components/Constellation";
@@ -36,6 +40,13 @@ const Preferences = () => {
   const [rhythm, setRhythm] = useState<Rhythm | null>(existing.rhythm ?? null);
   const [firstName, setFirstName] = useState(existing.firstName ?? "");
   const [birthday, setBirthday] = useState(existing.birthday ?? "");
+  const [birth, setBirth] = useState<BirthDetails>({
+    birthTime: existing.birthTime ?? null,
+    birthPlace: existing.birthPlace ?? null,
+    birthLat: existing.birthLat ?? null,
+    birthLon: existing.birthLon ?? null,
+    birthTzOffsetMin: existing.birthTzOffsetMin ?? null,
+  });
 
   const [insights, setInsights] = useState<InsightLite[]>([]);
   const [knowYouText, setKnowYouText] = useState<string>(
@@ -105,6 +116,11 @@ const Preferences = () => {
       rhythm: rhythm ?? undefined,
       firstName: firstName.trim() || undefined,
       birthday: birthday || undefined,
+      birthTime: birth.birthTime ?? null,
+      birthPlace: birth.birthPlace ?? null,
+      birthLat: birth.birthLat ?? null,
+      birthLon: birth.birthLon ?? null,
+      birthTzOffsetMin: birth.birthTzOffsetMin ?? null,
     });
     toast.success("Preferences updated");
     navigate("/");
@@ -246,6 +262,36 @@ const Preferences = () => {
             />
           </div>
         </div>
+      </Section>
+
+      <Section
+        kicker="A soft lens · optional"
+        title="Astrological details"
+      >
+        <p className="text-[13px] text-muted-foreground leading-relaxed mb-4 -mt-2">
+          A subtle layer that adds nuance to reflections. Never used to
+          predict — only to deepen the lens. Skip whatever doesn't fit.
+        </p>
+        <BirthDetailsForm
+          hideBirthday
+          value={{
+            birthday: birthday || undefined,
+            birthTime: birth.birthTime,
+            birthPlace: birth.birthPlace,
+            birthLat: birth.birthLat,
+            birthLon: birth.birthLon,
+            birthTzOffsetMin: birth.birthTzOffsetMin,
+          }}
+          onChange={(next) =>
+            setBirth({
+              birthTime: next.birthTime ?? null,
+              birthPlace: next.birthPlace ?? null,
+              birthLat: next.birthLat ?? null,
+              birthLon: next.birthLon ?? null,
+              birthTzOffsetMin: next.birthTzOffsetMin ?? null,
+            })
+          }
+        />
       </Section>
 
       <div className="mt-10 mb-4">

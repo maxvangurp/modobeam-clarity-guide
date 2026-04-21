@@ -36,6 +36,7 @@ import {
 } from "@/lib/weeklySynthesis";
 import { checkReturnAndStamp } from "@/lib/returnGap";
 import { haptic } from "@/lib/haptics";
+import { SunGlyphChip } from "@/components/SunGlyphChip";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
@@ -219,9 +220,12 @@ const Index = () => {
       {/* 1. Welcome + continuity */}
       <section className="pt-6 pb-8 animate-fade-up">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-sm text-muted-foreground tracking-wide">
-            {greeting}
-          </p>
+          <div className="flex items-center gap-2 min-w-0">
+            <p className="text-sm text-muted-foreground tracking-wide truncate">
+              {greeting}
+            </p>
+            <SunGlyphChip />
+          </div>
           {streak.count > 0 && (
             <div
               className="inline-flex items-center gap-1.5 rounded-full bg-card/60 backdrop-blur border border-border/50 px-2.5 py-1"

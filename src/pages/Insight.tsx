@@ -46,6 +46,7 @@ interface Combined {
   theme?: string;
   tension?: string;
   combined?: string;
+  focus?: { key: string; label: string } | null;
 }
 
 const Insight = () => {
@@ -333,18 +334,42 @@ const Insight = () => {
                 : { borderColor: "hsl(var(--border) / 0.4)" }
             }
           >
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles
-                className="h-3.5 w-3.5"
-                strokeWidth={1.8}
-                style={tint ? { color: tintedRing } : { color: "hsl(var(--ink-soft))" }}
-              />
-              <h2
-                className="font-display text-[10px] uppercase tracking-[0.25em]"
-                style={tint ? { color: tintedRing } : { color: "hsl(var(--ink-soft))" }}
-              >
-                What's underneath
-              </h2>
+            <div className="flex items-center justify-between gap-3 mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles
+                  className="h-3.5 w-3.5"
+                  strokeWidth={1.8}
+                  style={tint ? { color: tintedRing } : { color: "hsl(var(--ink-soft))" }}
+                />
+                <h2
+                  className="font-display text-[10px] uppercase tracking-[0.25em]"
+                  style={tint ? { color: tintedRing } : { color: "hsl(var(--ink-soft))" }}
+                >
+                  What's underneath
+                </h2>
+              </div>
+              {combined.focus?.label && (
+                <span
+                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] border bg-card/40 backdrop-blur"
+                  style={{
+                    borderColor: tint
+                      ? `hsl(${tint.ring} / 0.3)`
+                      : "hsl(var(--border) / 0.6)",
+                    color: tint ? tintedRing : "hsl(var(--ink-soft))",
+                  }}
+                  title="A soft life-area lens — never a prediction."
+                >
+                  <span
+                    className="h-1 w-1 rounded-full"
+                    style={{
+                      backgroundColor: tint
+                        ? tintedRing
+                        : "hsl(var(--ink-soft))",
+                    }}
+                  />
+                  Focus · {combined.focus.label}
+                </span>
+              )}
             </div>
 
             {combined.tension ? (
