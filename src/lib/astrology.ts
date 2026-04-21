@@ -292,7 +292,7 @@ export function computeChart(input: BirthInput): AstroChart | null {
   const gmst = gmstFromJD(jd);
   const lst = norm360(gmst + input.lon); // local sidereal time
   const ascLon = ascendantLongitude(lst, input.lat, obliquity);
-  const houses = placidusHouses(lst, input.lat, obliquity);
+  const houses = wholeSignHouses(ascLon);
   return {
     sun,
     ascendant: { longitude: ascLon, sign: signFromLongitude(ascLon) },
