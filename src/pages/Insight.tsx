@@ -17,6 +17,12 @@ import {
   MOOD_LABELS,
   type MoodSnap,
 } from "@/lib/moodSnapshot";
+import { LifeAreaGlyph } from "@/components/LifeAreaGlyph";
+import {
+  inferLifeAreaFromText,
+  lifeAreaForFocusKey,
+  type LifeAreaCard as LifeAreaCardType,
+} from "@/data/lifeAreas";
 import { KeepThisCard } from "@/components/KeepThisCard";
 import { NotQuiteIt } from "@/components/NotQuiteIt";
 import { toast } from "sonner";
@@ -119,6 +125,22 @@ const Insight = () => {
       .map((c) => getCardById(c.id))
       .filter(Boolean) as NonNullable<ReturnType<typeof getCardById>>[];
   }, [insight]);
+
+  // Map this reading to one Life Area card. Prefer the astrology focus key
+  // (already saved on the insight); fall back to a light keyword scan of
+  // the combined reflection text. Returns null when neither produces a fit.
+  const lifeArea = useMemo<LifeAreaCardType | null>(() => {
+    if (combined.focus?.key) {
+      const fromKey = lifeAreaForFocusKey(combined.focus.key);
+      if (fromKey) return fromKey;
+    }
+    const text = [combined.theme, combined.tension, combined.combined]
+      .filter(Boolean)
+      .join(" ");
+    if (!text) return null;
+    return inferLifeAreaFromText(text);
+  }, [combined]);
+  const [lifeAreaOpen, setLifeAreaOpen] = useState(false);
 
   const reading = insight ? getReadingType(insight.draw_type) : null;
   const labels = reading?.positionLabels ?? ["Today"];
@@ -391,6 +413,52 @@ const Insight = () => {
         </section>
       )}
 
+      {/* Life Area — quiet contextual layer, derived from the reading */}
+      {lifeArea && (
+        <section className="mt-4 animate-fade-up [animation-delay:200ms]">
+          <button
+            type="button"
+            onClick={() => setLifeAreaOpen((o) => !o)}
+            aria-expanded={lifeAreaOpen}
+            className="w-full text-left rounded-3xl border border-border/50 bg-[linear-gradient(140deg,hsl(40_30%_97%)_0%,hsl(211_42%_92%)_55%,hsl(218_36%_85%)_100%)] px-5 py-4 shadow-soft hover:shadow-card transition-smooth"
+          >
+            <div className="flex items-center gap-3">
+              <span className="h-10 w-10 rounded-full bg-background/55 backdrop-blur flex items-center justify-center shrink-0 text-[hsl(218_45%_28%)] p-1.5">
+                <LifeAreaGlyph motif={lifeArea.motif} className="h-full w-full" />
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[10px] uppercase tracking-[0.25em] text-[hsl(218_30%_38%)]/80">
+                  Life Area · {lifeArea.theme}
+                </p>
+                <p className="font-display text-[16px] text-foreground mt-0.5">
+                  {lifeArea.name}
+                </p>
+              </div>
+              <ChevronRight
+                className={`h-4 w-4 text-muted-foreground transition-transform ${lifeAreaOpen ? "rotate-90" : ""}`}
+              />
+            </div>
+            {lifeAreaOpen && (
+              <div className="mt-4 pt-4 border-t border-border/40 animate-fade-up">
+                <p className="text-[14px] leading-relaxed text-foreground/85">
+                  {lifeArea.shortMeaning}
+                </p>
+                <p className="text-[13px] leading-relaxed text-foreground/70 mt-3">
+                  {lifeArea.deeperMeaning}
+                </p>
+                <Link
+                  to={`/life-areas/${lifeArea.id}`}
+                  className="inline-flex items-center gap-1 text-[12px] text-foreground/70 hover:text-foreground transition-smooth mt-4"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Open full card
+                  <ArrowRight className="h-3 w-3" />
+                </Link>
+              </div>
+            )}
+          </button>
+        </section>
+      )}
 
       {/* AI reflection */}
       {insight.ai_reflection && (

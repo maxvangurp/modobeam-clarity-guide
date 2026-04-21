@@ -10,6 +10,8 @@ import History from "./pages/History.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
 import Preferences from "./pages/Preferences.tsx";
 import Readings from "./pages/Readings.tsx";
+import LifeAreas from "./pages/LifeAreas.tsx";
+import LifeAreaDetail from "./pages/LifeAreaDetail.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/draw/:type" element={<Draw />} />
           <Route path="/insight/:id" element={<Insight />} />
           <Route path="/history" element={<History />} />
+          <Route path="/life-areas" element={<LifeAreas />} />
+          <Route path="/life-areas/:id" element={<LifeAreaDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

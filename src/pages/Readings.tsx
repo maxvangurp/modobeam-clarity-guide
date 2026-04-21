@@ -7,7 +7,7 @@ import {
   isReadingUnlocked,
   readingsRemainingToUnlock,
 } from "@/lib/progression";
-import { Lock } from "lucide-react";
+import { Lock, Compass } from "lucide-react";
 
 const Readings = () => {
   const navigate = useNavigate();
@@ -107,6 +107,34 @@ const Readings = () => {
           );
         })}
       </div>
+
+      {/* Life Areas — contextual layer, not a draw type */}
+      <button
+        onClick={() => navigate("/life-areas")}
+        className="group w-full text-left rounded-2xl bg-[linear-gradient(140deg,hsl(40_30%_97%)_0%,hsl(211_40%_92%)_60%,hsl(218_36%_85%)_100%)] border border-border/50 px-5 py-4 mt-6 shadow-soft hover:shadow-card transition-smooth animate-fade-up [animation-delay:200ms]"
+      >
+        <div className="flex items-center gap-3">
+          <span className="h-9 w-9 rounded-full bg-background/60 backdrop-blur flex items-center justify-center shrink-0">
+            <Compass className="h-4 w-4 text-[hsl(218_45%_28%)]" strokeWidth={1.6} />
+          </span>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-baseline justify-between gap-2">
+              <span className="font-display text-[15px] font-medium text-foreground">
+                Life Areas
+              </span>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 shrink-0">
+                25 cards
+              </span>
+            </div>
+            <p className="text-[12px] text-muted-foreground leading-relaxed mt-0.5">
+              A quiet map of life's domains. Browse, or let one surface inside a reading.
+            </p>
+          </div>
+          <span className="text-muted-foreground/40 group-hover:text-muted-foreground group-hover:translate-x-0.5 transition-smooth">
+            →
+          </span>
+        </div>
+      </button>
 
       {total !== null && total < 5 && (
         <p className="text-center text-[11px] text-muted-foreground/70 mt-6 italic">
