@@ -1,5 +1,6 @@
 import { Sparkles, Layers, Compass, Heart, RotateCcw } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import type { CardCategory } from "@/data/deck";
 
 export type DrawType = "daily" | "three" | "next-phase" | "direction" | "love" | "year";
 
@@ -11,6 +12,8 @@ export interface ReadingType {
   cardCount: number;
   positionLabels: string[];
   icon: LucideIcon;
+  /** Drives the accent color in preview cards */
+  category: CardCategory;
   featured?: boolean;
   // How many saved reflections before this surfaces in the UI.
   // Defined centrally in src/lib/progression.ts (UNLOCK_THRESHOLDS).
@@ -25,6 +28,7 @@ export const READING_TYPES: ReadingType[] = [
     cardCount: 1,
     positionLabels: ["Today"],
     icon: Sparkles,
+    category: "Mind",
     featured: true,
   },
   {
@@ -35,6 +39,7 @@ export const READING_TYPES: ReadingType[] = [
     cardCount: 3,
     positionLabels: ["Past influence", "Present focus", "Emerging"],
     icon: Layers,
+    category: "Life Patterns",
     featured: true,
   },
   {
@@ -45,6 +50,7 @@ export const READING_TYPES: ReadingType[] = [
     cardCount: 4,
     positionLabels: ["Where you are", "What keeps you stuck", "What wants to change", "Next step"],
     icon: Compass,
+    category: "Life Patterns",
   },
   {
     id: "love",
@@ -54,6 +60,7 @@ export const READING_TYPES: ReadingType[] = [
     cardCount: 4,
     positionLabels: ["What you feel", "What you hold onto", "What you need to see", "What helps you move forward"],
     icon: Heart,
+    category: "Emotion",
   },
   {
     id: "next-phase",
@@ -63,6 +70,7 @@ export const READING_TYPES: ReadingType[] = [
     cardCount: 5,
     positionLabels: ["What is ending", "What is emerging", "What challenges you", "What supports you", "Your direction"],
     icon: RotateCcw,
+    category: "Life Patterns",
   },
   {
     id: "year",
@@ -72,6 +80,7 @@ export const READING_TYPES: ReadingType[] = [
     cardCount: 4,
     positionLabels: ["Main theme", "Inner tension", "Growth area", "Focus point"],
     icon: Layers,
+    category: "Life Patterns",
   },
 ];
 

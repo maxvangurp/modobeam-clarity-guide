@@ -1,10 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Sparkles, BookOpen } from "lucide-react";
+import { Home, Compass, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const links = [
   { to: "/", label: "Home", icon: Home },
-  { to: "/draw/daily", label: "Draw", icon: Sparkles },
+  { to: "/readings", label: "Explore", icon: Compass },
   { to: "/history", label: "History", icon: BookOpen },
 ];
 
@@ -17,11 +17,18 @@ export const BottomNav = () => {
       <div className="mx-auto max-w-md px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pointer-events-auto">
         <div className="flex items-center justify-around rounded-full border border-border/60 bg-card/85 backdrop-blur-xl shadow-soft py-2 px-2">
           {links.map(({ to, label, icon: Icon }) => {
+            // "Explore" lights up on the readings library and on every
+            // draw / reading / insight surface — they all live under
+            // exploring readings.
             const active =
               to === "/"
                 ? path === "/"
-                : to.startsWith("/draw")
-                  ? path.startsWith("/draw") || path.startsWith("/insight")
+                : to === "/readings"
+                  ? path.startsWith("/readings") ||
+                    path.startsWith("/draw") ||
+                    path.startsWith("/reading") ||
+                    path.startsWith("/insight") ||
+                    path.startsWith("/life-areas")
                   : path.startsWith(to);
             return (
               <Link

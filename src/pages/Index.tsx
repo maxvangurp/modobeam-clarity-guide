@@ -23,7 +23,11 @@ import {
 } from "@/lib/progression";
 import { inferReadingHint, type ReadingHint } from "@/lib/themeUnlocks";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
-import { Layers, Pause, Sparkles, Waypoints, X } from "lucide-react";
+import { READING_TYPES } from "@/data/readingTypes";
+import { COMING_SOON_MODES } from "@/data/comingSoonModes";
+import { ReadingPreviewCard } from "@/components/ReadingPreviewCard";
+import { isReadingUnlocked, readingsRemainingToUnlock } from "@/lib/progression";
+import { ArrowRight, Pause, Sparkles, Waypoints, X } from "lucide-react";
 import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
 import { WeekProgress } from "@/components/WeekProgress";
 import { WeeklySynthesisCard } from "@/components/WeeklySynthesisCard";
@@ -164,18 +168,11 @@ const Index = () => {
   }, [profile?.firstName, isReturning, returnGap]);
 
   const lastCardName = last?.cards?.[0]?.name?.toLowerCase();
-  const lastReading = last ? getReadingType(last.draw_type) : null;
 
   const startDaily = () => {
     const params = new URLSearchParams();
     if (moment) params.set("moment", moment);
     navigate(`/draw/daily${params.toString() ? `?${params}` : ""}`);
-  };
-
-  const startThree = () => {
-    const params = new URLSearchParams();
-    if (moment) params.set("moment", moment);
-    navigate(`/draw/three${params.toString() ? `?${params}` : ""}`);
   };
 
   const startSuggestion = () => {
@@ -471,23 +468,11 @@ const Index = () => {
           </span>
         </Button>
 
-        {/* 4. Secondary subtle actions */}
-        <div className="mt-5 flex items-center justify-center gap-1 text-[13px]">
-          <button
-            onClick={startThree}
-            className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-smooth px-3 py-2 rounded-full"
-          >
-            <Layers className="h-3.5 w-3.5" strokeWidth={1.6} />
-            3-card insight
-          </button>
-          <span className="text-muted-foreground/30">·</span>
-          <Link
-            to="/history"
-            className="text-muted-foreground hover:text-foreground transition-smooth px-3 py-2 rounded-full"
-          >
-            View your week
-          </Link>
-        </div>
+        {/* 4. Explore deeper readings — featured carousel */}
+        <ExploreCarousel
+          totalReflections={insights.length}
+          moment={moment}
+        />
       </section>
 
       {/* Soft suggestion — only when something newly unlocked */}
@@ -531,22 +516,109 @@ const Index = () => {
         </section>
       )}
 
-      {/* Quiet link to deeper readings — never competing with the primary CTA */}
-      <section className="mt-10 text-center animate-fade-up [animation-delay:360ms]">
-        <Link
-          to="/readings"
-          className="inline-block text-[11px] uppercase tracking-[0.25em] text-muted-foreground/70 hover:text-foreground transition-smooth"
-        >
-          Explore deeper readings
-        </Link>
-      </section>
-
       <JustBeHere
         open={breathing}
         onClose={() => setBreathing(false)}
         closingLine={quote.text ? `"${quote.text}"` : undefined}
       />
     </AppShell>
+  );
+};
+
+/**
+ * Explore deeper readings — featured horizontal carousel.
+ *
+ * Shows 4 hand-picked previews directly under the primary CTA so the
+ * second valid entry point (deeper modes) is visible without dominating
+ * the screen. Real readings respect their unlock thresholds; coming-soon
+ * modes appear as styled placeholders so users feel the depth that's
+ * coming. A "See all" link routes to the Readings library.
+ */
+interface ExploreCarouselProps {
+  totalReflections: number;
+  moment: MomentNeed | null;
+}
+
+const FEATURED_REAL_IDS = ["three", "direction"] as const;
+const FEATURED_COMING_IDS = ["ask-for-friend", "whats-going-on"] as const;
+
+const ExploreCarousel = ({
+  totalReflections,
+  moment,
+}: ExploreCarouselProps) => {
+  const featuredReal = FEATURED_REAL_IDS.map((id) =>
+    READING_TYPES.find((r) => r.id === id),
+  ).filter(Boolean) as ReadingType[];
+
+  const featuredComing = FEATURED_COMING_IDS.map((id) =>
+    COMING_SOON_MODES.find((m) => m.id === id),
+  ).filter(Boolean);
+
+  const buildTo = (id: string) => {
+    const params = new URLSearchParams();
+    if (moment) params.set("moment", moment);
+    return `/draw/${id}${params.toString() ? `?${params}` : ""}`;
+  };
+
+  return (
+    <div className="mt-8 animate-fade-up [animation-delay:300ms]">
+      <div className="flex items-baseline justify-between gap-3 mb-3 px-0.5">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+            Or try a different way in
+          </p>
+          <p className="font-display text-[16px] font-medium text-foreground mt-0.5">
+            Explore deeper readings
+          </p>
+        </div>
+        <Link
+          to="/readings"
+          className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-smooth shrink-0"
+        >
+          See all
+          <ArrowRight className="h-3 w-3" />
+        </Link>
+      </div>
+
+      {/* Horizontal scroller — bleeds slightly into the page padding so the
+          last card peeks, signalling there's more to scroll. */}
+      <div className="-mx-5 px-5">
+        <div className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          {featuredReal.map((r) => {
+            const unlocked = isReadingUnlocked(r.id, totalReflections);
+            const remaining = readingsRemainingToUnlock(r.id, totalReflections);
+            return (
+              <div key={r.id} className="snap-start">
+                <ReadingPreviewCard
+                  to={unlocked ? buildTo(r.id) : undefined}
+                  label={r.label}
+                  subtitle={r.subtitle}
+                  cardCount={r.cardCount}
+                  icon={r.icon}
+                  category={r.category}
+                  state={unlocked ? "ready" : "locked"}
+                  unlockIn={remaining}
+                  size="carousel"
+                />
+              </div>
+            );
+          })}
+          {featuredComing.map((m) => (
+            <div key={m.id} className="snap-start">
+              <ReadingPreviewCard
+                label={m.label}
+                subtitle={m.subtitle}
+                cardCount={m.cardCount}
+                icon={m.icon}
+                category={m.category}
+                state="coming-soon"
+                size="carousel"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 };
 
