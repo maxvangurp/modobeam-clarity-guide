@@ -17,6 +17,12 @@ import {
   MOOD_LABELS,
   type MoodSnap,
 } from "@/lib/moodSnapshot";
+import { LifeAreaCard as LifeAreaCardView } from "@/components/LifeAreaCard";
+import {
+  inferLifeAreaFromText,
+  lifeAreaForHouse,
+  type LifeAreaCard as LifeAreaCardType,
+} from "@/data/lifeAreas";
 import { KeepThisCard } from "@/components/KeepThisCard";
 import { NotQuiteIt } from "@/components/NotQuiteIt";
 import { toast } from "sonner";
