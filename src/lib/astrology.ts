@@ -198,6 +198,7 @@ function gmstFromJD(jd: number): number {
 }
 
 // Compute the ascendant (eastern horizon ecliptic longitude).
+// Standard Meeus formula with quadrant correction.
 function ascendantLongitude(
   lst: number, // local sidereal time in degrees
   latitude: number, // degrees
@@ -206,12 +207,18 @@ function ascendantLongitude(
   const ramc = lst * DEG;
   const lat = latitude * DEG;
   const eps = obliquity * DEG;
-  // Meeus eq. (uses the "rising" longitude formula)
   const y = -Math.cos(ramc);
   const x =
     Math.sin(ramc) * Math.cos(eps) + Math.tan(lat) * Math.sin(eps);
   let asc = Math.atan2(y, x) / DEG;
   asc = norm360(asc);
+  // Quadrant correction: ascendant must be in the eastern hemisphere
+  // relative to the MC. If ASC is on the wrong side (i.e. the formula
+  // returned the descendant), flip 180°. The rule: ASC should be such
+  // that (ASC - MC) mod 360 is between 0° and 180° (ASC east of MC).
+  const mc = midheavenLongitude(lst, obliquity);
+  const diff = norm360(asc - mc);
+  if (diff < 0 || diff > 180) asc = norm360(asc + 180);
   return asc;
 }
 
@@ -223,90 +230,15 @@ function midheavenLongitude(lst: number, obliquity: number): number {
   return norm360(mc);
 }
 
-// Placidus house cusps. Returns 12 cusp longitudes [house1..house12].
-// Standard semi-arc method. Falls back gracefully near the poles where
-// Placidus is undefined (|lat| > ~66°): we use equal houses from the
-// ascendant in that case.
-function placidusHouses(
-  lst: number,
-  latitude: number,
-  obliquity: number,
-): number[] {
-  const ascLon = ascendantLongitude(lst, latitude, obliquity);
-  const mc = midheavenLongitude(lst, obliquity);
-
-  // Polar / undefined region — fall back to equal houses from ASC
-  if (Math.abs(latitude) > 66) {
-    return Array.from({ length: 12 }, (_, i) => norm360(ascLon + i * 30));
-  }
-
-  const eps = obliquity * DEG;
-  const lat = latitude * DEG;
-  const ramc = lst; // degrees
-
-  // Helper: compute Placidus intermediate house cusp.
-  // n is the fraction of the semi-arc (1/3 or 2/3); mode chooses houses
-  // 11/12 (above horizon, eastern) vs 2/3 (below horizon, eastern).
-  // We iterate to converge — Placidus has no closed form.
-  const intermediate = (
-    f: number, // fraction of semi-arc (e.g. 1/3 or 2/3)
-    mode: "11" | "12" | "2" | "3",
-  ): number => {
-    // Initial guess: distribute equally between MC/ASC/IC arcs.
-    let H = 0;
-    if (mode === "11") H = ramc + 30;
-    if (mode === "12") H = ramc + 60;
-    if (mode === "2") H = ramc + 120;
-    if (mode === "3") H = ramc + 150;
-    for (let i = 0; i < 12; i++) {
-      const Hr = norm360(H) * DEG;
-      const dec = Math.asin(Math.sin(eps) * Math.sin(Hr));
-      const ad = Math.asin(Math.tan(lat) * Math.tan(dec));
-      let semiArc: number;
-      if (mode === "11" || mode === "12") {
-        semiArc = Math.PI / 2 + ad;
-      } else {
-        semiArc = Math.PI / 2 - ad;
-      }
-      const newH =
-        mode === "11" || mode === "12"
-          ? ramc + (semiArc * f) / DEG
-          : ramc + 180 - (semiArc * f) / DEG;
-      if (Math.abs(norm360(newH) - norm360(H)) < 0.001) {
-        H = newH;
-        break;
-      }
-      H = newH;
-    }
-    const HrFinal = norm360(H) * DEG;
-    const lonRad = Math.atan2(
-      Math.sin(HrFinal),
-      Math.cos(HrFinal) * Math.cos(eps),
-    );
-    return norm360(lonRad / DEG);
-  };
-
-  // The 4 angular cusps are exact:
-  const c1 = ascLon; // ASC = 1st
-  const c10 = mc; // MC = 10th
-  const c7 = norm360(ascLon + 180); // DSC = 7th
-  const c4 = norm360(mc + 180); // IC = 4th
-
-  // Intermediate cusps via Placidus iteration (rough but stable enough
-  // for our symbolic use — we round to the sign anyway).
-  const c11 = intermediate(1 / 3, "11");
-  const c12 = intermediate(2 / 3, "12");
-  const c2 = intermediate(1 / 3, "2");
-  const c3 = intermediate(2 / 3, "3");
-
-  // Opposite cusps:
-  const c5 = norm360(c11 + 180);
-  const c6 = norm360(c12 + 180);
-  const c8 = norm360(c2 + 180);
-  const c9 = norm360(c3 + 180);
-
-  return [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12];
+// Whole Sign houses: the ascendant's *sign* becomes the 1st house cusp
+// (at 0° of that sign), and each subsequent sign is the next house.
+// Widely used in modern astrology, mathematically robust at all latitudes,
+// and a clean fit for our symbolic life-area mapping.
+function wholeSignHouses(ascLon: number): number[] {
+  const startSignIdx = Math.floor(norm360(ascLon) / 30);
+  return Array.from({ length: 12 }, (_, i) => ((startSignIdx + i) % 12) * 30);
 }
+
 
 // ────────────────────────────────────────────────────────────────────────
 // Public chart computation
