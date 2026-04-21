@@ -201,17 +201,136 @@ const Insight = () => {
 
   return (
     <AppShell showBack backTo="/">
-      {/* Header */}
+      {/* Header — tinted by the moment chosen for this reading */}
       <section className="pt-2 pb-6 animate-fade-up">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
-          Your reflection
-        </p>
+        <div className="flex items-center gap-2 mb-2">
+          <p
+            className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground"
+            style={tint ? { color: tintedRing } : undefined}
+          >
+            Your reflection
+          </p>
+          {tint && moment && (
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] border"
+              style={{
+                backgroundColor: tintedSoftBg,
+                borderColor: `hsl(${tint.ring} / 0.35)`,
+                color: tintedRing,
+              }}
+            >
+              <span
+                className="h-1 w-1 rounded-full"
+                style={{ backgroundColor: tintedRing }}
+              />
+              {MOMENT_LABELS[moment]}
+            </span>
+          )}
+        </div>
         {insight.intention && (
           <p className="text-sm italic text-muted-foreground">
             "{insight.intention}"
           </p>
         )}
       </section>
+
+      {/* Cards */}
+      <section className="space-y-3 animate-fade-up [animation-delay:80ms]">
+        {cards.map((card, i) => (
+          <article
+            key={card.id}
+            className="rounded-3xl bg-card/70 backdrop-blur p-5 shadow-soft border"
+            style={
+              tint
+                ? { borderColor: `hsl(${tint.ring} / 0.22)` }
+                : { borderColor: "hsl(var(--border) / 0.6)" }
+            }
+          >
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div>
+                <p
+                  className="text-[10px] uppercase tracking-[0.2em] mb-1"
+                  style={
+                    tint
+                      ? { color: tintedRing }
+                      : { color: "hsl(var(--muted-foreground))" }
+                  }
+                >
+                  {labels[i]} · {card.category}
+                </p>
+                <h3 className="font-display text-xl font-medium">
+                  {card.name}
+                </h3>
+                <p className="text-sm text-muted-foreground italic">
+                  {card.keyword}
+                </p>
+              </div>
+              <div
+                className="h-10 w-10 rounded-full shrink-0"
+                style={{
+                  backgroundImage:
+                    tintedAccentBg ??
+                    "linear-gradient(135deg, hsl(var(--beam-soft)), hsl(var(--beam) / 0.7))",
+                  boxShadow: tintedGlow ?? "var(--shadow-glow)",
+                }}
+              />
+            </div>
+            <p className="text-[15px] leading-relaxed text-foreground/90">
+              {card.shortMeaning}
+            </p>
+            <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+              {card.deeperMeaning}
+            </p>
+          </article>
+        ))}
+      </section>
+
+      {/* The insight layer — emotional pattern lifted up */}
+      {(combined.theme || combined.tension || combined.combined) && (
+        <section className="mt-7 animate-fade-up [animation-delay:160ms]">
+          <div
+            className="rounded-3xl bg-gradient-dawn p-6 shadow-soft border"
+            style={
+              tint
+                ? {
+                    borderColor: `hsl(${tint.ring} / 0.3)`,
+                    boxShadow: `var(--shadow-soft), 0 0 40px hsl(${tint.hsl} / 0.18)`,
+                  }
+                : { borderColor: "hsl(var(--border) / 0.4)" }
+            }
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles
+                className="h-3.5 w-3.5"
+                strokeWidth={1.8}
+                style={tint ? { color: tintedRing } : { color: "hsl(var(--ink-soft))" }}
+              />
+              <h2
+                className="font-display text-[10px] uppercase tracking-[0.25em]"
+                style={tint ? { color: tintedRing } : { color: "hsl(var(--ink-soft))" }}
+              >
+                What's underneath
+              </h2>
+            </div>
+
+            {combined.tension ? (
+              <p className="font-display text-[17px] leading-snug text-foreground">
+                {combined.tension}
+              </p>
+            ) : combined.theme ? (
+              <p className="font-display text-[17px] leading-snug text-foreground">
+                {combined.theme}
+              </p>
+            ) : null}
+
+            {combined.combined && (
+              <p className="mt-4 text-[14px] leading-relaxed text-foreground/80">
+                {combined.combined}
+              </p>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Cards */}
       <section className="space-y-3 animate-fade-up [animation-delay:80ms]">
