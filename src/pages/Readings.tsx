@@ -79,12 +79,13 @@ const Readings = () => {
   const t = total ?? 0;
 
   // Bucket the real readings by group
-  const readingsByGroup = (group: "quick" | "deeper" | "lens"): ReadingType[] =>
+  const readingsByGroup = (group: "quick" | "deeper"): ReadingType[] =>
     READING_TYPES.filter((r) => READING_GROUP[r.id] === group);
 
-  // Bucket coming-soon modes by group
-  const comingByGroup = (group: "quick" | "deeper" | "lens"): ComingSoonMode[] =>
-    COMING_SOON_MODES.filter((m) => m.group === group);
+  // The dedicated "Coming soon" preview list — order matches the spec.
+  const featuredComing: ComingSoonMode[] = COMING_SOON_FEATURED_IDS
+    .map((id) => COMING_SOON_MODES.find((m) => m.id === id))
+    .filter(Boolean) as ComingSoonMode[];
 
   return (
     <AppShell screenMood="reveal">
