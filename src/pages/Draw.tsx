@@ -264,7 +264,11 @@ const Draw = () => {
           {reading.label}
         </p>
         <h1 className="font-display text-2xl font-light text-foreground">
-          {allRevealed ? "Sit with what you see." : "Tap each card when ready."}
+          {shuffling
+            ? "Settling…"
+            : allRevealed
+              ? "Sit with what you see."
+              : "Tap each card when ready."}
         </h1>
         {intention && (
           <p className="mt-3 text-sm text-muted-foreground italic max-w-xs mx-auto">
@@ -273,9 +277,21 @@ const Draw = () => {
         )}
       </div>
 
-      <div className={`${gridClass} animate-fade-up [animation-delay:120ms]`}>
+      <div
+        className={`${gridClass} animate-fade-up [animation-delay:120ms] transition-opacity duration-700`}
+        style={{ opacity: shuffling ? 0.55 : 1 }}
+      >
         {cards.map((card, i) => (
-          <div key={card.id} className="flex flex-col items-center gap-2">
+          <div
+            key={card.id}
+            className="flex flex-col items-center gap-2"
+            style={{
+              transform: shuffling
+                ? `translateY(${(i % 2 === 0 ? -1 : 1) * 4}px) rotate(${(i - (count - 1) / 2) * 1.5}deg)`
+                : "translateY(0) rotate(0deg)",
+              transition: "transform 700ms cubic-bezier(0.32, 0.72, 0, 1)",
+            }}
+          >
             <ReflectionCard
               card={card}
               index={i}
