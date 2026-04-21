@@ -113,7 +113,27 @@ const Draw = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, count]);
 
-  const dealt = resolvedCards ?? cards;
+  const cardsToShow = resolvedCards ?? cards;
+
+  const [revealed, setRevealed] = useState<boolean[]>(
+    Array(count).fill(false),
+  );
+  const [loading, setLoading] = useState(false);
+  const [shuffling, setShuffling] = useState(true);
+
+  useEffect(() => {
+    setShuffling(true);
+    const t = setTimeout(() => setShuffling(false), 1400);
+    return () => clearTimeout(t);
+  }, [type]);
+
+  // When a rare card is revealed, mark it seen so it goes into cooldown.
+  useEffect(() => {
+    if (!rareCardId) return;
+    if (revealed[0]) {
+      import("@/lib/rareCard").then((m) => m.markRareSeen(rareCardId));
+    }
+  }, [rareCardId, revealed]);
 
   const allRevealed = revealed.every(Boolean);
 
