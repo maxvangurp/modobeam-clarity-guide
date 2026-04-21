@@ -17,13 +17,14 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { AppShell } from "@/components/AppShell";
 import { ReflectionCard } from "@/components/ReflectionCard";
 import { LifeAreaGlyph } from "@/components/LifeAreaGlyph";
+import { FocusChip } from "@/components/FocusChip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById, type OracleCard } from "@/data/deck";
 import { getReadingType } from "@/data/readingTypes";
 import { getInsightMoment } from "@/lib/insightMoment";
 import { getMomentTint } from "@/lib/momentTint";
-import { MOMENT_LABELS, isAstroLensEnabled, type MomentNeed } from "@/lib/profile";
+import { MOMENT_LABELS, type MomentNeed } from "@/lib/profile";
 import { haptic } from "@/lib/haptics";
 import { useVerticalSwipe } from "@/hooks/useVerticalSwipe";
 import {
@@ -370,26 +371,13 @@ const Reading = () => {
                 </p>
               )}
 
-              {combined.focus?.label && isAstroLensEnabled() && (
-                <span
-                  className="mt-7 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] border bg-card/40 backdrop-blur"
-                  style={{
-                    borderColor: tint
-                      ? `hsl(${tint.ring} / 0.3)`
-                      : "hsl(var(--border) / 0.6)",
-                    color: tint ? tintedRing : "hsl(var(--ink-soft))",
-                  }}
-                >
-                  <span
-                    className="h-1 w-1 rounded-full"
-                    style={{
-                      backgroundColor: tint
-                        ? tintedRing
-                        : "hsl(var(--ink-soft))",
-                    }}
+              {combined.focus?.label && (
+                <div className="mt-7 flex justify-center">
+                  <FocusChip
+                    label={combined.focus.label}
+                    tintRing={tint ? `hsl(${tint.ring} / 0.5)` : undefined}
                   />
-                  Focus · {combined.focus.label}
-                </span>
+                </div>
               )}
             </div>
           )}

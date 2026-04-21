@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
 import { getSessionId } from "@/lib/session";
-import { recordReflectionSaved, MOMENT_LABELS, isAstroLensEnabled, type MomentNeed } from "@/lib/profile";
+import { recordReflectionSaved, MOMENT_LABELS, type MomentNeed } from "@/lib/profile";
 import { getInsightMoment } from "@/lib/insightMoment";
 import { getMomentTint } from "@/lib/momentTint";
 import { haptic } from "@/lib/haptics";
@@ -18,6 +18,7 @@ import {
   type MoodSnap,
 } from "@/lib/moodSnapshot";
 import { LifeAreaGlyph } from "@/components/LifeAreaGlyph";
+import { FocusChip } from "@/components/FocusChip";
 import {
   inferLifeAreaFromText,
   lifeAreaForFocusKey,
@@ -370,27 +371,11 @@ const Insight = () => {
                   What's underneath
                 </h2>
               </div>
-              {combined.focus?.label && isAstroLensEnabled() && (
-                <span
-                  className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] border bg-card/40 backdrop-blur"
-                  style={{
-                    borderColor: tint
-                      ? `hsl(${tint.ring} / 0.3)`
-                      : "hsl(var(--border) / 0.6)",
-                    color: tint ? tintedRing : "hsl(var(--ink-soft))",
-                  }}
-                  title="A soft life-area lens — never a prediction."
-                >
-                  <span
-                    className="h-1 w-1 rounded-full"
-                    style={{
-                      backgroundColor: tint
-                        ? tintedRing
-                        : "hsl(var(--ink-soft))",
-                    }}
-                  />
-                  Focus · {combined.focus.label}
-                </span>
+              {combined.focus?.label && (
+                <FocusChip
+                  label={combined.focus.label}
+                  tintRing={tint ? `hsl(${tint.ring} / 0.5)` : undefined}
+                />
               )}
             </div>
 
