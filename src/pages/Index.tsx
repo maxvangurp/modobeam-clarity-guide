@@ -36,6 +36,7 @@ import {
 } from "@/lib/weeklySynthesis";
 import { checkReturnAndStamp } from "@/lib/returnGap";
 import { haptic } from "@/lib/haptics";
+import { SunGlyphChip } from "@/components/SunGlyphChip";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
