@@ -234,6 +234,15 @@ const Index = () => {
           </div>
         )}
 
+        {/* Weekly synthesis — once per week, only when there's enough material */}
+        {weeklyOffer && !weeklyDismissed && (
+          <WeeklySynthesisCard
+            weekId={weeklyOffer.weekId}
+            recent={weeklyOffer.recent}
+            onDismiss={() => setWeeklyDismissed(true)}
+          />
+        )}
+
         <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground mt-4">
           Take a breath.
           <br />
@@ -321,7 +330,10 @@ const Index = () => {
             return (
               <button
                 key={id}
-                onClick={() => setMoment(selected ? null : id)}
+                onClick={() => {
+                  haptic("select");
+                  setMoment(selected ? null : id);
+                }}
                 style={
                   selected
                     ? {
@@ -343,9 +355,22 @@ const Index = () => {
             );
           })}
         </div>
-        <p className="text-[11px] text-muted-foreground/70 mt-2">
-          Optional — shapes this reading only.
-        </p>
+        <div className="mt-2 flex items-center justify-between gap-3">
+          <p className="text-[11px] text-muted-foreground/70">
+            Optional — shapes this reading only.
+          </p>
+          {/* Soft escape hatch for hard days — no card, no ask, no streak penalty */}
+          <button
+            onClick={() => {
+              haptic("warm");
+              setBreathing(true);
+            }}
+            className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground/80 hover:text-foreground transition-smooth"
+          >
+            <Pause className="h-3 w-3" strokeWidth={1.6} />
+            Just be here
+          </button>
+        </div>
       </section>
 
       {/* 3. Primary action — one clear CTA */}
