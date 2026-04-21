@@ -13,6 +13,7 @@ import {
   shouldShowPreferencesNudge,
   type MomentNeed,
 } from "@/lib/profile";
+import { getDailyQuote, msUntilNextMidnight } from "@/lib/dailyQuote";
 import { Flame, Layers, Sparkles, X } from "lucide-react";
 
 interface LastReflection {
@@ -48,6 +49,13 @@ const Index = () => {
     count: 0,
     savedToday: false,
   });
+  const [quote, setQuote] = useState(() => getDailyQuote());
+
+  // Refresh the quote at local midnight if the app stays open
+  useEffect(() => {
+    const t = setTimeout(() => setQuote(getDailyQuote()), msUntilNextMidnight());
+    return () => clearTimeout(t);
+  }, [quote]);
 
   useEffect(() => {
     if (!isOnboardingComplete()) {
@@ -169,6 +177,23 @@ const Index = () => {
             <span className="text-foreground/80 italic">{lastCardName}</span>.
           </p>
         )}
+      </section>
+
+      {/* Daily quote — quiet, rotates each day */}
+      <section className="mb-8 animate-fade-up [animation-delay:80ms]">
+        <figure className="rounded-3xl bg-gradient-dawn border border-border/40 px-6 py-5 shadow-soft">
+          <p className="text-[11px] uppercase tracking-[0.25em] text-ink-soft/80 mb-2">
+            Today
+          </p>
+          <blockquote className="font-display text-[16px] leading-snug text-foreground/95 italic">
+            "{quote.text}"
+          </blockquote>
+          {quote.author && (
+            <figcaption className="text-[12px] text-muted-foreground mt-2">
+              — {quote.author}
+            </figcaption>
+          )}
+        </figure>
       </section>
 
       {/* 2. Moment check-in — light, optional, inline */}
