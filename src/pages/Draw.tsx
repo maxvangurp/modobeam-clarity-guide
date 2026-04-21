@@ -11,6 +11,7 @@ import { getSessionId } from "@/lib/session";
 import {
   getProfile,
   GUIDANCE_LABELS,
+  isAstroLensEnabled,
   LOOKING_FOR_LABELS,
   markMomentPromptShown,
   MOMENT_LABELS,
