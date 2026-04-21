@@ -197,12 +197,22 @@ const Insight = () => {
 
   const skipJournal = () => {
     setSkippedJournal(true);
+    // No auto-scroll — let the mood snapshot affordance bloom in place
+    // and only nudge after they tap (or skip) it.
+  };
+
+  const pickMood = (m: MoodSnap) => {
+    if (!id) return;
+    haptic("select");
+    recordMood(id, m);
+    setSavedMood(m);
+    toast.success("Noted softly");
     setTimeout(() => {
       nextStepsRef.current?.scrollIntoView({
         behavior: "smooth",
         block: "start",
       });
-    }, 60);
+    }, 80);
   };
 
   if (loading || !insight) {
