@@ -125,6 +125,36 @@ const Preferences = () => {
         </p>
       </section>
 
+      {/* Constellation — long-arc portrait of presence over time */}
+      {insights.length >= 3 && (
+        <section className="mb-2 animate-fade-up">
+          <div className="rounded-3xl bg-card/50 backdrop-blur border border-border/50 px-5 pt-5 pb-3 shadow-soft">
+            <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+              Your field of presence
+            </p>
+            <Constellation insights={insights} className="mt-2 -mx-1" />
+            <p className="text-[11px] text-muted-foreground/70 mt-1 italic">
+              {insights.length} {insights.length === 1 ? "moment" : "moments"} —
+              gently arranged.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* "How I'm starting to know you" — quiet AI-observed note */}
+      {knowYouText && (
+        <section className="mb-2 animate-fade-up">
+          <div className="rounded-3xl bg-gradient-dawn border border-border/50 px-5 py-4 shadow-soft">
+            <p className="text-[11px] uppercase tracking-[0.25em] text-ink-soft/80 mb-2">
+              How I'm starting to know you
+            </p>
+            <p className="text-[14px] leading-relaxed text-foreground/90 italic">
+              {knowYouText}
+            </p>
+          </div>
+        </section>
+      )}
+
       <Section
         kicker="How you use it"
         title="What brings you here, generally?"
