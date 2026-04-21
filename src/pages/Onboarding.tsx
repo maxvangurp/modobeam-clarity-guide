@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
 import { ChoiceCard } from "@/components/onboarding/ChoiceCard";
+import {
+  BirthDetailsForm,
+  type BirthDetails,
+} from "@/components/onboarding/BirthDetailsForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,7 +21,7 @@ import {
   type UsageMode,
 } from "@/lib/profile";
 
-const TOTAL_STEPS = 5;
+const TOTAL_STEPS = 6;
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -29,6 +33,13 @@ const Onboarding = () => {
   const [rhythm, setRhythm] = useState<Rhythm | null>(null);
   const [firstName, setFirstName] = useState("");
   const [birthday, setBirthday] = useState("");
+  const [birth, setBirth] = useState<BirthDetails>({
+    birthTime: null,
+    birthPlace: null,
+    birthLat: null,
+    birthLon: null,
+    birthTzOffsetMin: null,
+  });
 
   const next = () => setStep((s) => Math.min(s + 1, TOTAL_STEPS));
   const back = () => setStep((s) => Math.max(s - 1, 1));
@@ -41,6 +52,11 @@ const Onboarding = () => {
       rhythm: rhythm ?? undefined,
       firstName: firstName.trim() || undefined,
       birthday: birthday || undefined,
+      birthTime: birth.birthTime ?? null,
+      birthPlace: birth.birthPlace ?? null,
+      birthLat: birth.birthLat ?? null,
+      birthLon: birth.birthLon ?? null,
+      birthTzOffsetMin: birth.birthTzOffsetMin ?? null,
     });
     markOnboardingComplete();
     // Send them straight into a soft first check-in
@@ -52,7 +68,8 @@ const Onboarding = () => {
     (step === 2 && !!lookingFor) ||
     (step === 3 && !!guidance) ||
     (step === 4 && !!rhythm) ||
-    step === 5;
+    step === 5 ||
+    step === 6;
 
   return (
     <OnboardingShell
