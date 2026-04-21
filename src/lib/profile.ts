@@ -108,8 +108,21 @@ export interface UserProfile {
   birthLat?: number | null;
   birthLon?: number | null;
   birthTzOffsetMin?: number | null; // historical offset at birth moment
+  // Optional astrology lens toggle. When false, the app ignores any saved
+  // birth details for tone/focus shaping. Birth details are preserved so the
+  // user can re-enable later without re-entering anything.
+  astroLensEnabled?: boolean;
   createdAt?: string;
   updatedAt?: string;
+}
+
+// Whether the astrology lens should currently shape reflections + UI.
+// Defaults to true when the user has provided a birthday — keeping the
+// existing behavior for anyone who set it up before this toggle existed.
+export function isAstroLensEnabled(profile?: UserProfile | null): boolean {
+  const p = profile ?? getProfile();
+  if (!p?.birthday) return false;
+  return p.astroLensEnabled !== false;
 }
 
 export function getProfile(): UserProfile | null {
