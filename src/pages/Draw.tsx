@@ -210,6 +210,15 @@ const Draw = () => {
             Change
           </button>
         </div>
+      {!fromOnboarding && !moment && !allRevealed && (
+        <div className="mb-6 flex justify-end animate-fade-up">
+          <button
+            onClick={() => setShowMoment(true)}
+            className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-smooth"
+          >
+            Set a moment
+          </button>
+        </div>
       )}
       <div className="text-center pt-2 pb-8 animate-fade-up">
         <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-3">
