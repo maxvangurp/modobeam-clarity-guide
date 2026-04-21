@@ -37,6 +37,66 @@ const Preferences = () => {
   const [firstName, setFirstName] = useState(existing.firstName ?? "");
   const [birthday, setBirthday] = useState(existing.birthday ?? "");
 
+  const [insights, setInsights] = useState<InsightLite[]>([]);
+  const [knowYouText, setKnowYouText] = useState<string>(
+    () => readKnowYou()?.text ?? "",
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const recent = await fetchRecentInsights(60);
+      if (cancelled) return;
+      setInsights(recent);
+
+      // Refresh the AI's "how I'm starting to know you" note every ~10 reflections.
+      if (shouldRegenerate(recent.length)) {
+        try {
+          const reflections = recent.slice(0, 20).map((r) => {
+            let theme = "";
+            let tension = "";
+            if (r.combined_insight) {
+              try {
+                const p = JSON.parse(r.combined_insight);
+                theme = p.theme ?? "";
+                tension = p.tension ?? "";
+              } catch {
+                /* noop */
+              }
+            }
+            return {
+              date: r.created_at,
+              draw_type: r.draw_type,
+              cards: r.cards.map((c) => c.name),
+              theme,
+              tension,
+            };
+          });
+          const { data, error } = await supabase.functions.invoke("know-you", {
+            body: { reflections, firstName: existing.firstName ?? null },
+          });
+          if (!error) {
+            const note = (data as { note?: string })?.note?.trim() ?? "";
+            if (note) {
+              writeKnowYou({
+                text: note,
+                generatedAtCount: recent.length,
+                generatedAt: new Date().toISOString(),
+              });
+              setKnowYouText(note);
+            }
+          }
+        } catch {
+          /* silent — note is a quiet bonus */
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const save = () => {
     saveProfile({
       usage: usage ?? undefined,
