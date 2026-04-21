@@ -11,6 +11,7 @@ import { getSessionId } from "@/lib/session";
 import {
   getProfile,
   GUIDANCE_LABELS,
+  isAstroLensEnabled,
   LOOKING_FOR_LABELS,
   markMomentPromptShown,
   MOMENT_LABELS,
@@ -246,6 +247,7 @@ const Draw = () => {
           priorThreads,
           dailyQuote,
           astroContext: (() => {
+            if (!isAstroLensEnabled(profile)) return null;
             if (!profile?.birthday) return null;
             const chart = getCachedChart({
               date: profile.birthday,

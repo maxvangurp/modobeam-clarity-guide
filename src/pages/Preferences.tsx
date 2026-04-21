@@ -8,6 +8,7 @@ import {
 } from "@/components/onboarding/BirthDetailsForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Constellation } from "@/components/Constellation";
 import { toast } from "sonner";
 import {
@@ -40,6 +41,9 @@ const Preferences = () => {
   const [rhythm, setRhythm] = useState<Rhythm | null>(existing.rhythm ?? null);
   const [firstName, setFirstName] = useState(existing.firstName ?? "");
   const [birthday, setBirthday] = useState(existing.birthday ?? "");
+  const [astroEnabled, setAstroEnabled] = useState<boolean>(
+    existing.astroLensEnabled !== false,
+  );
   const [birth, setBirth] = useState<BirthDetails>({
     birthTime: existing.birthTime ?? null,
     birthPlace: existing.birthPlace ?? null,
@@ -121,6 +125,7 @@ const Preferences = () => {
       birthLat: birth.birthLat ?? null,
       birthLon: birth.birthLon ?? null,
       birthTzOffsetMin: birth.birthTzOffsetMin ?? null,
+      astroLensEnabled: astroEnabled,
     });
     toast.success("Preferences updated");
     navigate("/");
@@ -272,26 +277,60 @@ const Preferences = () => {
           A subtle layer that adds nuance to reflections. Never used to
           predict — only to deepen the lens. Skip whatever doesn't fit.
         </p>
-        <BirthDetailsForm
-          hideBirthday
-          value={{
-            birthday: birthday || undefined,
-            birthTime: birth.birthTime,
-            birthPlace: birth.birthPlace,
-            birthLat: birth.birthLat,
-            birthLon: birth.birthLon,
-            birthTzOffsetMin: birth.birthTzOffsetMin,
-          }}
-          onChange={(next) =>
-            setBirth({
-              birthTime: next.birthTime ?? null,
-              birthPlace: next.birthPlace ?? null,
-              birthLat: next.birthLat ?? null,
-              birthLon: next.birthLon ?? null,
-              birthTzOffsetMin: next.birthTzOffsetMin ?? null,
-            })
+
+        {/* Toggle — turn the lens off without losing what you've entered */}
+        <div className="rounded-2xl bg-card/50 backdrop-blur border border-border/50 px-4 py-3.5 mb-5 flex items-start gap-4">
+          <div className="flex-1 min-w-0">
+            <label
+              htmlFor="astro-lens-toggle"
+              className="block text-[14px] text-foreground font-medium cursor-pointer"
+            >
+              Use the astrology lens
+            </label>
+            <p className="text-[12px] text-muted-foreground leading-relaxed mt-1">
+              {astroEnabled
+                ? "On — your details quietly tint tone and what gets noticed."
+                : "Off — your birth details are kept, just not used right now."}
+            </p>
+          </div>
+          <Switch
+            id="astro-lens-toggle"
+            checked={astroEnabled}
+            onCheckedChange={setAstroEnabled}
+            aria-label="Toggle astrology lens"
+            className="mt-0.5"
+          />
+        </div>
+
+        <div
+          className={
+            astroEnabled
+              ? ""
+              : "opacity-60 pointer-events-none transition-opacity"
           }
-        />
+          aria-hidden={!astroEnabled}
+        >
+          <BirthDetailsForm
+            hideBirthday
+            value={{
+              birthday: birthday || undefined,
+              birthTime: birth.birthTime,
+              birthPlace: birth.birthPlace,
+              birthLat: birth.birthLat,
+              birthLon: birth.birthLon,
+              birthTzOffsetMin: birth.birthTzOffsetMin,
+            }}
+            onChange={(next) =>
+              setBirth({
+                birthTime: next.birthTime ?? null,
+                birthPlace: next.birthPlace ?? null,
+                birthLat: next.birthLat ?? null,
+                birthLon: next.birthLon ?? null,
+                birthTzOffsetMin: next.birthTzOffsetMin ?? null,
+              })
+            }
+          />
+        </div>
       </Section>
 
       <div className="mt-10 mb-4">

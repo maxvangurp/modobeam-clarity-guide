@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
 import { getSessionId } from "@/lib/session";
-import { recordReflectionSaved, MOMENT_LABELS, type MomentNeed } from "@/lib/profile";
+import { recordReflectionSaved, MOMENT_LABELS, isAstroLensEnabled, type MomentNeed } from "@/lib/profile";
 import { getInsightMoment } from "@/lib/insightMoment";
 import { getMomentTint } from "@/lib/momentTint";
 import { haptic } from "@/lib/haptics";
@@ -348,7 +348,7 @@ const Insight = () => {
                   What's underneath
                 </h2>
               </div>
-              {combined.focus?.label && (
+              {combined.focus?.label && isAstroLensEnabled() && (
                 <span
                   className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] border bg-card/40 backdrop-blur"
                   style={{
