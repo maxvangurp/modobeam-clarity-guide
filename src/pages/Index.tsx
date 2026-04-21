@@ -7,12 +7,13 @@ import { getSessionId } from "@/lib/session";
 import {
   dismissPreferencesNudge,
   getProfile,
+  getStreak,
   isOnboardingComplete,
   MOMENT_LABELS,
   shouldShowPreferencesNudge,
   type MomentNeed,
 } from "@/lib/profile";
-import { Layers, Sparkles, X } from "lucide-react";
+import { Flame, Layers, Sparkles, X } from "lucide-react";
 
 interface LastReflection {
   id: string;
