@@ -48,11 +48,28 @@
     --gradient-card: linear-gradient(145deg, hsl(40 30% 98%) 0%, hsl(211 25% 92%) 100%);
     --gradient-card-back: linear-gradient(135deg, hsl(218 35% 18%) 0%, hsl(211 35% 28%) 50%, hsl(211 40% 22%) 100%);
     --gradient-beam: radial-gradient(circle at 50% 0%, hsl(211 60% 80% / 0.5) 0%, transparent 70%);
-    --gradient-button: linear-gradient(135deg, hsl(218 35% 18%) 0%, hsl(211 30% 30%) 100%);
+    /* Richer button — deep indigo to dusty blue, with a hint of violet sheen */
+    --gradient-button: linear-gradient(135deg, hsl(232 45% 22%) 0%, hsl(211 38% 32%) 55%, hsl(245 30% 30%) 100%);
+    --gradient-button-hover: linear-gradient(135deg, hsl(232 50% 26%) 0%, hsl(211 42% 36%) 55%, hsl(245 34% 34%) 100%);
+
+    /* Screen-mood gradients — each surface gets its own quiet atmosphere */
+    /* Draw / anticipation — deep indigo wash drifting into the page */
+    --gradient-mood-draw: radial-gradient(120% 80% at 50% 0%, hsl(232 40% 28% / 0.18) 0%, transparent 55%),
+                          radial-gradient(80% 60% at 80% 100%, hsl(245 35% 35% / 0.14) 0%, transparent 60%);
+    /* Reveal / clarity — soft silver-blue bloom */
+    --gradient-mood-reveal: radial-gradient(110% 70% at 50% 30%, hsl(211 65% 80% / 0.22) 0%, transparent 60%),
+                            radial-gradient(70% 50% at 20% 90%, hsl(200 50% 78% / 0.16) 0%, transparent 65%);
+    /* Reflection / journaling — lavender haze */
+    --gradient-mood-reflect: radial-gradient(110% 70% at 80% 20%, hsl(275 40% 78% / 0.22) 0%, transparent 60%),
+                             radial-gradient(80% 60% at 10% 90%, hsl(255 35% 80% / 0.16) 0%, transparent 65%);
+    /* History / patterns — cool blue-gray with a quiet violet whisper */
+    --gradient-mood-history: radial-gradient(120% 80% at 30% 0%, hsl(218 35% 75% / 0.20) 0%, transparent 60%),
+                             radial-gradient(80% 60% at 90% 80%, hsl(245 28% 75% / 0.14) 0%, transparent 65%);
 
     --shadow-soft: 0 1px 2px hsl(218 30% 14% / 0.04), 0 8px 24px hsl(218 30% 14% / 0.06);
     --shadow-card: 0 4px 16px hsl(218 30% 14% / 0.08), 0 24px 48px hsl(218 30% 14% / 0.12);
     --shadow-glow: 0 0 60px hsl(211 60% 70% / 0.35);
+    --shadow-cta: 0 1px 2px hsl(232 50% 14% / 0.18), 0 12px 28px hsl(232 50% 14% / 0.22), 0 0 32px hsl(245 40% 35% / 0.18);
 
     --transition-smooth: cubic-bezier(0.32, 0.72, 0, 1);
 
@@ -119,10 +136,18 @@
   .bg-gradient-card-back { background-image: var(--gradient-card-back); }
   .bg-gradient-beam { background-image: var(--gradient-beam); }
   .bg-gradient-button { background-image: var(--gradient-button); }
+  .bg-gradient-button:hover { background-image: var(--gradient-button-hover); }
+
+  /* Per-screen mood washes — layered above the base body gradient */
+  .bg-mood-draw { background-image: var(--gradient-mood-draw); }
+  .bg-mood-reveal { background-image: var(--gradient-mood-reveal); }
+  .bg-mood-reflect { background-image: var(--gradient-mood-reflect); }
+  .bg-mood-history { background-image: var(--gradient-mood-history); }
 
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-cta { box-shadow: var(--shadow-cta); }
 
   .transition-smooth { transition: all 0.5s var(--transition-smooth); }
 
@@ -196,6 +221,16 @@
   0% { transform: scale(1); }
   100% { transform: scale(1.06); }
 }
+@keyframes color-bloom {
+  0% { opacity: 0; transform: scale(0.92); }
+  60% { opacity: 1; transform: scale(1.02); }
+  100% { opacity: 0.6; transform: scale(1); }
+}
+@keyframes save-glow {
+  0% { box-shadow: 0 0 0 0 hsl(180 50% 70% / 0.0); }
+  40% { box-shadow: 0 0 0 8px hsl(180 50% 70% / 0.18); }
+  100% { box-shadow: 0 0 0 0 hsl(180 50% 70% / 0.0); }
+}
 
 .animate-fade-in { animation: fade-in 0.6s var(--transition-smooth) both; }
 .animate-fade-up { animation: fade-up 0.7s var(--transition-smooth) both; }
@@ -209,6 +244,8 @@
 .animate-gentle-breathe { animation: gentle-breathe 6s ease-in-out infinite; }
 .animate-ambient-drift { animation: ambient-drift 60s ease-in-out infinite; will-change: transform; }
 .animate-hold-rise { animation: hold-rise 0.45s var(--transition-smooth) forwards; }
+.animate-color-bloom { animation: color-bloom 1.6s var(--transition-smooth) both; }
+.animate-save-glow { animation: save-glow 1.6s ease-out; }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-card-breathe,
@@ -220,7 +257,9 @@
   .animate-soft-glow,
   .animate-gentle-breathe,
   .animate-ambient-drift,
-  .animate-hold-rise {
+  .animate-hold-rise,
+  .animate-color-bloom,
+  .animate-save-glow {
     animation: none !important;
   }
 }

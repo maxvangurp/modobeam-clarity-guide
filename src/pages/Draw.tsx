@@ -184,7 +184,7 @@ const Draw = () => {
 
   if (showMoment) {
     return (
-      <AppShell showBack backTo="/" ambientMoment={moment}>
+      <AppShell showBack backTo="/" ambientMoment={moment} screenMood="draw">
         <div className="pt-4">
           <MomentCheckIn
             value={moment}
@@ -318,7 +318,7 @@ const Draw = () => {
           : "grid grid-cols-3 gap-2 justify-items-center";
 
   return (
-    <AppShell showBack backTo="/" ambientMoment={moment}>
+    <AppShell showBack backTo="/" ambientMoment={moment} screenMood={allRevealed ? "reveal" : "draw"}>
       {fromOnboarding && profile && !allRevealed && (
         <div className="mb-6 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-5 animate-fade-up">
           <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
@@ -459,7 +459,7 @@ const Draw = () => {
             size="lg"
             onClick={continueToInsight}
             disabled={loading}
-            className="rounded-full bg-gradient-button text-primary-foreground px-8 shadow-soft min-w-[200px]"
+            className="rounded-full bg-gradient-button text-primary-foreground px-8 shadow-cta min-w-[200px] hover:scale-[1.01] active:scale-[0.99] transition-transform"
           >
             {loading ? (
               <>

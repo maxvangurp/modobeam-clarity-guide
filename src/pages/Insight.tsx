@@ -19,6 +19,7 @@ import {
 } from "@/lib/moodSnapshot";
 import { LifeAreaGlyph } from "@/components/LifeAreaGlyph";
 import { FocusChip } from "@/components/FocusChip";
+import { getCategoryAccent } from "@/lib/categoryAccent";
 import {
   inferLifeAreaFromText,
   lifeAreaForFocusKey,
@@ -258,7 +259,7 @@ const Insight = () => {
   const showNextSteps = saved || skippedJournal;
 
   return (
-    <AppShell showBack backTo="/">
+    <AppShell showBack backTo="/" screenMood="reflect">
       {/* Header — tinted by the moment chosen for this reading */}
       <section className="pt-2 pb-6 animate-fade-up">
         <div className="flex items-center gap-2 mb-2">
@@ -294,53 +295,58 @@ const Insight = () => {
 
       {/* Cards */}
       <section className="space-y-3 animate-fade-up [animation-delay:80ms]">
-        {cards.map((card, i) => (
-          <article
-            key={card.id}
-            className="rounded-3xl bg-card/70 backdrop-blur p-5 shadow-soft border"
-            style={
-              tint
-                ? { borderColor: `hsl(${tint.ring} / 0.22)` }
-                : { borderColor: "hsl(var(--border) / 0.6)" }
-            }
-          >
-            <div className="flex items-start justify-between gap-3 mb-3">
-              <div>
-                <p
-                  className="text-[10px] uppercase tracking-[0.2em] mb-1"
-                  style={
-                    tint
-                      ? { color: tintedRing }
-                      : { color: "hsl(var(--muted-foreground))" }
-                  }
-                >
-                  {labels[i]} · {card.category}
-                </p>
-                <h3 className="font-display text-xl font-medium">
-                  {card.name}
-                </h3>
-                <p className="text-sm text-muted-foreground italic">
-                  {card.keyword}
-                </p>
+        {cards.map((card, i) => {
+          const accent = getCategoryAccent(card.category);
+          // The orb on each card leans on the card's own category accent.
+          // The moment tint, when present, gently re-tones the border.
+          const orbBg = `linear-gradient(135deg, hsl(${accent.bg}) 0%, hsl(${accent.hsl}) 100%)`;
+          const orbGlow = `0 0 24px hsl(${accent.hsl} / 0.32)`;
+          return (
+            <article
+              key={card.id}
+              className="rounded-3xl bg-card/70 backdrop-blur p-5 shadow-soft border"
+              style={
+                tint
+                  ? { borderColor: `hsl(${tint.ring} / 0.22)` }
+                  : { borderColor: `hsl(${accent.ring} / 0.18)` }
+              }
+            >
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div>
+                  <p
+                    className="text-[10px] uppercase tracking-[0.2em] mb-1 inline-flex items-center gap-1.5"
+                    style={{ color: `hsl(${accent.ring})` }}
+                  >
+                    <span
+                      className="h-1 w-1 rounded-full"
+                      style={{ backgroundColor: `hsl(${accent.hsl})` }}
+                    />
+                    {labels[i]} · {card.category}
+                  </p>
+                  <h3 className="font-display text-xl font-medium">
+                    {card.name}
+                  </h3>
+                  <p className="text-sm text-muted-foreground italic">
+                    {card.keyword}
+                  </p>
+                </div>
+                <div
+                  className="h-10 w-10 rounded-full shrink-0"
+                  style={{
+                    backgroundImage: orbBg,
+                    boxShadow: orbGlow,
+                  }}
+                />
               </div>
-              <div
-                className="h-10 w-10 rounded-full shrink-0"
-                style={{
-                  backgroundImage:
-                    tintedAccentBg ??
-                    "linear-gradient(135deg, hsl(var(--beam-soft)), hsl(var(--beam) / 0.7))",
-                  boxShadow: tintedGlow ?? "var(--shadow-glow)",
-                }}
-              />
-            </div>
-            <p className="text-[15px] leading-relaxed text-foreground/90">
-              {card.shortMeaning}
-            </p>
-            <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-              {card.deeperMeaning}
-            </p>
-          </article>
-        ))}
+              <p className="text-[15px] leading-relaxed text-foreground/90">
+                {card.shortMeaning}
+              </p>
+              <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+                {card.deeperMeaning}
+              </p>
+            </article>
+          );
+        })}
       </section>
 
       {/* The insight layer — emotional pattern lifted up */}
@@ -541,7 +547,9 @@ const Insight = () => {
           <Button
             onClick={saveJournal}
             disabled={!journal.trim() || saving || saved}
-            className="rounded-full bg-gradient-button text-primary-foreground px-6"
+            className={`rounded-full bg-gradient-button text-primary-foreground px-6 shadow-cta hover:scale-[1.01] active:scale-[0.99] transition-transform ${
+              saved ? "animate-save-glow" : ""
+            }`}
           >
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin" />

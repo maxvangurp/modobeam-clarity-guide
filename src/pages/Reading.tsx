@@ -230,7 +230,7 @@ const Reading = () => {
     cards.flatMap((c) => c.prompts ?? []).find((p) => !!p) ?? "";
 
   return (
-    <AppShell showBack backTo="/" ambientMoment={moment}>
+    <AppShell showBack backTo="/" ambientMoment={moment} screenMood="reveal">
       <div
         {...swipe}
         className="flex flex-col min-h-[78vh] select-none touch-pan-y"
@@ -442,7 +442,7 @@ const Reading = () => {
           <Button
             size="lg"
             onClick={handleCta}
-            className="rounded-full bg-gradient-button text-primary-foreground px-7 shadow-soft min-w-[200px]"
+            className="rounded-full bg-gradient-button text-primary-foreground px-7 shadow-cta min-w-[200px] hover:scale-[1.01] active:scale-[0.99] transition-transform"
           >
             {ctaCopy}
             {isLast ? (
