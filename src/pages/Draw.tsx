@@ -127,6 +127,11 @@ const Draw = () => {
   const continueToInsight = async () => {
     setLoading(true);
     try {
+      // Pull the user's recent threads so the AI can quietly notice when
+      // today's reading echoes something they sat with before.
+      const recent = await fetchRecentInsights(3);
+      const priorThreads = buildPriorThreads(recent, 3);
+
       const { data, error } = await supabase.functions.invoke("reflect", {
         body: {
           intention,
@@ -158,6 +163,7 @@ const Draw = () => {
                 label: MOMENT_LABELS[moment],
               }
             : null,
+          priorThreads,
         },
       });
 
