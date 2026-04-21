@@ -2,26 +2,27 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { getSessionId } from "@/lib/session";
 import {
   dismissPreferencesNudge,
   getProfile,
   getStreak,
   isOnboardingComplete,
-  MOMENT_LABELS,
   shouldShowPreferencesNudge,
   type MomentNeed,
 } from "@/lib/profile";
 import { getDailyQuote, msUntilNextMidnight } from "@/lib/dailyQuote";
-import { Flame, Layers, Sparkles, X } from "lucide-react";
-
-interface LastReflection {
-  id: string;
-  draw_type: string;
-  cards: { id: string; name: string }[];
-  created_at: string;
-}
+import {
+  detectRecentThemes,
+  dismissSuggestion,
+  fetchRecentInsights,
+  markSuggestionShown,
+  pickSuggestion,
+  shouldShowSuggestion,
+  type InsightLite,
+  type ThemeInsight,
+} from "@/lib/progression";
+import { getReadingType, type ReadingType } from "@/data/readingTypes";
+import { Flame, Layers, Sparkles, Waypoints, X } from "lucide-react";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
@@ -31,7 +32,6 @@ const MOMENT_ORDER: MomentNeed[] = [
   "reflect",
 ];
 
-// Short, tappable labels — keep them tight for chip layout
 const MOMENT_CHIP: Record<MomentNeed, string> = {
   clarity: "Clarity",
   calm: "Calm",
@@ -43,13 +43,16 @@ const MOMENT_CHIP: Record<MomentNeed, string> = {
 const Index = () => {
   const navigate = useNavigate();
   const [showNudge, setShowNudge] = useState(false);
-  const [last, setLast] = useState<LastReflection | null>(null);
+  const [insights, setInsights] = useState<InsightLite[]>([]);
   const [moment, setMoment] = useState<MomentNeed | null>(null);
   const [streak, setStreak] = useState<{ count: number; savedToday: boolean }>({
     count: 0,
     savedToday: false,
   });
   const [quote, setQuote] = useState(() => getDailyQuote());
+  const [suggestion, setSuggestion] = useState<ReadingType | null>(null);
+  const [themes, setThemes] = useState<ThemeInsight[]>([]);
+  const [suggestionDismissed, setSuggestionDismissed] = useState(false);
 
   // Refresh the quote at local midnight if the app stays open
   useEffect(() => {
@@ -65,23 +68,26 @@ const Index = () => {
     setShowNudge(shouldShowPreferencesNudge());
     setStreak(getStreak());
 
-    // Fetch the most recent reflection for continuity ("Last time you reflected on…")
     (async () => {
-      const session_id = getSessionId();
-      const { data } = await supabase
-        .from("insights")
-        .select("id, draw_type, cards, created_at")
-        .eq("session_id", session_id)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      if (data) setLast(data as unknown as LastReflection);
+      const recent = await fetchRecentInsights(14);
+      setInsights(recent);
+
+      // Pattern awareness — recurring themes across last week of reflections
+      setThemes(detectRecentThemes(recent));
+
+      // Suggestion — surface a reading they've just unlocked but haven't tried
+      const sug = pickSuggestion(recent);
+      if (sug && shouldShowSuggestion(sug)) {
+        setSuggestion(sug);
+        markSuggestionShown(sug.id);
+      }
     })();
   }, [navigate]);
 
   const profile = getProfile();
-
+  const last = insights[0] ?? null;
   const isReturning = !!last;
+
   const greeting = useMemo(() => {
     if (profile?.firstName) {
       return isReturning
@@ -92,6 +98,7 @@ const Index = () => {
   }, [profile?.firstName, isReturning]);
 
   const lastCardName = last?.cards?.[0]?.name?.toLowerCase();
+  const lastReading = last ? getReadingType(last.draw_type) : null;
 
   const startDaily = () => {
     const params = new URLSearchParams();
@@ -103,6 +110,13 @@ const Index = () => {
     const params = new URLSearchParams();
     if (moment) params.set("moment", moment);
     navigate(`/draw/three${params.toString() ? `?${params}` : ""}`);
+  };
+
+  const startSuggestion = () => {
+    if (!suggestion) return;
+    const params = new URLSearchParams();
+    if (moment) params.set("moment", moment);
+    navigate(`/draw/${suggestion.id}${params.toString() ? `?${params}` : ""}`);
   };
 
   return (
@@ -154,9 +168,7 @@ const Index = () => {
             >
               <Flame
                 className={`h-3 w-3 ${
-                  streak.savedToday
-                    ? "text-beam"
-                    : "text-muted-foreground/60"
+                  streak.savedToday ? "text-beam" : "text-muted-foreground/60"
                 }`}
                 strokeWidth={1.8}
               />
@@ -171,11 +183,43 @@ const Index = () => {
           <br />
           <span className="font-medium italic">Begin</span> when you're ready.
         </h1>
-        {lastCardName && (
+
+        {/* Continuity: link back to last reflection */}
+        {last && lastCardName && (
           <p className="text-[13px] text-muted-foreground mt-4 leading-relaxed">
             Last time you reflected on{" "}
-            <span className="text-foreground/80 italic">{lastCardName}</span>.
+            <span className="text-foreground/80 italic">{lastCardName}</span>
+            {" — "}
+            <Link
+              to={`/insight/${last.id}`}
+              className="underline underline-offset-4 decoration-muted-foreground/40 hover:text-foreground hover:decoration-foreground transition-smooth"
+            >
+              return to it
+            </Link>
+            .
           </p>
+        )}
+
+        {/* Pattern awareness — recurring themes across recent reflections */}
+        {themes.length > 0 && (
+          <div className="mt-4 inline-flex items-start gap-2 rounded-2xl bg-card/40 backdrop-blur border border-border/40 px-3.5 py-2.5">
+            <Waypoints
+              className="h-3.5 w-3.5 text-muted-foreground/70 mt-0.5 shrink-0"
+              strokeWidth={1.8}
+            />
+            <p className="text-[12px] text-foreground/80 leading-relaxed">
+              Lately you've been moving around{" "}
+              {themes.map((t, i) => (
+                <span key={t.label}>
+                  <span className="italic text-foreground">{t.label}</span>
+                  {i < themes.length - 1 && (
+                    <span className="text-muted-foreground"> and </span>
+                  )}
+                </span>
+              ))}
+              .
+            </p>
+          </div>
         )}
       </section>
 
@@ -237,9 +281,7 @@ const Index = () => {
             </span>
             <span className="text-left">
               <span className="block font-display text-base font-medium">
-                {isReturning
-                  ? "Continue your reflection"
-                  : "Start your daily clarity"}
+                {isReturning ? "Continue your reflection" : "Start your daily clarity"}
               </span>
               <span className="block text-xs opacity-70 font-body">
                 One card · one focus
@@ -269,6 +311,47 @@ const Index = () => {
           </Link>
         </div>
       </section>
+
+      {/* Soft suggestion — only when something newly unlocked */}
+      {suggestion && !suggestionDismissed && (
+        <section className="mt-8 animate-fade-up [animation-delay:320ms]">
+          <div className="rounded-2xl bg-card/50 backdrop-blur border border-border/40 px-5 py-4 flex items-start gap-3">
+            <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
+              <suggestion.icon
+                className="h-3.5 w-3.5 text-muted-foreground"
+                strokeWidth={1.8}
+              />
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-1">
+                You might find this helpful
+              </p>
+              <p className="text-[14px] font-display font-medium text-foreground leading-tight">
+                {suggestion.label}
+              </p>
+              <p className="text-[12px] text-muted-foreground leading-relaxed mt-1">
+                {suggestion.description}
+              </p>
+              <button
+                onClick={startSuggestion}
+                className="mt-2.5 text-[12px] uppercase tracking-[0.2em] text-foreground/80 hover:text-foreground transition-smooth"
+              >
+                Try it →
+              </button>
+            </div>
+            <button
+              onClick={() => {
+                dismissSuggestion();
+                setSuggestionDismissed(true);
+              }}
+              aria-label="Not now"
+              className="text-muted-foreground/60 hover:text-foreground transition-smooth -mr-1 -mt-0.5"
+            >
+              <X className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </section>
+      )}
 
       {/* Quiet link to deeper readings — never competing with the primary CTA */}
       <section className="mt-10 text-center animate-fade-up [animation-delay:360ms]">
