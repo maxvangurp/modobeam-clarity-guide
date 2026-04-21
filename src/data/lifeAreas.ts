@@ -476,6 +476,29 @@ export function lifeAreaForHouse(house: number): LifeAreaCard | undefined {
   return id ? getLifeAreaById(id) : undefined;
 }
 
+// Map the focus-area keys produced by `inferFocusArea` (see src/lib/astrology.ts
+// → HOUSE_AREAS) to a Life Area card id. This lets a saved insight whose
+// `combined.focus.key` is e.g. "values" surface the "Money" life-area card.
+export const FOCUS_KEY_TO_LIFE_AREA: Record<string, string> = {
+  self: "self",
+  values: "money",
+  voice: "communication",
+  home: "home",
+  expression: "growth",
+  rhythm: "stability",
+  relationships: "relationships",
+  depth: "letting-go",
+  meaning: "purpose",
+  direction: "direction",
+  belonging: "connection",
+  inner: "inner-world",
+};
+
+export function lifeAreaForFocusKey(key: string): LifeAreaCard | undefined {
+  const id = FOCUS_KEY_TO_LIFE_AREA[key];
+  return id ? getLifeAreaById(id) : undefined;
+}
+
 // ────────────────────────────────────────────────────────────────────────
 // Light keyword matcher — picks a Life Area from free text alone, used
 // when no astrology focus is available so every reading can still be
