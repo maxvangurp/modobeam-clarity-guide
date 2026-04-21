@@ -62,25 +62,25 @@ export const ReflectionCard = ({
         )}
       />
 
+      {/* Outer lift wrapper — handles press/hover translate so the inner 3D transform stays clean */}
       <div
         className={cn(
-          "relative h-full w-full preserve-3d transition-transform",
-          // Premium eased flip — slow, calm, with a tiny lift
-          revealed
-            ? "animate-card-flip"
-            : "duration-700 [transition-timing-function:cubic-bezier(0.32,0.72,0,1)]",
-          // Press feedback before reveal
+          "relative h-full w-full transition-transform duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
           !revealed && pressing && "scale-[0.97]",
           !revealed && !pressing && "group-hover:-translate-y-1",
         )}
+        style={{ perspective: "1200px" }}
       >
-        {/* Back */}
+        {/* Inner flip wrapper — only handles rotateY, smoothly animated */}
         <div
           className={cn(
-            "absolute inset-0 backface-hidden rounded-[1.5rem] card-back-pattern shadow-card overflow-hidden",
-            !revealed && "animate-card-breathe",
+            "relative h-full w-full preserve-3d",
+            "transition-transform duration-[1100ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
+            revealed && "rotate-y-180",
           )}
         >
+        {/* Back */}
+        <div className="absolute inset-0 backface-hidden rounded-[1.5rem] card-back-pattern shadow-card overflow-hidden">
           <div className="absolute inset-0 bg-gradient-beam opacity-60 animate-beam" />
           <div className="absolute inset-3 rounded-[1.25rem] border border-white/10" />
           {/* Soft sweep highlight invites the tap */}
@@ -91,7 +91,10 @@ export const ReflectionCard = ({
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="relative">
               <div className="h-10 w-10 rounded-full bg-beam/60 blur-xl absolute inset-0" />
-              <div className="relative h-10 w-10 rounded-full bg-gradient-to-br from-beam-soft to-beam shadow-glow" />
+              <div className={cn(
+                "relative h-10 w-10 rounded-full bg-gradient-to-br from-beam-soft to-beam shadow-glow",
+                !revealed && "animate-float-soft",
+              )} />
             </div>
           </div>
           <div className="absolute bottom-4 inset-x-0 text-center">
@@ -102,12 +105,7 @@ export const ReflectionCard = ({
         </div>
 
         {/* Front */}
-        <div
-          className={cn(
-            "absolute inset-0 backface-hidden rotate-y-180 rounded-[1.5rem] bg-gradient-card shadow-card overflow-hidden border border-border/60",
-            revealed && "animate-card-rest [animation-delay:1s]",
-          )}
-        >
+        <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[1.5rem] bg-gradient-card shadow-card overflow-hidden border border-border/60">
           {art ? (
             <img
               src={art}
