@@ -12,7 +12,9 @@ import {
   getProfile,
   GUIDANCE_LABELS,
   LOOKING_FOR_LABELS,
+  markMomentPromptShown,
   MOMENT_LABELS,
+  shouldPromptMoment,
   USAGE_LABELS,
   type MomentNeed,
 } from "@/lib/profile";
@@ -36,9 +38,21 @@ const Draw = () => {
   );
 
   const [moment, setMoment] = useState<MomentNeed | null>(null);
-  // Show moment check-in first, unless user is coming straight from onboarding
-  // (we don't want to greet them with another question right after setup).
-  const [showMoment, setShowMoment] = useState<boolean>(!fromOnboarding);
+  // Auto-prompt the moment check-in only when the user's rhythm allows.
+  // - Skip right after onboarding (already a fresh setup moment).
+  // - Skip when the user explicitly chose "whenever I need it" — they can
+  //   still open it manually from the chip below.
+  const [showMoment, setShowMoment] = useState<boolean>(
+    !fromOnboarding && shouldPromptMoment(profile?.rhythm),
+  );
+
+  // Mark the prompt as shown the first time we surface it, so the
+  // rhythm-based cooldown starts ticking.
+  useEffect(() => {
+    if (showMoment) markMomentPromptShown();
+    // We only want to mark it on the initial auto-show, not on manual reopens.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [revealed, setRevealed] = useState<boolean[]>(
     Array(count).fill(false),
