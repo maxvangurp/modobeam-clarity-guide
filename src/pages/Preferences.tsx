@@ -125,6 +125,7 @@ const Preferences = () => {
       birthLat: birth.birthLat ?? null,
       birthLon: birth.birthLon ?? null,
       birthTzOffsetMin: birth.birthTzOffsetMin ?? null,
+      astroLensEnabled: astroEnabled,
     });
     toast.success("Preferences updated");
     navigate("/");
