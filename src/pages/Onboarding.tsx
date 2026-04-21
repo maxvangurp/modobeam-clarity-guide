@@ -84,9 +84,89 @@ const Onboarding = () => {
       onBack={step > 1 ? back : undefined}
     >
       <div key={step} className="flex-1 flex flex-col animate-fade-up">
+        {/* ───── Screen 1 — What Modobeam is ───── */}
         {step === 1 && (
           <Step
             kicker="Welcome"
+            title={
+              <>
+                A quiet space for{" "}
+                <span className="font-medium italic">clarity</span>.
+              </>
+            }
+            hint="Modobeam is a guided reflection experience — built around cards, layered insight, and your own honest words."
+          >
+            <div className="mt-2 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-6 shadow-soft">
+              <div className="relative h-36 mb-5 flex items-center justify-center">
+                {/* Soft floating card stack — purely decorative */}
+                <div
+                  aria-hidden
+                  className="absolute h-32 w-20 rounded-2xl bg-gradient-to-br from-beam-soft/40 to-beam/30 border border-border/40 -rotate-12 -translate-x-7 shadow-soft"
+                />
+                <div
+                  aria-hidden
+                  className="absolute h-32 w-20 rounded-2xl bg-gradient-to-br from-beam/30 to-beam-soft/50 border border-border/50 rotate-12 translate-x-7 shadow-soft"
+                />
+                <div
+                  aria-hidden
+                  className="relative h-36 w-24 rounded-2xl bg-gradient-card border border-border/60 shadow-card flex items-center justify-center"
+                >
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-beam-soft to-beam shadow-glow animate-float-soft" />
+                </div>
+              </div>
+              <p className="text-[14px] leading-relaxed text-foreground/85">
+                Not a journaling app. Not a card app. A small, calm place
+                to slow down, listen, and notice what you already know.
+              </p>
+            </div>
+            <p className="text-[12px] text-muted-foreground/80 mt-5 leading-relaxed text-center italic">
+              Nothing to learn. Nothing to perform.
+            </p>
+          </Step>
+        )}
+
+        {/* ───── Screen 2 — How it works ───── */}
+        {step === 2 && (
+          <Step
+            kicker="How it works"
+            title={
+              <>
+                Three simple <span className="font-medium italic">steps</span>.
+              </>
+            }
+            hint="Each reading unfolds slowly, one layer at a time."
+          >
+            <div className="grid gap-3 mt-2">
+              <HowStep
+                index={1}
+                icon={<Sparkles className="h-4 w-4" strokeWidth={1.8} />}
+                title="Draw"
+                body="Pull a card or a small reading. One question, or a wider lens."
+              />
+              <HowStep
+                index={2}
+                icon={<Layers className="h-4 w-4" strokeWidth={1.8} />}
+                title="Reveal"
+                body="Unfold the meaning layer by layer — never all at once."
+              />
+              <HowStep
+                index={3}
+                icon={<PenLine className="h-4 w-4" strokeWidth={1.8} />}
+                title="Reflect"
+                body="Write a few honest lines. Return to your patterns over time."
+              />
+            </div>
+            <p className="text-[12px] text-muted-foreground/85 mt-6 leading-relaxed text-center">
+              Use Modobeam daily, occasionally, or whenever something is on
+              your mind.
+            </p>
+          </Step>
+        )}
+
+        {/* ───── Screen 3 — Usage (was step 1) ───── */}
+        {step === 3 && (
+          <Step
+            kicker="Make it personal"
             title="How would you like to use Modobeam?"
             hint="Choose what feels closest. You can always shift later."
           >
@@ -103,7 +183,8 @@ const Onboarding = () => {
           </Step>
         )}
 
-        {step === 2 && (
+        {/* ───── Screen 4 — Looking for (was step 2) ───── */}
+        {step === 4 && (
           <Step
             kicker="A small intention"
             title="What are you usually looking for in a reflection moment?"
@@ -122,7 +203,8 @@ const Onboarding = () => {
           </Step>
         )}
 
-        {step === 3 && (
+        {/* ───── Screen 5 — Tone (was step 3) ───── */}
+        {step === 5 && (
           <Step
             kicker="Your tone"
             title="What kind of guidance feels right to you?"
@@ -151,7 +233,8 @@ const Onboarding = () => {
           </Step>
         )}
 
-        {step === 4 && (
+        {/* ───── Screen 6 — Rhythm (was step 4) ───── */}
+        {step === 6 && (
           <Step
             kicker="Your rhythm"
             title="How often would you like to check in?"
@@ -170,7 +253,8 @@ const Onboarding = () => {
           </Step>
         )}
 
-        {step === 5 && (
+        {/* ───── Screen 7 — Personal details (was step 5) ───── */}
+        {step === 7 && (
           <Step
             kicker="Almost there"
             title="Let's make this feel a little more personal."
@@ -215,7 +299,8 @@ const Onboarding = () => {
           </Step>
         )}
 
-        {step === 6 && (
+        {/* ───── Screen 8 — Astro lens (was step 6) ───── */}
+        {step === 8 && (
           <Step
             kicker="A soft lens · optional"
             title="A quiet astrological layer, if you'd like."
