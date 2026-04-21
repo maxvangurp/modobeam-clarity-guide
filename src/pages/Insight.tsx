@@ -111,6 +111,8 @@ const Insight = () => {
     ? `linear-gradient(135deg, hsl(${tint.bg}) 0%, hsl(${tint.hsl} / 0.85) 100%)`
     : undefined;
   const tintedGlow = tint ? `0 0 28px hsl(${tint.hsl} / 0.35)` : undefined;
+
+  const fetchSummary = async (text: string) => {
     if (!text.trim() || !insight) return;
     setSummaryLoading(true);
     try {
