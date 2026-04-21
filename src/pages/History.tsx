@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { getReadingType } from "@/data/readingTypes";
 import { AppShell } from "@/components/AppShell";
+import { HistoryRiver } from "@/components/HistoryRiver";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
 import { Sparkles, Loader2 } from "lucide-react";
@@ -229,8 +230,24 @@ const TimelineEntry = ({ r }: { r: Row }) => {
 
 const TimelineView = ({ rows }: { rows: Row[] }) => {
   const groups = groupByTimeline(rows);
+  // River expects InsightLite-shaped data; Row already matches enough.
+  const riverInsights = rows.map((r) => ({
+    id: r.id,
+    draw_type: r.draw_type,
+    cards: r.cards,
+    combined_insight: r.combined_insight,
+    created_at: r.created_at,
+  }));
   return (
     <div className="space-y-8 animate-fade-up">
+      {rows.length >= 2 && (
+        <section className="rounded-3xl bg-card/50 backdrop-blur border border-border/40 px-4 py-5 shadow-soft">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70 mb-2 text-center">
+            Your river so far
+          </p>
+          <HistoryRiver insights={riverInsights} />
+        </section>
+      )}
       {groups.map((group) => (
         <section key={group.label}>
           <h2 className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3 pl-1">

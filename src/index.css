@@ -187,6 +187,15 @@
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.015); opacity: 0.96; }
 }
+@keyframes ambient-drift {
+  0%   { transform: translate3d(0%, 0%, 0) rotate(0deg) scale(1); }
+  50%  { transform: translate3d(-3%, 2%, 0) rotate(8deg) scale(1.05); }
+  100% { transform: translate3d(0%, 0%, 0) rotate(0deg) scale(1); }
+}
+@keyframes hold-rise {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.06); }
+}
 
 .animate-fade-in { animation: fade-in 0.6s var(--transition-smooth) both; }
 .animate-fade-up { animation: fade-up 0.7s var(--transition-smooth) both; }
@@ -198,6 +207,8 @@
 .animate-card-rest { animation: card-rest-in 0.6s var(--transition-smooth) both; }
 .animate-soft-glow { animation: soft-glow 1.4s ease-out; }
 .animate-gentle-breathe { animation: gentle-breathe 6s ease-in-out infinite; }
+.animate-ambient-drift { animation: ambient-drift 60s ease-in-out infinite; will-change: transform; }
+.animate-hold-rise { animation: hold-rise 0.45s var(--transition-smooth) forwards; }
 
 @media (prefers-reduced-motion: reduce) {
   .animate-card-breathe,
@@ -207,7 +218,9 @@
   .animate-float-soft,
   .animate-beam,
   .animate-soft-glow,
-  .animate-gentle-breathe {
+  .animate-gentle-breathe,
+  .animate-ambient-drift,
+  .animate-hold-rise {
     animation: none !important;
   }
 }

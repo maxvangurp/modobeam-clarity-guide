@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { OracleCard } from "@/data/deck";
 import { getCardArt } from "@/data/cardArt";
 import { CardSigil } from "@/components/CardSigil";
@@ -10,6 +10,7 @@ interface Props {
   index?: number;
   revealed?: boolean;
   onReveal?: () => void;
+  onHold?: (active: boolean) => void;
   size?: "sm" | "md" | "lg";
 }
 
@@ -19,40 +20,79 @@ const sizes = {
   lg: "w-56 h-[22rem]",
 };
 
+const HOLD_MS = 380;
+
 export const ReflectionCard = ({
   card,
   index = 0,
   revealed: controlled,
   onReveal,
+  onHold,
   size = "md",
 }: Props) => {
   const [internal, setInternal] = useState(false);
   const [pressing, setPressing] = useState(false);
+  const [holding, setHolding] = useState(false);
+  const holdTimer = useRef<number | null>(null);
   const revealed = controlled ?? internal;
   const art = getCardArt(card.id);
 
   const handleClick = () => {
+    if (holding) return; // a hold just ended; swallow the click
     if (revealed) return;
     haptic("flip");
     setInternal(true);
     onReveal?.();
   };
 
+  const startHold = () => {
+    if (!revealed) {
+      setPressing(true);
+      return;
+    }
+    holdTimer.current = window.setTimeout(() => {
+      setHolding(true);
+      haptic("warm");
+      onHold?.(true);
+    }, HOLD_MS);
+  };
+  const endHold = () => {
+    setPressing(false);
+    if (holdTimer.current) {
+      clearTimeout(holdTimer.current);
+      holdTimer.current = null;
+    }
+    if (holding) {
+      setHolding(false);
+      onHold?.(false);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (holdTimer.current) clearTimeout(holdTimer.current);
+    };
+  }, []);
+
   return (
     <button
       type="button"
       onClick={handleClick}
-      onPointerDown={() => !revealed && setPressing(true)}
-      onPointerUp={() => setPressing(false)}
-      onPointerLeave={() => setPressing(false)}
-      disabled={revealed}
+      onPointerDown={startHold}
+      onPointerUp={endHold}
+      onPointerLeave={endHold}
+      onPointerCancel={endHold}
+      onContextMenu={(e) => revealed && e.preventDefault()}
+      disabled={false}
       className={cn(
-        "relative perspective-1200 group outline-none",
+        "relative perspective-1200 group outline-none transition-transform duration-500",
         sizes[size],
         !revealed && "cursor-pointer",
+        revealed && "cursor-default",
+        holding && "z-30 animate-hold-rise",
       )}
       style={{ animationDelay: `${index * 120}ms` }}
-      aria-label={revealed ? `${card.name} card` : "Tap to reveal"}
+      aria-label={revealed ? `${card.name} card — hold to focus` : "Tap to reveal"}
     >
       {/* Subtle floor glow that intensifies during flip */}
       <div
@@ -62,6 +102,7 @@ export const ReflectionCard = ({
           "bg-[radial-gradient(ellipse_at_center,hsl(var(--beam)/0.25),transparent_70%)]",
           revealed ? "opacity-60" : "opacity-0 group-hover:opacity-30",
           revealed && "animate-card-glow",
+          holding && "opacity-90",
         )}
       />
 

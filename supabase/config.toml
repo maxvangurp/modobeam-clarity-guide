@@ -2,3 +2,12 @@ project_id = "uabaabviqnygolrmffqf"
 
 [functions.reflect]
 verify_jwt = false
+
+[functions.reflect-summary]
+verify_jwt = false
+
+[functions.summarize-period]
+verify_jwt = false
+
+[functions.know-you]
+verify_jwt = false
