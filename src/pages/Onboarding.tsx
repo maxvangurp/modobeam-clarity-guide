@@ -8,6 +8,7 @@ import {
 } from "@/components/onboarding/BirthDetailsForm";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Sparkles, Layers, PenLine } from "lucide-react";
 import {
   GUIDANCE_LABELS,
   LOOKING_FOR_LABELS,
@@ -21,7 +22,10 @@ import {
   type UsageMode,
 } from "@/lib/profile";
 
-const TOTAL_STEPS = 6;
+// Two intro screens (1 — what it is, 2 — how it works) come before the
+// six preference/personalization screens, so a new user understands the
+// product before they're asked anything about themselves.
+const TOTAL_STEPS = 8;
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -64,12 +68,14 @@ const Onboarding = () => {
   };
 
   const canContinue =
-    (step === 1 && !!usage) ||
-    (step === 2 && !!lookingFor) ||
-    (step === 3 && !!guidance) ||
-    (step === 4 && !!rhythm) ||
-    step === 5 ||
-    step === 6;
+    step === 1 ||
+    step === 2 ||
+    (step === 3 && !!usage) ||
+    (step === 4 && !!lookingFor) ||
+    (step === 5 && !!guidance) ||
+    (step === 6 && !!rhythm) ||
+    step === 7 ||
+    step === 8;
 
   return (
     <OnboardingShell
