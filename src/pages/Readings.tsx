@@ -20,7 +20,7 @@ import {
 import { Compass } from "lucide-react";
 
 interface SectionDef {
-  key: "quick" | "deeper" | "lens" | "context";
+  key: "quick" | "deeper" | "context" | "coming";
   title: string;
   hint: string;
 }
@@ -37,19 +37,19 @@ const SECTIONS: SectionDef[] = [
     hint: "When something is asking for more time",
   },
   {
-    key: "lens",
-    title: "A different lens",
-    hint: "Other ways to come at the same question",
+    key: "context",
+    title: "Context & layers",
+    hint: "The wider map your reflections live inside",
   },
   {
-    key: "context",
-    title: "Context",
-    hint: "The wider map your reflections live inside",
+    key: "coming",
+    title: "Coming soon",
+    hint: "New ways to reflect, on the way",
   },
 ];
 
 // Where each existing reading type belongs in the library.
-const READING_GROUP: Record<string, "quick" | "deeper" | "lens"> = {
+const READING_GROUP: Record<string, "quick" | "deeper"> = {
   daily: "quick",
   three: "quick",
   direction: "deeper",
@@ -57,6 +57,13 @@ const READING_GROUP: Record<string, "quick" | "deeper" | "lens"> = {
   "next-phase": "deeper",
   year: "deeper",
 };
+
+// The 3 coming-soon previews we surface as a dedicated section.
+const COMING_SOON_FEATURED_IDS = [
+  "ask-for-friend",
+  "this-or-that",
+  "whats-going-on",
+] as const;
 
 const Readings = () => {
   const navigate = useNavigate();
@@ -72,12 +79,13 @@ const Readings = () => {
   const t = total ?? 0;
 
   // Bucket the real readings by group
-  const readingsByGroup = (group: "quick" | "deeper" | "lens"): ReadingType[] =>
+  const readingsByGroup = (group: "quick" | "deeper"): ReadingType[] =>
     READING_TYPES.filter((r) => READING_GROUP[r.id] === group);
 
-  // Bucket coming-soon modes by group
-  const comingByGroup = (group: "quick" | "deeper" | "lens"): ComingSoonMode[] =>
-    COMING_SOON_MODES.filter((m) => m.group === group);
+  // The dedicated "Coming soon" preview list — order matches the spec.
+  const featuredComing: ComingSoonMode[] = COMING_SOON_FEATURED_IDS
+    .map((id) => COMING_SOON_MODES.find((m) => m.id === id))
+    .filter(Boolean) as ComingSoonMode[];
 
   return (
     <AppShell screenMood="reveal">
@@ -137,9 +145,34 @@ const Readings = () => {
             );
           }
 
+          if (section.key === "coming") {
+            return (
+              <section
+                key={section.key}
+                className="animate-fade-up"
+                style={{ animationDelay: `${120 + sectionIdx * 80}ms` }}
+              >
+                <SectionHeader title={section.title} hint={section.hint} />
+                <div className="mt-3 space-y-2.5">
+                  {featuredComing.map((m) => (
+                    <ReadingPreviewCard
+                      key={m.id}
+                      label={m.label}
+                      subtitle={m.subtitle}
+                      description={m.description}
+                      cardCount={m.cardCount}
+                      icon={m.icon}
+                      category={m.category}
+                      state="coming-soon"
+                    />
+                  ))}
+                </div>
+              </section>
+            );
+          }
+
           const real = readingsByGroup(section.key);
-          const coming = comingByGroup(section.key);
-          if (real.length === 0 && coming.length === 0) return null;
+          if (real.length === 0) return null;
 
           return (
             <section
@@ -167,18 +200,6 @@ const Readings = () => {
                     />
                   );
                 })}
-                {coming.map((m) => (
-                  <ReadingPreviewCard
-                    key={m.id}
-                    label={m.label}
-                    subtitle={m.subtitle}
-                    description={m.description}
-                    cardCount={m.cardCount}
-                    icon={m.icon}
-                    category={m.category}
-                    state="coming-soon"
-                  />
-                ))}
               </div>
             </section>
           );
