@@ -23,7 +23,9 @@ import {
 } from "@/lib/progression";
 import { inferReadingHint, type ReadingHint } from "@/lib/themeUnlocks";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
-import { Layers, Pause, Sparkles, Waypoints, X } from "lucide-react";
+import { getComingSoonMode } from "@/data/comingSoonModes";
+import { ReadingPreviewCard } from "@/components/ReadingPreviewCard";
+import { ArrowRight, Pause, Sparkles, Waypoints, X } from "lucide-react";
 import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
 import { WeekProgress } from "@/components/WeekProgress";
 import { WeeklySynthesisCard } from "@/components/WeeklySynthesisCard";
@@ -471,23 +473,11 @@ const Index = () => {
           </span>
         </Button>
 
-        {/* 4. Secondary subtle actions */}
-        <div className="mt-5 flex items-center justify-center gap-1 text-[13px]">
-          <button
-            onClick={startThree}
-            className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-smooth px-3 py-2 rounded-full"
-          >
-            <Layers className="h-3.5 w-3.5" strokeWidth={1.6} />
-            3-card insight
-          </button>
-          <span className="text-muted-foreground/30">·</span>
-          <Link
-            to="/history"
-            className="text-muted-foreground hover:text-foreground transition-smooth px-3 py-2 rounded-full"
-          >
-            View your week
-          </Link>
-        </div>
+        {/* 4. Explore deeper readings — featured carousel */}
+        <ExploreCarousel
+          totalReflections={insights.length}
+          moment={moment}
+        />
       </section>
 
       {/* Soft suggestion — only when something newly unlocked */}
