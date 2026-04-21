@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ReflectionCard } from "@/components/ReflectionCard";
+import { MomentCheckIn } from "@/components/MomentCheckIn";
 import { Button } from "@/components/ui/button";
 import { drawCards, type OracleCard } from "@/data/deck";
 import { getReadingType, type DrawType } from "@/data/readingTypes";
@@ -11,7 +12,9 @@ import {
   getProfile,
   GUIDANCE_LABELS,
   LOOKING_FOR_LABELS,
+  MOMENT_LABELS,
   USAGE_LABELS,
+  type MomentNeed,
 } from "@/lib/profile";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -31,6 +34,11 @@ const Draw = () => {
     () => drawCards(count),
     [type],
   );
+
+  const [moment, setMoment] = useState<MomentNeed | null>(null);
+  // Show moment check-in first, unless user is coming straight from onboarding
+  // (we don't want to greet them with another question right after setup).
+  const [showMoment, setShowMoment] = useState<boolean>(!fromOnboarding);
 
   const [revealed, setRevealed] = useState<boolean[]>(
     Array(count).fill(false),
@@ -56,6 +64,24 @@ const Draw = () => {
   if (!reading) return null;
 
   const labels = reading.positionLabels;
+
+  if (showMoment) {
+    return (
+      <AppShell showBack backTo="/">
+        <div className="pt-4">
+          <MomentCheckIn
+            value={moment}
+            onSelect={(m) => {
+              setMoment(m);
+              // small delay so the selection is felt before transition
+              setTimeout(() => setShowMoment(false), 220);
+            }}
+            onSkip={() => setShowMoment(false)}
+          />
+        </div>
+      </AppShell>
+    );
+  }
 
   const continueToInsight = async () => {
     setLoading(true);
@@ -83,6 +109,12 @@ const Draw = () => {
                   ? GUIDANCE_LABELS[profile.guidance]
                   : null,
                 guidanceKey: profile.guidance ?? null,
+              }
+            : null,
+          moment: moment
+            ? {
+                key: moment,
+                label: MOMENT_LABELS[moment],
               }
             : null,
         },
@@ -145,6 +177,24 @@ const Draw = () => {
               : ""}
             .
           </p>
+        </div>
+      )}
+      {!fromOnboarding && moment && !allRevealed && (
+        <div className="mb-6 rounded-2xl bg-card/50 backdrop-blur border border-border/50 px-5 py-3 flex items-center justify-between animate-fade-up">
+          <div className="min-w-0">
+            <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+              For this moment
+            </p>
+            <p className="text-[14px] text-foreground/90 truncate">
+              {MOMENT_LABELS[moment]}
+            </p>
+          </div>
+          <button
+            onClick={() => setShowMoment(true)}
+            className="text-[12px] text-muted-foreground hover:text-foreground transition-smooth shrink-0 ml-3"
+          >
+            Change
+          </button>
         </div>
       )}
       <div className="text-center pt-2 pb-8 animate-fade-up">

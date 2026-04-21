@@ -8,6 +8,7 @@ import Draw from "./pages/Draw.tsx";
 import Insight from "./pages/Insight.tsx";
 import History from "./pages/History.tsx";
 import Onboarding from "./pages/Onboarding.tsx";
+import Preferences from "./pages/Preferences.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -21,6 +22,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/welcome" element={<Onboarding />} />
+          <Route path="/preferences" element={<Preferences />} />
           <Route path="/draw/:type" element={<Draw />} />
           <Route path="/insight/:id" element={<Insight />} />
           <Route path="/history" element={<History />} />
