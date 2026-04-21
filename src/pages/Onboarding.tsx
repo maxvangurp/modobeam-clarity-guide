@@ -361,7 +361,7 @@ const Onboarding = () => {
               Begin with a simple check-in
             </Button>
           )}
-          {(step === 5 || step === 6) && (
+          {(step === 7 || step === 8) && (
             <button
               onClick={finish}
               className="w-full text-center text-[13px] text-muted-foreground hover:text-foreground transition-smooth mt-3"
@@ -382,7 +382,7 @@ const Step = ({
   children,
 }: {
   kicker: string;
-  title: string;
+  title: React.ReactNode;
   hint?: string;
   children: React.ReactNode;
 }) => (
