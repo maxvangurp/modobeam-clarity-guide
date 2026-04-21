@@ -85,7 +85,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { intention, drawType, positionLabels, cards } =
+    const { intention, drawType, positionLabels, cards, profile } =
       (await req.json()) as Payload;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -106,6 +106,29 @@ Deno.serve(async (req: Request) => {
     const intentionLine = intention?.trim()
       ? `What they shared:\n"${intention.trim()}"\n\n`
       : `They didn't share a specific intention. Speak to common human experience that fits this combination.\n\n`;
+
+    // Personalization context from onboarding
+    const profileLines: string[] = [];
+    if (profile?.firstName) profileLines.push(`Name: ${profile.firstName}`);
+    if (profile?.intent) profileLines.push(`Wants clarity on: ${profile.intent}`);
+    if (profile?.state) profileLines.push(`Currently: ${profile.state}`);
+    if (profile?.guidance) profileLines.push(`Prefers tone: ${profile.guidance}`);
+    const profileBlock = profileLines.length
+      ? `About this person (from their onboarding — use as context, never quote back literally):\n${profileLines.join("\n")}\n\nWeave this awareness in subtly. You may use their name once, sparingly. Let their focus area and current state shape *what you notice*, not what you announce.\n\n`
+      : "";
+
+    // Map guidance preference → tone shaping
+    const guidanceTone: Record<string, string> = {
+      direct:
+        "Tone preference: lean direct and honest. Plain language. Short sentences. Name things without softening. No metaphor unless it sharpens a truth.",
+      calm:
+        "Tone preference: lean calm and supportive. Grounded warmth. Soft pacing. Make them feel met, not assessed.",
+      deep:
+        "Tone preference: lean deep and reflective. More poetic phrasing allowed. Ask more of the reader. Sit with ambiguity longer.",
+    };
+    const guidanceLine = profile?.guidanceKey
+      ? `\n${guidanceTone[profile.guidanceKey]}\n`
+      : "";
 
     const readingDesc =
       READING_DESCRIPTIONS[drawType] ?? `a ${cards.length}-card reading`;
