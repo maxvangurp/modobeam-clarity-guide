@@ -43,6 +43,7 @@ interface Payload {
   profile?: ProfileInput | null;
   moment?: MomentInput | null;
   priorThreads?: PriorThread[] | null;
+  dailyQuote?: { text: string; author?: string } | null;
 }
 
 const READING_DESCRIPTIONS: Record<string, string> = {
@@ -99,7 +100,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { intention, drawType, positionLabels, cards, profile, moment, priorThreads } =
+    const { intention, drawType, positionLabels, cards, profile, moment, priorThreads, dailyQuote } =
       (await req.json()) as Payload;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
