@@ -105,7 +105,19 @@ const Index = () => {
       setInsights(recent);
 
       // Pattern awareness — recurring themes across last week of reflections
-      setThemes(detectRecentThemes(recent));
+      const detected = detectRecentThemes(recent);
+      setThemes(detected);
+
+      // Theme-driven reading hint — only when themes naturally point somewhere.
+      const hint = inferReadingHint(detected);
+      if (hint) {
+        const reading = getReadingType(hint.type);
+        const triedTypes = new Set(recent.map((r) => r.draw_type));
+        // Only nudge toward something they haven't already tried.
+        if (reading && !triedTypes.has(hint.type)) {
+          setReadingHint({ hint, reading });
+        }
+      }
 
       // Weekly synthesis — fresh on weekend window OR cached any other day.
       const offer = shouldOfferWeeklySynthesis(recent);
