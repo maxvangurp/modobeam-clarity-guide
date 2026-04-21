@@ -4,26 +4,32 @@
 const KEY = "modobeam_profile_v1";
 const COMPLETE_KEY = "modobeam_onboarding_complete_v1";
 
-export type ClarityIntent =
-  | "relationships"
-  | "career"
-  | "growth"
-  | "rest"
-  | "direction";
+export type UsageMode =
+  | "daily"
+  | "on-mind"
+  | "perspective"
+  | "patterns";
 
-export type CurrentState =
-  | "stuck"
-  | "change"
-  | "healing"
-  | "uncertain"
-  | "seeking-direction";
+export type LookingFor =
+  | "clarity"
+  | "calm"
+  | "direction"
+  | "perspective"
+  | "pause";
 
 export type GuidanceStyle = "direct" | "calm" | "deep";
 
+export type Rhythm =
+  | "daily"
+  | "few-times-week"
+  | "when-needed"
+  | "figuring-out";
+
 export interface UserProfile {
-  intent?: ClarityIntent;
-  state?: CurrentState;
+  usage?: UsageMode;
+  lookingFor?: LookingFor;
   guidance?: GuidanceStyle;
+  rhythm?: Rhythm;
   firstName?: string;
   birthday?: string; // ISO yyyy-mm-dd
   createdAt?: string;
@@ -63,24 +69,30 @@ export function markOnboardingComplete(): void {
 }
 
 // Human-readable labels — used in UI and sent to AI as context
-export const INTENT_LABELS: Record<ClarityIntent, string> = {
-  relationships: "Relationships",
-  career: "Career",
-  growth: "Personal growth",
-  rest: "Mental rest",
-  direction: "Direction in life",
+export const USAGE_LABELS: Record<UsageMode, string> = {
+  daily: "As a daily check-in",
+  "on-mind": "To reflect when something is on my mind",
+  perspective: "To slow down and get perspective",
+  patterns: "To notice patterns over time",
 };
 
-export const STATE_LABELS: Record<CurrentState, string> = {
-  stuck: "Feeling stuck",
-  change: "Going through change",
-  healing: "Healing from something",
-  uncertain: "Feeling uncertain",
-  "seeking-direction": "Looking for direction",
+export const LOOKING_FOR_LABELS: Record<LookingFor, string> = {
+  clarity: "Clarity",
+  calm: "Calm",
+  direction: "Direction",
+  perspective: "Perspective",
+  pause: "A moment to pause",
 };
 
 export const GUIDANCE_LABELS: Record<GuidanceStyle, string> = {
   direct: "Direct and honest",
   calm: "Calm and supportive",
   deep: "Deep and reflective",
+};
+
+export const RHYTHM_LABELS: Record<Rhythm, string> = {
+  daily: "Daily",
+  "few-times-week": "A few times a week",
+  "when-needed": "Whenever I need it",
+  "figuring-out": "I'm still figuring that out",
 };
