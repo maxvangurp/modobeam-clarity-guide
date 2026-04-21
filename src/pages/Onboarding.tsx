@@ -415,4 +415,35 @@ const Summary = ({ label, value }: { label: string; value: string }) => (
   </div>
 );
 
+const HowStep = ({
+  index,
+  icon,
+  title,
+  body,
+}: {
+  index: number;
+  icon: React.ReactNode;
+  title: string;
+  body: string;
+}) => (
+  <div className="rounded-2xl bg-card/60 backdrop-blur border border-border/50 p-4 flex items-start gap-3 shadow-soft">
+    <div className="relative shrink-0">
+      <span className="h-10 w-10 rounded-full bg-gradient-to-br from-beam-soft/60 to-beam/40 border border-border/50 flex items-center justify-center text-foreground/85 shadow-glow">
+        {icon}
+      </span>
+      <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-background border border-border/60 flex items-center justify-center text-[9px] font-display text-muted-foreground tabular-nums">
+        {index}
+      </span>
+    </div>
+    <div className="flex-1 min-w-0">
+      <p className="font-display text-[15px] font-medium text-foreground">
+        {title}
+      </p>
+      <p className="text-[13px] text-muted-foreground leading-relaxed mt-0.5">
+        {body}
+      </p>
+    </div>
+  </div>
+);
+
 export default Onboarding;
