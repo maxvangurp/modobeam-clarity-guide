@@ -210,6 +210,7 @@ const Draw = () => {
             Change
           </button>
         </div>
+      )}
       {!fromOnboarding && !moment && !allRevealed && (
         <div className="mb-6 flex justify-end animate-fade-up">
           <button
