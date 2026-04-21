@@ -35,6 +35,14 @@ interface PriorThread {
   cards?: string[];
 }
 
+interface AstroContext {
+  sunSign?: string;
+  ascendantSign?: string | null;
+  isSolarHouses?: boolean;
+  toneHint?: string;
+  focusArea?: { key: string; label: string } | null;
+}
+
 interface Payload {
   intention?: string;
   drawType: string;
@@ -44,6 +52,7 @@ interface Payload {
   moment?: MomentInput | null;
   priorThreads?: PriorThread[] | null;
   dailyQuote?: { text: string; author?: string } | null;
+  astroContext?: AstroContext | null;
 }
 
 const READING_DESCRIPTIONS: Record<string, string> = {
@@ -100,7 +109,7 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { intention, drawType, positionLabels, cards, profile, moment, priorThreads, dailyQuote } =
+    const { intention, drawType, positionLabels, cards, profile, moment, priorThreads, dailyQuote, astroContext } =
       (await req.json()) as Payload;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -253,6 +262,19 @@ Deno.serve(async (req: Request) => {
       ? `\n\nToday's quote (only weave a brief, organic allusion if it genuinely matches the reading — otherwise ignore completely; never quote it verbatim, never name the author): "${dailyQuote.text}"${dailyQuote.author ? ` — ${dailyQuote.author}` : ""}`
       : "";
 
+    // Astrology — a soft, optional lens. NEVER name the sign, NEVER mention
+    // astrology or houses. Only let it shape tone and (rarely) what life
+    // area you notice. If nothing matches, ignore it entirely.
+    const astroBlock = astroContext
+      ? `\n\nQuiet astrological lens (internal context only — do NOT mention astrology, signs, houses, planets, or rising. Never name "${astroContext.sunSign ?? ""}" or "${astroContext.ascendantSign ?? ""}". This is solely a stylistic and thematic nudge):${
+          astroContext.toneHint ? `\n- Tone nudge: ${astroContext.toneHint}.` : ""
+        }${
+          astroContext.focusArea
+            ? `\n- Possible life area in play: "${astroContext.focusArea.label}". If — and ONLY if — the reading content genuinely fits, you may quietly orient one observation toward this area. Do not name the area as a "focus" or "house". If it doesn't fit, ignore it.`
+            : ""
+        }\n`
+      : "";
+
     // Deeper readings get more reflection space
     const reflectionLength =
       cards.length >= 5
@@ -264,7 +286,7 @@ Deno.serve(async (req: Request) => {
     const userPrompt = `${profileBlock}${intentionLine}They drew ${readingDesc}.
 
 ${cardSummary}
-${guidanceLine}${momentLine}${priorBlock}${quoteHint}
+${guidanceLine}${momentLine}${priorBlock}${quoteHint}${astroBlock}
 
 ${modeInstruction[mode]}
 
