@@ -23,6 +23,7 @@ import {
 } from "@/lib/progression";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
 import { Flame, Layers, Sparkles, Waypoints, X } from "lucide-react";
+import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
@@ -53,6 +54,7 @@ const Index = () => {
   const [suggestion, setSuggestion] = useState<ReadingType | null>(null);
   const [themes, setThemes] = useState<ThemeInsight[]>([]);
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
+  const [activeTheme, setActiveTheme] = useState<string | null>(null);
 
   // Refresh the quote at local midnight if the app stays open
   useEffect(() => {
@@ -211,7 +213,13 @@ const Index = () => {
               Lately you've been moving around{" "}
               {themes.map((t, i) => (
                 <span key={t.label}>
-                  <span className="italic text-foreground">{t.label}</span>
+                  <button
+                    onClick={() => setActiveTheme(t.label)}
+                    className="italic text-foreground underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-smooth"
+                    aria-label={`See reflections about ${t.label}`}
+                  >
+                    {t.label}
+                  </button>
                   {i < themes.length - 1 && (
                     <span className="text-muted-foreground"> and </span>
                   )}
@@ -222,6 +230,13 @@ const Index = () => {
           </div>
         )}
       </section>
+
+      <ThemeReflectionsSheet
+        open={activeTheme !== null}
+        onOpenChange={(open) => !open && setActiveTheme(null)}
+        theme={activeTheme}
+        insights={insights}
+      />
 
       {/* Daily quote — quiet, rotates each day */}
       <section className="mb-8 animate-fade-up [animation-delay:80ms]">
