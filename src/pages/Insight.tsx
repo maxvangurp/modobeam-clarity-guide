@@ -413,7 +413,9 @@ const Insight = () => {
         </section>
       )}
 
-      {/* Life Area — quiet contextual layer, derived from the reading */}
+      {/* Life Area — quiet contextual layer, derived from the reading.
+          Framed as a "Focus area": context for the reflection, never a label
+          on the user. */}
       {lifeArea && (
         <section className="mt-4 animate-fade-up [animation-delay:200ms]">
           <button
@@ -428,7 +430,7 @@ const Insight = () => {
               </span>
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-[0.25em] text-[hsl(218_30%_38%)]/80">
-                  Life Area · {lifeArea.theme}
+                  Focus area
                 </p>
                 <p className="font-display text-[16px] text-foreground mt-0.5">
                   {lifeArea.name}
@@ -439,16 +441,35 @@ const Insight = () => {
               />
             </div>
             {lifeAreaOpen && (
-              <div className="mt-4 pt-4 border-t border-border/40 animate-fade-up">
+              <div className="mt-4 pt-4 border-t border-border/40 animate-fade-up space-y-3">
+                {/* Why this area — short, soft framing */}
+                <p className="text-[13px] leading-relaxed text-foreground/75 italic">
+                  This reflection may be showing up in the area of{" "}
+                  <span className="not-italic font-medium text-foreground/85">
+                    {lifeArea.name.toLowerCase()}
+                  </span>{" "}
+                  — {lifeArea.theme.toLowerCase()}.
+                </p>
+
                 <p className="text-[14px] leading-relaxed text-foreground/85">
                   {lifeArea.shortMeaning}
                 </p>
-                <p className="text-[13px] leading-relaxed text-foreground/70 mt-3">
-                  {lifeArea.deeperMeaning}
-                </p>
+
+                {/* One quiet prompt — invitation, not assignment */}
+                {lifeArea.prompts[0] && (
+                  <div className="rounded-2xl bg-background/40 backdrop-blur border border-border/40 px-4 py-3">
+                    <p className="text-[10px] uppercase tracking-[0.22em] text-[hsl(218_30%_38%)]/80 mb-1">
+                      A question to sit with
+                    </p>
+                    <p className="text-[13px] leading-relaxed text-foreground/85">
+                      {lifeArea.prompts[0]}
+                    </p>
+                  </div>
+                )}
+
                 <Link
                   to={`/life-areas/${lifeArea.id}`}
-                  className="inline-flex items-center gap-1 text-[12px] text-foreground/70 hover:text-foreground transition-smooth mt-4"
+                  className="inline-flex items-center gap-1 text-[12px] text-foreground/70 hover:text-foreground transition-smooth"
                   onClick={(e) => e.stopPropagation()}
                 >
                   Open full card

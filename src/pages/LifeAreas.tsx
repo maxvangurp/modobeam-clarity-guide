@@ -7,6 +7,8 @@ import {
   type LifeAreaTheme,
 } from "@/data/lifeAreas";
 import { cn } from "@/lib/utils";
+import { Shuffle } from "lucide-react";
+import { haptic } from "@/lib/haptics";
 
 const THEMES: LifeAreaTheme[] = [
   "Self",
@@ -40,6 +42,19 @@ const LifeAreas = () => {
           Twenty-five quiet domains that show up across a real life. Browse
           them, or let them surface naturally inside your readings.
         </p>
+
+        {/* Optional manual draw — secondary, calm */}
+        <button
+          onClick={() => {
+            haptic("select");
+            const pick = LIFE_AREAS[Math.floor(Math.random() * LIFE_AREAS.length)];
+            navigate(`/life-areas/${pick.id}`);
+          }}
+          className="mt-5 inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/50 backdrop-blur px-4 py-2 text-[12px] text-foreground/80 hover:bg-card/80 hover:text-foreground transition-smooth"
+        >
+          <Shuffle className="h-3.5 w-3.5" strokeWidth={1.6} />
+          Draw one for context
+        </button>
       </section>
 
       {/* Theme filter */}
