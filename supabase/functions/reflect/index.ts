@@ -15,11 +15,20 @@ interface CardInput {
   deeperMeaning: string;
 }
 
+interface ProfileInput {
+  firstName?: string | null;
+  intent?: string | null;
+  state?: string | null;
+  guidance?: string | null;
+  guidanceKey?: "direct" | "calm" | "deep" | null;
+}
+
 interface Payload {
   intention?: string;
   drawType: string;
   positionLabels?: string[];
   cards: CardInput[];
+  profile?: ProfileInput | null;
 }
 
 const READING_DESCRIPTIONS: Record<string, string> = {
