@@ -247,6 +247,7 @@ const Draw = () => {
           priorThreads,
           dailyQuote,
           astroContext: (() => {
+            if (!isAstroLensEnabled(profile)) return null;
             if (!profile?.birthday) return null;
             const chart = getCachedChart({
               date: profile.birthday,
