@@ -41,6 +41,9 @@ const Preferences = () => {
   const [rhythm, setRhythm] = useState<Rhythm | null>(existing.rhythm ?? null);
   const [firstName, setFirstName] = useState(existing.firstName ?? "");
   const [birthday, setBirthday] = useState(existing.birthday ?? "");
+  const [astroEnabled, setAstroEnabled] = useState<boolean>(
+    existing.astroLensEnabled !== false,
+  );
   const [birth, setBirth] = useState<BirthDetails>({
     birthTime: existing.birthTime ?? null,
     birthPlace: existing.birthPlace ?? null,
