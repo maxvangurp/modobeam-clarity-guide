@@ -34,7 +34,7 @@ const Index = () => {
     <AppShell>
       <section className="pt-8 pb-10 animate-fade-up">
         <p className="text-sm text-muted-foreground mb-3 tracking-wide">
-          A quiet moment with yourself.
+          {greeting}
         </p>
         <h1 className="font-display text-[2.4rem] leading-[1.05] font-light tracking-tight text-foreground">
           What do you need
