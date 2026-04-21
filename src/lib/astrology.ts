@@ -258,50 +258,30 @@ function placidusHouses(
     if (mode === "12") H = ramc + 60;
     if (mode === "2") H = ramc + 120;
     if (mode === "3") H = ramc + 150;
-    let cusp = 0;
     for (let i = 0; i < 12; i++) {
       const Hr = norm360(H) * DEG;
-      // Declination of point with hour angle H on ecliptic
       const dec = Math.asin(Math.sin(eps) * Math.sin(Hr));
-      // Semi-diurnal arc check: ascensional difference
       const ad = Math.asin(Math.tan(lat) * Math.tan(dec));
       let semiArc: number;
       if (mode === "11" || mode === "12") {
-        // above horizon (eastern → 11/12)
-        semiArc = Math.PI / 2 + ad; // diurnal semi-arc
+        semiArc = Math.PI / 2 + ad;
       } else {
-        // below horizon (eastern → 2/3)
-        semiArc = Math.PI / 2 - ad; // nocturnal semi-arc
+        semiArc = Math.PI / 2 - ad;
       }
-      // Target hour angle from MC for this cusp
-      const targetH =
-        mode === "11" || mode === "12"
-          ? (semiArc * f) / DEG
-          : ((Math.PI - semiArc * f) / DEG) + 0; // below horizon offset
-      // Re-derive H from target; for above-horizon: H = ramc + targetH
-      // for below-horizon (2/3): H = ramc + 180 - targetH
       const newH =
         mode === "11" || mode === "12"
-          ? ramc + targetH
-          : ramc + 180 - ((semiArc * f) / DEG);
+          ? ramc + (semiArc * f) / DEG
+          : ramc + 180 - (semiArc * f) / DEG;
       if (Math.abs(norm360(newH) - norm360(H)) < 0.001) {
         H = newH;
         break;
       }
       H = newH;
-      // Convert H back to ecliptic longitude
-      const Hrr = norm360(H) * DEG;
-      const lonNum = Math.atan2(
-        Math.sin(Hrr),
-        Math.cos(Hrr) * Math.cos(eps) - Math.tan(0) * Math.sin(eps),
-      );
-      cusp = norm360(lonNum / DEG);
     }
-    // Final convert H → ecliptic longitude
-    const Hr = norm360(H) * DEG;
+    const HrFinal = norm360(H) * DEG;
     const lonRad = Math.atan2(
-      Math.sin(Hr),
-      Math.cos(Hr) * Math.cos(eps),
+      Math.sin(HrFinal),
+      Math.cos(HrFinal) * Math.cos(eps),
     );
     return norm360(lonRad / DEG);
   };
