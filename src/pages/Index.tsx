@@ -21,6 +21,7 @@ import {
   type InsightLite,
   type ThemeInsight,
 } from "@/lib/progression";
+import { inferReadingHint, type ReadingHint } from "@/lib/themeUnlocks";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
 import { Layers, Pause, Sparkles, Waypoints, X } from "lucide-react";
 import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
