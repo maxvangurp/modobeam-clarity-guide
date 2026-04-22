@@ -391,16 +391,22 @@ const Index = () => {
         </figure>
       </section>
 
-      {/* 2. Moment check-in — light, optional, inline */}
+      {/* 2. Moment check-in — precise tool, not a soft panel */}
       <section className={cn(layout.pageSection, "mb-12 [animation-delay:120ms]")}>
-        <div className="space-y-4 border-t border-border/55 pt-4.5">
-          <div className="space-y-2">
-            <p className={layout.sectionLabel}>What feels closest right now?</p>
-            <p className="max-w-[30ch] text-[12.5px] leading-[1.55] text-muted-foreground/88">
-              Choose a tone for this moment, or leave the space open.
-            </p>
+        <div className="space-y-4 border-y border-border/50 py-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="min-w-0 space-y-1.5">
+              <p className={layout.sectionLabel}>Set the tone</p>
+              <p className="max-w-[27ch] text-[13.5px] font-medium leading-[1.45] text-foreground/88">
+                What feels closest right now?
+              </p>
+            </div>
+            <span className="shrink-0 pt-0.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/78">
+              Optional
+            </span>
           </div>
-          <div className={cn(layout.chipRow, "gap-2.5")}>
+
+          <div className={cn(layout.chipRow, "gap-2") }>
             {MOMENT_ORDER.map((id) => {
               const selected = moment === id;
               const t = MOMENT_TINTS[id];
@@ -421,10 +427,10 @@ const Index = () => {
                         }
                       : undefined
                   }
-                   className={`min-h-10 rounded-full border px-3.5 py-2 text-[12.5px] transition-smooth ${
+                    className={`min-h-10 rounded-full border px-3.5 py-2 text-[12px] transition-smooth ${
                     selected
                       ? "font-medium shadow-soft"
-                       : "bg-background/84 text-foreground/84 border-border/65 hover:bg-card hover:text-foreground"
+                        : "bg-background/84 text-foreground/84 border-border/65 hover:bg-card hover:text-foreground"
                   }`}
                 >
                   {MOMENT_CHIP[id]}
@@ -432,16 +438,16 @@ const Index = () => {
               );
             })}
           </div>
-          <div className={cn(layout.helperRow, "border-t border-border/45 pt-3.5") }>
-            <p className="text-[11px] text-muted-foreground/82">
-              Optional — shapes this reading only.
+          <div className="flex items-center justify-between gap-3 border-t border-border/45 pt-3">
+            <p className="text-[11px] leading-none text-muted-foreground/86">
+              Shapes this reading only.
             </p>
             <button
               onClick={() => {
                 haptic("warm");
                 setBreathing(true);
               }}
-              className="inline-flex items-center gap-1.5 text-[11px] font-medium text-foreground/70 transition-smooth hover:text-foreground"
+              className="inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.16em] text-foreground/72 transition-smooth hover:text-foreground"
             >
               <Pause className="h-3 w-3" strokeWidth={1.6} />
               Just be here
@@ -482,7 +488,7 @@ const Index = () => {
 
       </section>
 
-      <section className={cn(layout.pageSection, "mt-14 [animation-delay:300ms]")}>
+      <section className={cn(layout.pageSection, "mt-16 [animation-delay:300ms]")}>
         <ExploreCarousel
           totalReflections={insights.length}
           moment={moment}
@@ -577,15 +583,10 @@ const ExploreCarousel = ({
   };
 
   return (
-    <section className="animate-fade-up space-y-5 [animation-delay:300ms]">
-      <div className="space-y-3.5">
+    <section className="animate-fade-up space-y-6 [animation-delay:300ms]">
+      <div className="space-y-4 border-t border-border/55 pt-5">
         <div className="flex items-start justify-between gap-4">
-          <div className="space-y-2 min-w-0">
-            <p className={layout.sectionLabel}>Explore</p>
-            <h2 className="font-display text-[1.42rem] font-semibold leading-[1.02] text-foreground">
-              Explore deeper readings
-            </h2>
-          </div>
+          <p className={layout.sectionLabel}>Explore</p>
           <Link
             to="/readings"
             className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/66 transition-smooth hover:text-foreground"
@@ -594,13 +595,19 @@ const ExploreCarousel = ({
             <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
-        <p className="max-w-[31ch] text-[12.5px] leading-[1.6] text-muted-foreground/90">
-          A slower way in when one card isn&apos;t quite enough.
-        </p>
+
+        <div className="space-y-2.5">
+          <h2 className="max-w-[12ch] font-display text-[1.66rem] font-semibold leading-[1.02] text-foreground">
+            Explore deeper readings
+          </h2>
+          <p className="max-w-[28ch] text-[13px] leading-[1.65] text-muted-foreground/90">
+            A slower way in when one card isn&apos;t quite enough.
+          </p>
+        </div>
       </div>
 
-      <div className="border-y border-border/55 py-4">
-        <div className="flex gap-3.5 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <div className="-mx-1 border-y border-border/50 py-4">
+        <div className="flex gap-3 overflow-x-auto px-1 pb-1 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {featuredReal.map((r) => {
             const unlocked = isReadingUnlocked(r.id, totalReflections);
             const remaining = readingsRemainingToUnlock(r.id, totalReflections);
