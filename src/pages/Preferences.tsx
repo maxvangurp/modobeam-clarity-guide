@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ChoiceCard } from "@/components/onboarding/ChoiceCard";
 import {
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Constellation } from "@/components/Constellation";
-import { ArrowRight, Clock3, Sparkles, Waypoints } from "lucide-react";
+import { ArrowRight, Clock3, Sparkles, Waypoints, type LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 import {
   GUIDANCE_LABELS,
@@ -413,11 +413,10 @@ const InsightLink = ({
   to: string;
   label: string;
   description: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: LucideIcon;
 }) => (
-  <button
-    type="button"
-    onClick={() => (window.location.href = to)}
+  <Link
+    to={to}
     className="group flex w-full items-start justify-between gap-3 rounded-[1.15rem] border border-border/60 bg-card/70 px-4 py-3.5 text-left shadow-soft transition-smooth hover:bg-card/92"
   >
     <div className="flex min-w-0 gap-3">
@@ -430,7 +429,7 @@ const InsightLink = ({
       </div>
     </div>
     <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground" strokeWidth={1.8} />
-  </button>
+  </Link>
 );
 
 const InsightButton = ({
@@ -441,7 +440,7 @@ const InsightButton = ({
 }: {
   label: string;
   description: string;
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: LucideIcon;
   onClick: () => void;
 }) => (
   <button
