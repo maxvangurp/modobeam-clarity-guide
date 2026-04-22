@@ -87,9 +87,9 @@ export const ReadingPreviewCard = ({
         style={{ backgroundColor: `hsl(${accent.ring} / 0.36)` }}
       />
       {/* Top row — orb + depth chip */}
-       <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-4.5" : "mb-4.5")}>
+      <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-3.5" : "mb-4.5")}>
         <span
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border"
           style={{
             backgroundImage: state === "ready" ? orbBg : undefined,
             backgroundColor: state === "ready" ? undefined : "hsl(var(--secondary) / 0.5)",
@@ -98,16 +98,16 @@ export const ReadingPreviewCard = ({
           }}
         >
           {state === "locked" ? (
-            <Lock className="h-3.5 w-3.5 text-muted-foreground/70" strokeWidth={1.7} />
+             <Lock className="h-3 w-3 text-muted-foreground/70" strokeWidth={1.7} />
           ) : state === "coming-soon" ? (
-            <Sparkles className="h-3.5 w-3.5 text-muted-foreground/70" strokeWidth={1.7} />
+             <Sparkles className="h-3 w-3 text-muted-foreground/70" strokeWidth={1.7} />
           ) : (
-            <Icon className="h-4 w-4 text-white/95" strokeWidth={1.8} />
+             <Icon className="h-3.5 w-3.5 text-white/95" strokeWidth={1.8} />
           )}
         </span>
 
         <span
-           className="whitespace-nowrap rounded-full border px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.18em]"
+           className="whitespace-nowrap rounded-full border px-2.5 py-1 text-[7.5px] font-semibold uppercase tracking-[0.18em]"
           style={{
              color: `hsl(${accent.ring} / 0.96)`,
              borderColor: `hsl(${accent.ring} / 0.2)`,
@@ -119,17 +119,17 @@ export const ReadingPreviewCard = ({
       </div>
 
       {/* Title + subtitle */}
-      <div className={cn(isCarousel ? "min-h-[5.2rem] space-y-1.5" : "space-y-1.5")}>
+      <div className={cn(isCarousel ? "min-h-[5rem] space-y-1" : "space-y-1.5")}>
         <p
           className={cn(
             "font-display leading-[1.14] text-foreground",
-             isCarousel ? "text-[1.24rem] font-semibold" : "text-[1.08rem] font-semibold",
+             isCarousel ? "max-w-[11ch] text-[1.18rem] font-semibold" : "text-[1.08rem] font-semibold",
           )}
         >
           {label}
         </p>
         {subtitle && (
-          <p className="max-w-[19ch] text-[11.5px] leading-[1.5] text-muted-foreground/96">
+          <p className="max-w-[19ch] text-[11px] leading-[1.48] text-muted-foreground/94">
             {subtitle}
           </p>
         )}
