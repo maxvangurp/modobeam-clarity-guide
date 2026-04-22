@@ -42,6 +42,8 @@ import {
   Image as ImageIcon,
   ChevronRight,
 } from "lucide-react";
+import { layout } from "@/lib/layout";
+import { cn } from "@/lib/utils";
 
 interface InsightRow {
   id: string;
@@ -291,10 +293,11 @@ const Insight = () => {
   return (
     <AppShell showBack backTo="/" screenMood="reflect">
       {/* Header — tinted by the moment chosen for this reading */}
-      <section className="pt-2 pb-6 animate-fade-up">
-        <div className="flex items-center gap-2 mb-2">
+      <section className={cn(layout.pageHeader, layout.pageSection)}>
+        <div className={layout.pageIntro}>
+        <div className="flex items-center gap-2">
           <p
-            className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground"
+            className={layout.eyebrow}
             style={tint ? { color: tintedRing } : undefined}
           >
             Your reflection
@@ -321,6 +324,7 @@ const Insight = () => {
             "{insight.intention}"
           </p>
         )}
+        </div>
       </section>
 
       {/* Cards */}
@@ -334,7 +338,7 @@ const Insight = () => {
           return (
             <article
               key={card.id}
-              className="rounded-3xl bg-card/70 backdrop-blur p-5 shadow-soft border"
+              className="rounded-3xl border bg-card/70 p-5 shadow-soft backdrop-blur"
               style={
                 tint
                   ? { borderColor: `hsl(${tint.ring} / 0.22)` }
@@ -516,18 +520,20 @@ const Insight = () => {
 
       {/* Reflection moment */}
       <section className="mt-10 animate-fade-up [animation-delay:280ms]">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+        <div className={layout.pageIntro}>
+        <p className={layout.eyebrow}>
           A moment with yourself
         </p>
         <h2 className="font-display text-[22px] leading-tight font-light text-foreground">
           Take a moment to <span className="font-medium italic">reflect</span>.
         </h2>
-        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
+        <p className={layout.body}>
           Choose the response that fits your energy — write, tap a few truths, or speak it out.
         </p>
+        </div>
 
         {prompts.length > 0 && (
-          <div className="mt-5 rounded-2xl bg-card/40 backdrop-blur border border-border/40 px-4 py-4">
+          <div className="mt-5 rounded-2xl border border-border/40 bg-card/40 px-4 py-4 backdrop-blur">
             <div className="flex items-start gap-3">
               <span className="font-display text-muted-foreground/70 tabular-nums shrink-0 text-[12px] mt-0.5">
                 {String(activePromptIdx + 1).padStart(2, "0")}/{String(prompts.length).padStart(2, "0")}
@@ -623,10 +629,10 @@ const Insight = () => {
               </p>
             ) : (
               <>
-                <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
+                <p className={cn(layout.eyebrow, "mb-3")}>
                   How does today feel?
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className={layout.chipRow}>
                   {(Object.keys(MOOD_LABELS) as MoodSnap[]).map((m) => (
                     <button
                       key={m}
@@ -653,7 +659,7 @@ const Insight = () => {
           ref={summaryRef}
           className="mt-8 animate-fade-up"
         >
-          <div className="rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-6 shadow-soft">
+            <div className="rounded-3xl border border-border/50 bg-card/60 p-6 shadow-soft backdrop-blur">
             <div className="flex items-center gap-2 mb-3">
               <span className="h-1.5 w-1.5 rounded-full bg-beam shadow-glow" />
               <h2 className="font-display text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
@@ -735,7 +741,7 @@ const Insight = () => {
           ref={nextStepsRef}
           className="mt-10 mb-4 animate-fade-up"
         >
-          <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
+          <p className={cn(layout.eyebrow, "mb-3")}>
             Where to go from here
           </p>
 

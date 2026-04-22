@@ -41,6 +41,8 @@ import {
 import { checkReturnAndStamp } from "@/lib/returnGap";
 import { haptic } from "@/lib/haptics";
 import { SunGlyphChip } from "@/components/SunGlyphChip";
+import { layout } from "@/lib/layout";
+import { cn } from "@/lib/utils";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
@@ -215,8 +217,9 @@ const Index = () => {
       )}
 
       {/* 1. Welcome + continuity */}
-      <section className="pt-6 pb-8 animate-fade-up">
-        <div className="flex items-center justify-between gap-3">
+      <section className="animate-fade-up pt-6 pb-8">
+        <div className={layout.sectionStack}>
+          <div className={layout.splitHeader}>
           <div className="flex items-center gap-2 min-w-0">
             <p className="text-sm text-muted-foreground tracking-wide truncate">
               {greeting}
@@ -245,6 +248,7 @@ const Index = () => {
             </div>
           )}
         </div>
+        </div>
 
         {/* Soft weekly progress — 7 days, no judgment */}
         {insights.length > 0 && (
@@ -262,7 +266,7 @@ const Index = () => {
           />
         )}
 
-        <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground mt-4">
+        <h1 className={layout.title}>
           Take a breath.
           <br />
           <span className="font-medium italic">Begin</span> when you're ready.
@@ -385,10 +389,10 @@ const Index = () => {
 
       {/* 2. Moment check-in — light, optional, inline */}
       <section className="animate-fade-up [animation-delay:120ms]">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
+        <p className={layout.sectionLabel}>
           What feels closest right now?
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className={layout.chipRow}>
           {MOMENT_ORDER.map((id) => {
             const selected = moment === id;
             const t = MOMENT_TINTS[id];
@@ -420,7 +424,7 @@ const Index = () => {
             );
           })}
         </div>
-        <div className="mt-2 flex items-center justify-between gap-3">
+        <div className={layout.helperRow}>
           <p className="text-[11px] text-muted-foreground/70">
             Optional — shapes this reading only.
           </p>
@@ -561,10 +565,10 @@ const ExploreCarousel = ({
   };
 
   return (
-    <div className="mt-8 animate-fade-up [animation-delay:300ms]">
-      <div className="flex items-baseline justify-between gap-3 mb-3 px-0.5">
+      <div className="mt-8 animate-fade-up [animation-delay:300ms]">
+        <div className={cn(layout.splitHeader, "mb-3") }>
         <div>
-          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+            <p className={layout.sectionLabel}>
             Or try a different way in
           </p>
           <p className="font-display text-[16px] font-medium text-foreground mt-0.5">

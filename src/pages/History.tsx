@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
 import { Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { layout } from "@/lib/layout";
+import { cn } from "@/lib/utils";
 
 /* ── types ── */
 
@@ -167,7 +169,7 @@ const summaryCache = new Map<string, PeriodSummary>();
 /* ── Components ── */
 
 const EmptyState = () => (
-  <div className="rounded-3xl bg-card/60 backdrop-blur border border-border/60 p-8 text-center animate-fade-up">
+  <div className="rounded-3xl border border-border/60 bg-card/60 p-8 text-center backdrop-blur animate-fade-up">
     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-beam-soft to-beam mx-auto mb-4 shadow-glow" />
     <h2 className="font-display text-lg mb-1">Nothing here yet</h2>
     <p className="text-sm text-muted-foreground mb-5">
@@ -257,8 +259,8 @@ const TimelineView = ({ rows }: { rows: Row[] }) => {
   return (
     <div className="space-y-8 animate-fade-up">
       {rows.length >= 2 && (
-        <section className="rounded-3xl bg-card/50 backdrop-blur border border-border/40 px-4 py-5 shadow-soft">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70 mb-2 text-center">
+        <section className="rounded-3xl border border-border/40 bg-card/50 px-5 py-5 shadow-soft backdrop-blur">
+          <p className="mb-3 text-center text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70">
             Your river so far
           </p>
           <HistoryRiver insights={riverInsights} />
@@ -266,10 +268,10 @@ const TimelineView = ({ rows }: { rows: Row[] }) => {
       )}
       {groups.map((group) => (
         <section key={group.label}>
-          <h2 className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3 pl-1">
+          <h2 className={layout.eyebrow}>
             {group.label}
           </h2>
-          <ul className="space-y-2.5">
+          <ul className="mt-3 space-y-3">
             {group.items.map((r) => (
               <TimelineEntry key={r.id} r={r} />
             ))}
@@ -331,7 +333,7 @@ const PeriodSummaryCard = ({
   // Auto-fetch on mount
   useEffect(() => {
     if (!summary && !loading) fetchSummary();
-  }, []);
+  }, [fetchSummary, loading, summary]);
 
   const top = topCards(items);
 
@@ -409,7 +411,7 @@ const WeekView = ({ rows }: { rows: Row[] }) => {
     <div className="space-y-10 animate-fade-up">
       {weeks.map((week) => (
         <section key={week.key}>
-          <h2 className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3 pl-1">
+          <h2 className={layout.eyebrow}>
             {week.label}
           </h2>
 
@@ -420,7 +422,7 @@ const WeekView = ({ rows }: { rows: Row[] }) => {
           />
 
           {/* Mini daily overview */}
-          <ul className="mt-4 space-y-1 pl-1">
+          <ul className="mt-4 space-y-1.5">
             {week.items.map((r) => (
               <li key={r.id}>
                 <Link
@@ -467,8 +469,8 @@ const MonthView = ({ rows }: { rows: Row[] }) => {
 
         return (
           <section key={month.key}>
-            <div className="flex items-baseline justify-between mb-3 pl-1">
-              <h2 className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground">
+            <div className={cn(layout.splitHeader, "mb-3")}>
+              <h2 className={layout.eyebrow}>
                 {month.label}
               </h2>
               <span className="text-[10px] text-muted-foreground/50">
@@ -528,16 +530,18 @@ const History = () => {
 
   return (
     <AppShell screenMood="history">
-      <section className="pt-6 pb-4 animate-fade-up">
-        <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground mb-2">
+      <section className="animate-fade-up pt-2 pb-6">
+        <div className={layout.pageIntro}>
+        <p className={layout.eyebrow}>
           Looking back
         </p>
-        <h1 className="font-display text-3xl font-light">Your reflections</h1>
+        <h1 className={layout.title}>Your reflections</h1>
+        </div>
       </section>
 
       {/* Tabs */}
       {rows && rows.length > 0 && (
-        <nav className="flex gap-1 mb-6 bg-card/50 rounded-xl p-1 border border-border/40 animate-fade-up [animation-delay:60ms]">
+        <nav className="mb-8 flex gap-1 rounded-xl border border-border/40 bg-card/50 p-1 animate-fade-up [animation-delay:60ms]">
           {TABS.map((t) => (
             <button
               key={t.key}

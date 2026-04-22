@@ -18,6 +18,7 @@ import {
   readingsRemainingToUnlock,
 } from "@/lib/progression";
 import { Compass } from "lucide-react";
+import { layout } from "@/lib/layout";
 
 interface SectionDef {
   key: "quick" | "deeper" | "context" | "coming";
@@ -90,21 +91,23 @@ const Readings = () => {
   return (
     <AppShell screenMood="reveal">
       {/* Header */}
-      <section className="pt-2 pb-7 animate-fade-up">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
+      <section className={layout.pageHeader}>
+        <div className={layout.pageIntro}>
+        <p className={layout.eyebrow}>
           Ways to reflect
         </p>
-        <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground">
+        <h1 className={layout.title}>
           Choose your <span className="font-medium italic">depth</span>.
         </h1>
-        <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+        <p className={layout.body}>
           Modobeam offers many ways in. Start with what's near. New shapes
           appear as you keep showing up.
         </p>
+        </div>
       </section>
 
       {/* Sections */}
-      <div className="space-y-9">
+      <div className="space-y-8">
         {SECTIONS.map((section, sectionIdx) => {
           if (section.key === "context") {
             return (
@@ -116,7 +119,7 @@ const Readings = () => {
                 <SectionHeader title={section.title} hint={section.hint} />
                 <button
                   onClick={() => navigate("/life-areas")}
-                  className="group w-full text-left rounded-2xl bg-[linear-gradient(140deg,hsl(40_30%_97%)_0%,hsl(211_40%_92%)_60%,hsl(218_36%_85%)_100%)] border border-border/50 px-5 py-4 mt-3 shadow-soft hover:shadow-card hover:-translate-y-0.5 transition-smooth"
+                  className="group mt-3 w-full rounded-2xl border border-border/50 bg-[linear-gradient(140deg,hsl(40_30%_97%)_0%,hsl(211_40%_92%)_60%,hsl(218_36%_85%)_100%)] px-5 py-5 text-left shadow-soft transition-smooth hover:-translate-y-0.5 hover:shadow-card"
                 >
                   <div className="flex items-center gap-3">
                     <span className="h-10 w-10 rounded-full bg-background/60 backdrop-blur flex items-center justify-center shrink-0">
@@ -153,7 +156,7 @@ const Readings = () => {
                 style={{ animationDelay: `${120 + sectionIdx * 80}ms` }}
               >
                 <SectionHeader title={section.title} hint={section.hint} />
-                <div className="mt-3 space-y-2.5">
+                <div className="mt-3 space-y-3">
                   {featuredComing.map((m) => (
                     <ReadingPreviewCard
                       key={m.id}
@@ -181,7 +184,7 @@ const Readings = () => {
               style={{ animationDelay: `${120 + sectionIdx * 80}ms` }}
             >
               <SectionHeader title={section.title} hint={section.hint} />
-              <div className="mt-3 space-y-2.5">
+              <div className="mt-3 space-y-3">
                 {real.map((r) => {
                   const unlocked = isReadingUnlocked(r.id, t);
                   const remaining = readingsRemainingToUnlock(r.id, t);
@@ -216,11 +219,11 @@ const Readings = () => {
 };
 
 const SectionHeader = ({ title, hint }: { title: string; hint: string }) => (
-  <div className="flex items-baseline justify-between gap-3 px-1">
+  <div className={layout.splitHeader}>
     <h2 className="font-display text-[15px] font-medium text-foreground">
       {title}
     </h2>
-    <span className="text-[10.5px] uppercase tracking-[0.2em] text-muted-foreground/70 text-right">
+    <span className="max-w-[12rem] text-right text-[10.5px] uppercase tracking-[0.2em] text-muted-foreground/70">
       {hint}
     </span>
   </div>

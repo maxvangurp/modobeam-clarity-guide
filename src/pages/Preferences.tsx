@@ -27,6 +27,7 @@ import { fetchRecentInsights, type InsightLite } from "@/lib/progression";
 import { readKnowYou, shouldRegenerate, writeKnowYou } from "@/lib/aiKnowYou";
 import { supabase } from "@/integrations/supabase/client";
 import { layout } from "@/lib/layout";
+import { cn } from "@/lib/utils";
 
 const Preferences = () => {
   const navigate = useNavigate();
@@ -134,17 +135,19 @@ const Preferences = () => {
 
   return (
     <AppShell showBack backTo="/">
-      <section className="pt-2 pb-8 animate-fade-up">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
+      <section className={cn(layout.pageHeader, layout.pageSection)}>
+        <div className={layout.pageIntro}>
+          <p className={layout.eyebrow}>
           Preferences
         </p>
-        <h1 className="font-display text-[2rem] leading-[1.1] font-light tracking-tight text-foreground">
+          <h1 className={layout.title}>
           How Modobeam fits you.
         </h1>
-        <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+          <p className={layout.body}>
           Adjust anything, anytime. These shape the baseline tone — your
           moment-of choices still come first.
         </p>
+        </div>
       </section>
 
       {/* Constellation — long-arc portrait of presence over time */}
@@ -334,7 +337,7 @@ const Preferences = () => {
         </div>
       </Section>
 
-      <div className="mt-10 mb-4">
+      <div className={cn(layout.actionBlock, "mb-4")}>
         <Button
           size="lg"
           onClick={save}
@@ -357,12 +360,12 @@ const Section = ({
   children: React.ReactNode;
 }) => (
   <section className="mt-9 animate-fade-up">
-    <div className="mb-4 space-y-2">
+    <div className="mb-4 space-y-3">
       <p className={layout.eyebrow}>
-      {kicker}
+        {kicker}
       </p>
       <h2 className="font-display text-[1.1rem] leading-snug text-foreground font-light">
-      {title}
+        {title}
       </h2>
     </div>
     {children}
