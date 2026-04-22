@@ -119,9 +119,10 @@ export const ReflectionCard = ({
         <div
           className={cn(
             "relative h-full w-full preserve-3d",
-            "transition-transform duration-[1100ms] [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
+            "transition-transform [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
             revealed && "rotate-y-180",
           )}
+          style={{ transitionDuration: "1100ms" }}
         >
         {/* Back */}
         <div className="absolute inset-0 backface-hidden rounded-[1.5rem] card-back-pattern shadow-card overflow-hidden">
