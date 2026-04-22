@@ -160,10 +160,38 @@ const Insight = () => {
   const tint = getMomentTint(moment);
   const tintedSoftBg = tint ? `hsl(${tint.bg} / 0.55)` : undefined;
   const tintedRing = tint ? `hsl(${tint.ring})` : undefined;
-  const tintedAccentBg = tint
-    ? `linear-gradient(135deg, hsl(${tint.bg}) 0%, hsl(${tint.hsl} / 0.85) 100%)`
-    : undefined;
-  const tintedGlow = tint ? `0 0 28px hsl(${tint.hsl} / 0.35)` : undefined;
+  const prompts = Array.from(new Set(cards.flatMap((c) => c.prompts))).slice(
+    0,
+    3,
+  );
+  const activePrompt = prompts[activePromptIdx];
+  const quickChoiceSet = useMemo(
+    () =>
+      buildQuickChoiceSet({
+        prompt: activePrompt,
+        cards,
+        reading,
+      }),
+    [activePrompt, cards, reading],
+  );
+  const finalReflectionText = useMemo(() => {
+    if (reflectionMode === "quick") {
+      return composeQuickReflection(activePrompt, quickSelections, quickNote);
+    }
+
+    if (reflectionMode === "voice") {
+      return voiceJournal.trim();
+    }
+
+    return journal.trim();
+  }, [
+    activePrompt,
+    journal,
+    quickNote,
+    quickSelections,
+    reflectionMode,
+    voiceJournal,
+  ]);
 
   const fetchSummary = async (text: string) => {
     if (!text.trim() || !insight) return;
@@ -200,12 +228,12 @@ const Insight = () => {
   };
 
   const saveJournal = async () => {
-    if (!journal.trim() || !id) return;
+    if (!finalReflectionText || !id) return;
     setSaving(true);
     const { error } = await supabase.from("journal_entries").insert({
       insight_id: id,
       session_id: getSessionId(),
-      content: journal.trim(),
+      content: finalReflectionText,
     });
     setSaving(false);
     if (error) {
@@ -216,7 +244,7 @@ const Insight = () => {
     haptic("save");
     const { count, isNewDay } = recordReflectionSaved();
     // Quietly recognize depth without scoring it visibly.
-    const wordCount = journal.trim().split(/\s+/).filter(Boolean).length;
+    const wordCount = finalReflectionText.split(/\s+/).filter(Boolean).length;
     const landed = wordCount >= 80;
     if (landed) {
       toast.success("That landed");
@@ -227,7 +255,7 @@ const Insight = () => {
     } else {
       toast.success("Saved");
     }
-    fetchSummary(journal);
+    fetchSummary(finalReflectionText);
   };
 
   const skipJournal = () => {
