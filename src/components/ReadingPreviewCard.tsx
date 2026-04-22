@@ -72,7 +72,7 @@ export const ReadingPreviewCard = ({
         interactive
           ? "shadow-soft hover:shadow-card hover:-translate-y-0.5"
           : "shadow-soft",
-        isCarousel ? "px-4.5 py-4.5" : "px-5 py-5",
+        isCarousel ? "px-5 py-5" : "px-5 py-5",
         state !== "ready" && "opacity-90",
         className,
       )}
@@ -82,7 +82,7 @@ export const ReadingPreviewCard = ({
       }}
     >
       {/* Top row — orb + depth chip */}
-      <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-3.5" : "mb-4")}>
+      <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-4" : "mb-4")}>
         <span
           className="h-9 w-9 rounded-full flex items-center justify-center shrink-0"
           style={{
@@ -113,7 +113,7 @@ export const ReadingPreviewCard = ({
       </div>
 
       {/* Title + subtitle */}
-      <div className={cn(isCarousel ? "min-h-[3.55rem]" : "space-y-1.5")}>
+      <div className={cn(isCarousel ? "min-h-[3.8rem]" : "space-y-1.5")}>
         <p
           className={cn(
             "font-display font-medium text-foreground leading-tight",
@@ -158,7 +158,7 @@ export const ReadingPreviewCard = ({
         to={to!}
           className={cn(
             "group block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl",
-            isCarousel ? "w-[15.75rem] shrink-0" : "w-full",
+            isCarousel ? "w-[16.25rem] shrink-0" : "w-full",
           )}
         aria-label={`Open ${label}`}
       >
@@ -170,7 +170,7 @@ export const ReadingPreviewCard = ({
   return (
     <div
       className={cn(
-        isCarousel ? "w-[15.75rem] shrink-0" : "w-full",
+        isCarousel ? "w-[16.25rem] shrink-0" : "w-full",
         "cursor-default",
       )}
       aria-disabled
