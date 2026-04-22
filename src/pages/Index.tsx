@@ -60,6 +60,14 @@ const MOMENT_CHIP: Record<MomentNeed, string> = {
   reflect: "Just reflecting",
 };
 
+const MOMENT_SURFACE: Record<MomentNeed, string> = {
+  clarity: "bg-tone-clarity",
+  calm: "bg-tone-calm",
+  direction: "bg-tone-direction",
+  uncertain: "bg-tone-uncertain",
+  reflect: "bg-tone-reflect",
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const [showNudge, setShowNudge] = useState(false);
@@ -217,153 +225,163 @@ const Index = () => {
       )}
 
       {/* 1. Welcome + continuity */}
-      <section className={cn(layout.pageSection, "pt-5 pb-6")}>
-        <div className="space-y-6">
-          <div className="space-y-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0 space-y-3">
+      <section className={cn(layout.pageSection, "pt-5 pb-2")}>
+        <div className="space-y-7">
+          <div className={cn("overflow-hidden rounded-[1.6rem] border border-border/80 bg-gradient-hero shadow-card", moment && MOMENT_SURFACE[moment])}>
+            <div className="space-y-6 px-5 py-6">
+              <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <p className="text-[13px] font-medium tracking-[0.01em] text-foreground/72">
+                  <p className="text-[12.5px] font-medium tracking-[0.01em] text-foreground/74">
                     {greeting}
                   </p>
                   <SunGlyphChip />
                 </div>
-                <h1 className={cn(layout.title, "max-w-[10.2ch]")}>
-                  Take a breath.
-                  <br />
-                  <span className="font-medium italic text-foreground/84">Begin</span> when you're ready.
-                </h1>
+                <div className="space-y-3">
+                  <p className={layout.eyebrow}>Daily clarity</p>
+                  <h1 className={cn(layout.title, "max-w-[9.6ch]")}>
+                    Take a breath.
+                    <br />
+                    <span className="font-medium italic text-foreground/84">Begin</span> when you're ready.
+                  </h1>
+                </div>
               </div>
-            </div>
 
-            {(insights.length > 0 || streak.count > 0) && (
-              <div className="flex flex-wrap items-center gap-2.5">
-                {insights.length > 0 && <WeekProgress week={week} />}
-                {streak.count > 0 && (
-                  <div
-                    className="inline-flex min-h-10 items-center gap-2.5 rounded-full border border-border/70 bg-background/90 px-3.5 py-2 shadow-soft"
-                    title={
-                      streak.savedToday
-                        ? "You've reflected today"
-                        : "Your gentle rhythm so far"
-                    }
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
+              {(insights.length > 0 || streak.count > 0) && (
+                <div className="flex flex-wrap items-center gap-2.5 border-t border-border/55 pt-4">
+                  {insights.length > 0 && <WeekProgress week={week} />}
+                  {streak.count > 0 && (
+                    <div
+                      className="inline-flex min-h-10 items-center gap-2.5 rounded-full border border-border/75 bg-background/92 px-3.5 py-2 shadow-soft"
+                      title={
                         streak.savedToday
-                          ? "bg-foreground/80 animate-gentle-breathe"
-                          : "bg-muted-foreground/50"
-                      }`}
-                    />
-                    <span className="text-[11px] font-medium tabular-nums text-foreground/82">
-                      {streak.count} {streak.count === 1 ? "moment" : "moments"}
-                    </span>
-                  </div>
+                          ? "You've reflected today"
+                          : "Your gentle rhythm so far"
+                      }
+                    >
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${
+                          streak.savedToday
+                            ? "bg-foreground/84 animate-gentle-breathe"
+                            : "bg-muted-foreground/56"
+                        }`}
+                      />
+                      <span className="text-[11px] font-medium tabular-nums text-foreground/84">
+                        {streak.count} {streak.count === 1 ? "moment" : "moments"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {(last && lastCardName) || themes.length > 0 ? (
+              <div className="grid gap-3">
+                {last && lastCardName && (
+                  <section className="rounded-[1.2rem] border border-border/72 bg-card/92 px-4 py-4 shadow-soft">
+                    <div className="space-y-2">
+                      <p className={layout.sectionLabel}>Continuity</p>
+                      <p className="max-w-[31ch] text-[13px] leading-[1.72] text-foreground/84">
+                        Last time you reflected on <span className="italic text-foreground">{lastCardName}</span>
+                        {" — "}
+                        <Link
+                          to={`/insight/${last.id}`}
+                          className="font-medium underline underline-offset-4 decoration-muted-foreground/40 hover:text-foreground hover:decoration-foreground transition-smooth"
+                        >
+                          return to it
+                        </Link>
+                        .
+                      </p>
+                    </div>
+                  </section>
                 )}
+
+                {themes.length > 0 && (
+                  <section className="rounded-[1.2rem] border border-border/72 bg-gradient-module px-4 py-4 shadow-soft">
+                    <div className="flex items-start gap-3">
+                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/84">
+                        <Waypoints
+                          className="h-3.5 w-3.5 text-foreground/76"
+                          strokeWidth={1.8}
+                        />
+                      </span>
+                      <div className="min-w-0 space-y-2">
+                        <p className={layout.sectionLabel}>Recent themes</p>
+                        <p className="max-w-[30ch] text-[12.5px] leading-[1.65] text-foreground/86">
+                          Lately you've been moving around{" "}
+                          {themes.map((t, i) => (
+                            <span key={t.label}>
+                              <button
+                                onClick={() => setActiveTheme(t.label)}
+                                className="font-medium italic text-foreground underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-smooth"
+                                aria-label={`See reflections about ${t.label}`}
+                              >
+                                {t.label}
+                              </button>
+                              {i < themes.length - 1 && <span className="text-muted-foreground"> and </span>}
+                            </span>
+                          ))}
+                          .
+                        </p>
+                      </div>
+                    </div>
+                  </section>
+                )}
+              </div>
+            ) : null}
+
+            {/* Weekly synthesis — once per week, only when there's enough material */}
+            {weeklyOffer && !weeklyDismissed && (
+              <WeeklySynthesisCard
+                weekId={weeklyOffer.weekId}
+                recent={weeklyOffer.recent}
+                onDismiss={() => setWeeklyDismissed(true)}
+              />
+            )}
+
+            {/* Theme-driven reading hint — surfaces when a recurring thread
+                naturally points to a deeper reading they haven't opened yet. */}
+            {readingHint && !hintDismissed && (
+              <div className="animate-fade-up rounded-[1.25rem] border border-border/72 bg-card/94 px-4 py-4 shadow-soft">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/60 bg-secondary/46">
+                    <readingHint.reading.icon
+                      className="h-3.5 w-3.5 text-foreground/80"
+                      strokeWidth={1.8}
+                    />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className={layout.sectionLabel}>Suggested next reading</p>
+                    <p className="mt-2 text-[13px] leading-[1.65] text-foreground/92">
+                      <span className="italic">"{readingHint.hint.matchedTheme}"</span> keeps surfacing. A{" "}
+                      <span className="font-medium">{readingHint.reading.label.toLowerCase()}</span> reading might meet it.
+                    </p>
+                    <button
+                      onClick={() => {
+                        haptic("select");
+                        const params = new URLSearchParams();
+                        if (moment) params.set("moment", moment);
+                        navigate(
+                          `/draw/${readingHint.reading.id}${params.toString() ? `?${params}` : ""}`,
+                        );
+                      }}
+                      className="mt-3 text-[11px] uppercase tracking-[0.2em] text-foreground/80 transition-smooth hover:text-foreground"
+                    >
+                      Try it →
+                    </button>
+                  </div>
+                  <button
+                    onClick={() => setHintDismissed(true)}
+                    aria-label="Dismiss"
+                    className="-mr-1 -mt-0.5 text-muted-foreground/60 transition-smooth hover:text-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
               </div>
             )}
           </div>
-
-          {/* Weekly synthesis — once per week, only when there's enough material */}
-          {weeklyOffer && !weeklyDismissed && (
-            <WeeklySynthesisCard
-              weekId={weeklyOffer.weekId}
-              recent={weeklyOffer.recent}
-              onDismiss={() => setWeeklyDismissed(true)}
-            />
-          )}
-
-          {/* Continuity: link back to last reflection */}
-          {last && lastCardName && (
-            <p className="max-w-[31ch] text-[13px] leading-[1.7] text-muted-foreground/92">
-              Last time you reflected on{" "}
-              <span className="text-foreground/80 italic">{lastCardName}</span>
-              {" — "}
-              <Link
-                to={`/insight/${last.id}`}
-                className="underline underline-offset-4 decoration-muted-foreground/40 hover:text-foreground hover:decoration-foreground transition-smooth"
-              >
-                return to it
-              </Link>
-              .
-            </p>
-          )}
-
-          {/* Pattern awareness — recurring themes across recent reflections */}
-          {themes.length > 0 && (
-            <div className="inline-flex items-start gap-2.5 rounded-[1.1rem] border border-border/65 bg-background/88 px-4 py-3 shadow-soft">
-              <Waypoints
-                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/82"
-                strokeWidth={1.8}
-              />
-              <p className="max-w-[30ch] text-[12.5px] leading-[1.6] text-foreground/84">
-                Lately you've been moving around{" "}
-                {themes.map((t, i) => (
-                  <span key={t.label}>
-                    <button
-                      onClick={() => setActiveTheme(t.label)}
-                      className="italic text-foreground underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-smooth"
-                      aria-label={`See reflections about ${t.label}`}
-                    >
-                      {t.label}
-                    </button>
-                    {i < themes.length - 1 && (
-                      <span className="text-muted-foreground"> and </span>
-                    )}
-                  </span>
-                ))}
-                .
-              </p>
-            </div>
-          )}
-
-          {/* Theme-driven reading hint — surfaces when a recurring thread
-              naturally points to a deeper reading they haven't opened yet. */}
-          {readingHint && !hintDismissed && (
-            <div className="animate-fade-up rounded-[1.25rem] border border-border/65 bg-card px-4 py-4 shadow-soft">
-              <div className="flex items-start gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary/45">
-                  <readingHint.reading.icon
-                    className="h-3.5 w-3.5 text-foreground/80"
-                    strokeWidth={1.8}
-                  />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-foreground/56">
-                    Something in your reflections
-                  </p>
-                  <p className="mt-1.5 text-[13px] leading-[1.65] text-foreground/90">
-                    <span className="italic">"{readingHint.hint.matchedTheme}"</span>{" "}
-                    keeps surfacing. A{" "}
-                    <span className="font-medium">
-                      {readingHint.reading.label.toLowerCase()}
-                    </span>{" "}
-                    reading might meet it.
-                  </p>
-                  <button
-                    onClick={() => {
-                      haptic("select");
-                      const params = new URLSearchParams();
-                      if (moment) params.set("moment", moment);
-                      navigate(
-                        `/draw/${readingHint.reading.id}${params.toString() ? `?${params}` : ""}`,
-                      );
-                    }}
-                    className="mt-2 text-[11px] uppercase tracking-[0.2em] text-foreground/80 transition-smooth hover:text-foreground"
-                  >
-                    Try it →
-                  </button>
-                </div>
-                <button
-                  onClick={() => setHintDismissed(true)}
-                  aria-label="Dismiss"
-                  className="-mr-1 -mt-0.5 text-muted-foreground/60 transition-smooth hover:text-foreground"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </section>
 
@@ -375,16 +393,16 @@ const Index = () => {
       />
 
       {/* Daily quote — quiet, rotates each day */}
-      <section className={cn(layout.pageSection, "mb-9 [animation-delay:80ms]")}>
-        <figure className="border-l-2 border-primary/35 pl-4">
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.28em] text-foreground/54">
+      <section className={cn(layout.pageSection, "mb-10 [animation-delay:80ms]")}>
+        <figure className={cn("rounded-[1.25rem] border border-border/72 px-4 py-4 shadow-soft", moment ? MOMENT_SURFACE[moment] : "bg-gradient-module")}>
+          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-foreground/58">
             Today
           </p>
-          <blockquote className="max-w-[25ch] font-display text-[1.18rem] leading-[1.42] text-foreground italic">
+          <blockquote className="max-w-[24ch] font-display text-[1.24rem] leading-[1.4] text-foreground italic">
             "{quote.text}"
           </blockquote>
           {quote.author && (
-            <figcaption className="mt-2.5 text-[12px] text-muted-foreground/90">
+            <figcaption className="mt-3 text-[12px] text-muted-foreground/94">
               — {quote.author}
             </figcaption>
           )}
@@ -393,15 +411,15 @@ const Index = () => {
 
       {/* 2. Moment check-in — precise tool, not a soft panel */}
       <section className={cn(layout.pageSection, "mb-12 [animation-delay:120ms]")}>
-        <div className="space-y-4 border-y border-border/50 py-4">
+        <div className={cn("space-y-4 rounded-[1.25rem] border border-border/72 px-4 py-4 shadow-soft", moment ? MOMENT_SURFACE[moment] : "bg-card/90")}>
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0 space-y-1.5">
               <p className={layout.sectionLabel}>Set the tone</p>
-              <p className="max-w-[27ch] text-[13.5px] font-medium leading-[1.45] text-foreground/88">
+              <p className="max-w-[27ch] text-[14px] font-medium leading-[1.45] text-foreground/90">
                 What feels closest right now?
               </p>
             </div>
-            <span className="shrink-0 pt-0.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/78">
+            <span className="shrink-0 pt-0.5 text-[10px] uppercase tracking-[0.2em] text-muted-foreground/84">
               Optional
             </span>
           </div>
@@ -430,7 +448,7 @@ const Index = () => {
                     className={`min-h-10 rounded-full border px-3.5 py-2 text-[12px] transition-smooth ${
                     selected
                       ? "font-medium shadow-soft"
-                        : "bg-background/84 text-foreground/84 border-border/65 hover:bg-card hover:text-foreground"
+                        : "bg-background/88 text-foreground/88 border-border/70 hover:bg-card hover:text-foreground"
                   }`}
                 >
                   {MOMENT_CHIP[id]}
@@ -439,7 +457,7 @@ const Index = () => {
             })}
           </div>
           <div className="flex items-center justify-between gap-3 border-t border-border/45 pt-3">
-            <p className="text-[11px] leading-none text-muted-foreground/86">
+            <p className="text-[11px] leading-none text-muted-foreground/92">
               Shapes this reading only.
             </p>
             <button
@@ -457,7 +475,7 @@ const Index = () => {
       </section>
 
       {/* 3. Primary action — one clear CTA */}
-      <section className={cn(layout.pageSection, "mt-16 [animation-delay:240ms]")}>
+      <section className={cn(layout.pageSection, "mt-14 [animation-delay:240ms]")}>
         <Button
           size="lg"
           onClick={startDaily}
@@ -466,7 +484,7 @@ const Index = () => {
               ? { boxShadow: `0 0 0 1px hsl(${tint.hsl} / 0.25), 0 0 32px hsl(${tint.hsl} / 0.18)` }
               : undefined
           }
-          className="group w-full h-auto min-h-[9.75rem] justify-between rounded-[1.4rem] bg-gradient-button px-5 py-6 text-primary-foreground shadow-cta transition-smooth hover:opacity-95"
+          className="group w-full h-auto min-h-[10rem] justify-between rounded-[1.3rem] bg-gradient-button px-5 py-6 text-primary-foreground shadow-cta transition-smooth hover:opacity-95"
         >
           <span className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/8">
@@ -498,7 +516,7 @@ const Index = () => {
       {/* Soft suggestion — only when something newly unlocked */}
       {suggestion && !suggestionDismissed && !readingHint && (
         <section className="mt-14 animate-fade-up [animation-delay:320ms]">
-          <div className="rounded-[1.3rem] border border-border/70 bg-card/92 px-5 py-5 shadow-soft">
+          <div className={cn("rounded-[1.3rem] border border-border/72 px-5 py-5 shadow-soft", moment ? MOMENT_SURFACE[moment] : "bg-card/94")}>
             <div className="flex items-start gap-3">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary/52">
               <suggestion.icon
@@ -583,8 +601,8 @@ const ExploreCarousel = ({
   };
 
   return (
-    <section className="animate-fade-up space-y-6 [animation-delay:300ms]">
-      <div className="space-y-4 border-t border-border/55 pt-5">
+    <section className="animate-fade-up space-y-5 [animation-delay:300ms]">
+      <div className="rounded-[1.45rem] border border-border/78 bg-gradient-module px-5 py-5 shadow-soft">
         <div className="flex items-start justify-between gap-4">
           <p className={layout.sectionLabel}>Explore</p>
           <Link
@@ -596,18 +614,18 @@ const ExploreCarousel = ({
           </Link>
         </div>
 
-        <div className="space-y-2.5">
-          <h2 className="max-w-[12ch] font-display text-[1.66rem] font-semibold leading-[1.02] text-foreground">
+        <div className="mt-4 space-y-2.5">
+          <h2 className="max-w-[12ch] font-display text-[1.78rem] font-semibold leading-[1] text-foreground">
             Explore deeper readings
           </h2>
-          <p className="max-w-[28ch] text-[13px] leading-[1.65] text-muted-foreground/90">
+          <p className="max-w-[28ch] text-[13px] leading-[1.65] text-muted-foreground/96">
             A slower way in when one card isn&apos;t quite enough.
           </p>
         </div>
       </div>
 
-      <div className="-mx-1 border-y border-border/50 py-4">
-        <div className="flex gap-3 overflow-x-auto px-1 pb-1 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <div className="-mx-1 rounded-[1.45rem] border border-border/72 bg-card/80 py-4 shadow-soft">
+        <div className="flex gap-3 overflow-x-auto px-4 pb-1 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {featuredReal.map((r) => {
             const unlocked = isReadingUnlocked(r.id, totalReflections);
             const remaining = readingsRemainingToUnlock(r.id, totalReflections);
