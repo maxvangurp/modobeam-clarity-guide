@@ -31,18 +31,22 @@ import { ArrowRight, Pause, Sparkles, Waypoints, X } from "lucide-react";
 import { ThemeReflectionsSheet } from "@/components/ThemeReflectionsSheet";
 import { WeekProgress } from "@/components/WeekProgress";
 import { WeeklySynthesisCard } from "@/components/WeeklySynthesisCard";
+import { WeeklyOverviewSheet } from "@/components/WeeklyOverviewSheet";
 import { JustBeHere } from "@/components/JustBeHere";
 import { buildWeek } from "@/lib/weekProgress";
 import { getMomentTint, MOMENT_TINTS } from "@/lib/momentTint";
 import {
+  getCurrentWeekId,
   readCachedSynthesis,
   shouldOfferWeeklySynthesis,
+  type WeeklySynthesis,
 } from "@/lib/weeklySynthesis";
 import { checkReturnAndStamp } from "@/lib/returnGap";
 import { haptic } from "@/lib/haptics";
 import { SunGlyphChip } from "@/components/SunGlyphChip";
 import { layout } from "@/lib/layout";
 import { cn } from "@/lib/utils";
+import { getInsightMoment } from "@/lib/insightMoment";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
@@ -98,6 +102,7 @@ const Index = () => {
   const [weeklyOffer, setWeeklyOffer] = useState<
     { weekId: string; recent: InsightLite[] } | null
   >(null);
+  const [weeklyOverviewOpen, setWeeklyOverviewOpen] = useState(false);
   const [weeklyDismissed, setWeeklyDismissed] = useState(false);
   const [breathing, setBreathing] = useState(false);
 
@@ -163,6 +168,40 @@ const Index = () => {
   const isReturning = !!last;
   const week = useMemo(() => buildWeek(insights), [insights]);
   const tint = getMomentTint(moment);
+  const currentWeekId = useMemo(() => getCurrentWeekId(), []);
+  const weekInsights = useMemo(() => {
+    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    return insights.filter((insight) => new Date(insight.created_at).getTime() >= cutoff);
+  }, [insights]);
+  const checkedInDays = useMemo(
+    () => week.filter((day) => day.filled).length,
+    [week],
+  );
+  const weeklyThemes = useMemo(
+    () => detectRecentThemes(weekInsights, 7),
+    [weekInsights],
+  );
+  const weeklySynthesis = useMemo<WeeklySynthesis | null>(() => {
+    const cached = readCachedSynthesis();
+    return cached?.weekId === currentWeekId ? cached : null;
+  }, [currentWeekId, weeklyOffer]);
+  const weeklyMomentCounts = useMemo(() => {
+    const counts = new Map<MomentNeed, number>();
+    for (const insight of weekInsights) {
+      const savedMoment = getInsightMoment(insight.id);
+      if (!savedMoment) continue;
+      counts.set(savedMoment, (counts.get(savedMoment) ?? 0) + 1);
+    }
+    return [...counts.entries()]
+      .map(([moment, count]) => ({ moment, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [weekInsights]);
+  const weeklyTakeaways = useMemo(() => {
+    return weekInsights
+      .flatMap((insight) => insight.cards.map((card) => card.name))
+      .filter((value, index, list) => list.indexOf(value) === index)
+      .slice(0, 3);
+  }, [weekInsights]);
 
   const greeting = useMemo(() => {
     const name = profile?.firstName;
@@ -198,6 +237,11 @@ const Index = () => {
     const params = new URLSearchParams();
     if (moment) params.set("moment", moment);
     navigate(`/draw/${suggestion.id}${params.toString() ? `?${params}` : ""}`);
+  };
+
+  const openWeeklyOverview = () => {
+    haptic("select");
+    setWeeklyOverviewOpen(true);
   };
 
   return (
@@ -254,32 +298,59 @@ const Index = () => {
                 </div>
               </div>
 
-              {(insights.length > 0 || streak.count > 0) && (
-                <div className="flex flex-wrap items-center gap-2.5 border-t border-border/55 pt-4">
-                  {insights.length > 0 && <WeekProgress week={week} />}
-                  {streak.count > 0 && (
-                    <div
-                      className="inline-flex min-h-10 items-center gap-2.5 rounded-full border border-border/75 bg-background/92 px-3.5 py-2 shadow-soft"
-                      title={
-                        streak.savedToday
-                          ? "You've reflected today"
-                          : "Your gentle rhythm so far"
-                      }
-                    >
-                      <span
-                        className={`h-1.5 w-1.5 rounded-full ${
-                          streak.savedToday
-                            ? "bg-foreground/84 animate-gentle-breathe"
-                            : "bg-muted-foreground/56"
-                        }`}
-                      />
-                      <span className="text-[11px] font-medium tabular-nums text-foreground/84">
-                        {streak.count} {streak.count === 1 ? "moment" : "moments"}
-                      </span>
+              <div className="border-t border-border/55 pt-4">
+                <div className="grid gap-2.5">
+                  <button
+                    type="button"
+                    onClick={openWeeklyOverview}
+                    className="group flex items-center justify-between gap-3 rounded-[1.18rem] border border-border/72 bg-background/90 px-3.5 py-3 text-left shadow-soft transition-smooth hover:border-border hover:bg-background"
+                    aria-label="Open weekly overview"
+                  >
+                    <div className="min-w-0 flex-1 space-y-2">
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-foreground/60">
+                          This week
+                        </p>
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80">
+                          {checkedInDays}/7 days
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between gap-3">
+                        <WeekProgress week={week} />
+                        <ArrowRight
+                          className="h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground group-hover:translate-x-0.5"
+                          strokeWidth={1.8}
+                        />
+                      </div>
                     </div>
-                  )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={openWeeklyOverview}
+                    className="group flex items-center justify-between gap-3 rounded-[1.18rem] border border-border/72 bg-background/82 px-3.5 py-3 text-left transition-smooth hover:border-border hover:bg-background/94"
+                    aria-label={`Open weekly overview: ${weekInsights.length} reflection ${weekInsights.length === 1 ? "" : "s"} this week`}
+                  >
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-foreground/56">
+                        Weekly total
+                      </p>
+                      <p className="mt-1 font-display text-[1.15rem] leading-[1.05] text-foreground">
+                        {weekInsights.length} {weekInsights.length === 1 ? "reflection" : "reflections"} this week
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80">
+                        {weeklyThemes[0]?.label ?? (streak.savedToday ? "Checked in today" : "Open overview")}
+                      </p>
+                      <ArrowRight
+                        className="ml-auto mt-1 h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground group-hover:translate-x-0.5"
+                        strokeWidth={1.8}
+                      />
+                    </div>
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           </div>
 
@@ -433,6 +504,19 @@ const Index = () => {
         onOpenChange={(open) => !open && setActiveTheme(null)}
         theme={activeTheme}
         insights={insights}
+      />
+
+      <WeeklyOverviewSheet
+        open={weeklyOverviewOpen}
+        onOpenChange={setWeeklyOverviewOpen}
+        week={week}
+        reflectionCount={weekInsights.length}
+        checkedInDays={checkedInDays}
+        themes={weeklyThemes}
+        momentCounts={weeklyMomentCounts}
+        synthesis={weeklySynthesis}
+        takeaways={weeklyTakeaways}
+        surfaceClassName={moment ? MOMENT_SURFACE[moment] : undefined}
       />
 
       {/* Daily quote — quiet, rotates each day */}
