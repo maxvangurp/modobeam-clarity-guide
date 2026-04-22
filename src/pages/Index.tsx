@@ -217,37 +217,37 @@ const Index = () => {
       )}
 
       {/* 1. Welcome + continuity */}
-      <section className="animate-fade-up pt-6 pb-8">
+      <section className={cn(layout.pageSection, "pt-6 pb-8")}>
         <div className={layout.sectionStack}>
           <div className={layout.splitHeader}>
-          <div className="flex items-center gap-2 min-w-0">
-            <p className="text-sm text-muted-foreground tracking-wide truncate">
-              {greeting}
-            </p>
-            <SunGlyphChip />
-          </div>
-          {streak.count > 0 && (
-            <div
-              className="inline-flex items-center gap-1.5 rounded-full bg-card/60 backdrop-blur border border-border/50 px-2.5 py-1"
-              title={
-                streak.savedToday
-                  ? "You've reflected today"
-                  : "Your gentle rhythm so far"
-              }
-            >
-              <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  streak.savedToday
-                    ? "bg-foreground/80 animate-gentle-breathe"
-                    : "bg-muted-foreground/40"
-                }`}
-              />
-              <span className="text-[11px] tabular-nums text-foreground/80">
-                {streak.count} {streak.count === 1 ? "moment" : "moments"} of reflection
-              </span>
+            <div className="flex min-w-0 items-center gap-2">
+              <p className="truncate text-sm tracking-wide text-muted-foreground">
+                {greeting}
+              </p>
+              <SunGlyphChip />
             </div>
-          )}
-        </div>
+            {streak.count > 0 && (
+              <div
+                className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-card/60 px-2.5 py-1 backdrop-blur"
+                title={
+                  streak.savedToday
+                    ? "You've reflected today"
+                    : "Your gentle rhythm so far"
+                }
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    streak.savedToday
+                      ? "bg-foreground/80 animate-gentle-breathe"
+                      : "bg-muted-foreground/40"
+                  }`}
+                />
+                <span className="text-[11px] tabular-nums text-foreground/80">
+                  {streak.count} {streak.count === 1 ? "moment" : "moments"} of reflection
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Soft weekly progress — 7 days, no judgment */}
@@ -388,7 +388,7 @@ const Index = () => {
       </section>
 
       {/* 2. Moment check-in — light, optional, inline */}
-      <section className="animate-fade-up [animation-delay:120ms]">
+      <section className={cn(layout.pageSection, "[animation-delay:120ms]")}>
         <p className={layout.sectionLabel}>
           What feels closest right now?
         </p>
@@ -443,7 +443,7 @@ const Index = () => {
       </section>
 
       {/* 3. Primary action — one clear CTA */}
-      <section className="mt-10 animate-fade-up [animation-delay:240ms]">
+      <section className={cn(layout.pageSection, "mt-10 [animation-delay:240ms]")}>
         <Button
           size="lg"
           onClick={startDaily}
@@ -565,10 +565,10 @@ const ExploreCarousel = ({
   };
 
   return (
-      <div className="mt-8 animate-fade-up [animation-delay:300ms]">
-        <div className={cn(layout.splitHeader, "mb-3") }>
-        <div>
-            <p className={layout.sectionLabel}>
+    <div className="mt-8 animate-fade-up [animation-delay:300ms]">
+      <div className={cn(layout.splitHeader, "mb-3")}>
+        <div className="space-y-1">
+          <p className={layout.sectionLabel}>
             Or try a different way in
           </p>
           <p className="font-display text-[16px] font-medium text-foreground mt-0.5">
