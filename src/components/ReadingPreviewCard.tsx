@@ -117,7 +117,7 @@ export const ReadingPreviewCard = ({
         <p
           className={cn(
             "font-display leading-[1.14] text-foreground",
-            isCarousel ? "text-[1.75rem] font-semibold" : "text-[1rem] font-semibold",
+            isCarousel ? "text-[1.1rem] font-semibold" : "text-[1rem] font-semibold",
           )}
         >
           {label}
