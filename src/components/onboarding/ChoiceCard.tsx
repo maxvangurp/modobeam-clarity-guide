@@ -9,7 +9,7 @@ export const ChoiceCard = ({ label, description, selected, onClick }: Props) => 
   <button
     type="button"
     onClick={onClick}
-    className={`w-full text-left rounded-2xl px-5 py-4 border transition-smooth backdrop-blur ${
+    className={`w-full rounded-2xl border px-5 py-4 text-left backdrop-blur transition-smooth ${
       selected
         ? "bg-foreground text-background border-foreground shadow-soft"
         : "bg-card/70 border-border/60 hover:bg-card hover:border-border"
@@ -20,7 +20,7 @@ export const ChoiceCard = ({ label, description, selected, onClick }: Props) => 
     </div>
     {description && (
       <div
-        className={`text-[12px] mt-1 leading-relaxed ${
+        className={`mt-2 text-[12px] leading-relaxed ${
           selected ? "opacity-70" : "text-muted-foreground"
         }`}
       >

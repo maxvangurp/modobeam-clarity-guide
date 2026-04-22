@@ -16,14 +16,14 @@ const ORDER: MomentNeed[] = [
 
 export const MomentCheckIn = ({ value, onSelect, onSkip }: Props) => (
   <div className="animate-fade-up">
-    <div className="text-center mb-7">
+    <div className="mb-8 space-y-3 text-left">
       <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
         A small moment first
       </p>
       <h1 className="font-display text-[1.75rem] leading-[1.15] font-light tracking-tight text-foreground">
         What feels closest right now?
       </h1>
-      <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+      <p className="text-sm leading-relaxed text-muted-foreground">
         Optional — just for this reading.
       </p>
     </div>
@@ -52,7 +52,7 @@ export const MomentCheckIn = ({ value, onSelect, onSkip }: Props) => (
 
     <button
       onClick={onSkip}
-      className="w-full text-center text-[13px] text-muted-foreground hover:text-foreground transition-smooth mt-6"
+      className="mt-5 w-full text-left text-[13px] text-muted-foreground transition-smooth hover:text-foreground"
     >
       Skip — just draw
     </button>
