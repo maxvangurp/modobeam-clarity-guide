@@ -68,6 +68,13 @@ const MOMENT_SURFACE: Record<MomentNeed, string> = {
   reflect: "bg-tone-reflect",
 };
 
+function formatShortDate(iso: string) {
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}
+
 const Index = () => {
   const navigate = useNavigate();
   const [showNudge, setShowNudge] = useState(false);
@@ -177,7 +184,8 @@ const Index = () => {
     return isReturning ? "Welcome back." : "A quiet moment with yourself.";
   }, [profile?.firstName, isReturning, returnGap]);
 
-  const lastCardName = last?.cards?.[0]?.name?.toLowerCase();
+  const lastCardTitle = last?.cards?.[0]?.name ?? null;
+  const lastCardName = lastCardTitle?.toLowerCase();
 
   const startDaily = () => {
     const params = new URLSearchParams();
@@ -277,53 +285,88 @@ const Index = () => {
 
           <div className="space-y-4">
             {(last && lastCardName) || themes.length > 0 ? (
-              <div className="grid gap-3">
+              <div className="grid gap-3.5">
                 {last && lastCardName && (
-                  <section className="rounded-[1.2rem] border border-border/72 bg-card/92 px-4 py-4 shadow-soft">
-                    <div className="space-y-2">
-                      <p className={layout.sectionLabel}>Continuity</p>
-                      <p className="max-w-[31ch] text-[13px] leading-[1.72] text-foreground/84">
-                        Last time you reflected on <span className="italic text-foreground">{lastCardName}</span>
-                        {" — "}
+                  <section
+                    className={cn(
+                      "overflow-hidden rounded-[1.28rem] border border-border/76 shadow-soft",
+                      moment ? MOMENT_SURFACE[moment] : "bg-card/96",
+                    )}
+                  >
+                    <div className="space-y-4 px-4 py-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 space-y-1.5">
+                          <p className={layout.sectionLabel}>Continuity</p>
+                          <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/88">
+                            {formatShortDate(last.created_at)}
+                            <span className="mx-1.5 text-muted-foreground/45">·</span>
+                            {getReadingType(last.draw_type)?.label ?? "Reflection"}
+                          </p>
+                        </div>
                         <Link
                           to={`/insight/${last.id}`}
-                          className="font-medium underline underline-offset-4 decoration-muted-foreground/40 hover:text-foreground hover:decoration-foreground transition-smooth"
+                          className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-border/70 bg-background/88 px-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/84 transition-smooth hover:border-border hover:bg-background"
                         >
-                          return to it
+                          Open
+                          <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.8} />
                         </Link>
-                        .
-                      </p>
+                      </div>
+
+                      <div className="space-y-2.5 border-t border-border/55 pt-4">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-foreground/56">
+                          Last reflection
+                        </p>
+                        <p className="max-w-[14ch] font-display text-[1.56rem] leading-[1.02] text-foreground">
+                          {lastCardTitle}
+                        </p>
+                        <p className="max-w-[31ch] text-[13px] leading-[1.65] text-foreground/84">
+                          Pick up the thread you left there and return to what it was asking of you.
+                        </p>
+                      </div>
                     </div>
                   </section>
                 )}
 
                 {themes.length > 0 && (
-                  <section className="rounded-[1.2rem] border border-border/72 bg-gradient-module px-4 py-4 shadow-soft">
-                    <div className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/84">
-                        <Waypoints
-                          className="h-3.5 w-3.5 text-foreground/76"
-                          strokeWidth={1.8}
-                        />
-                      </span>
-                      <div className="min-w-0 space-y-2">
-                        <p className={layout.sectionLabel}>Recent themes</p>
-                        <p className="max-w-[30ch] text-[12.5px] leading-[1.65] text-foreground/86">
-                          Lately you've been moving around{" "}
-                          {themes.map((t, i) => (
-                            <span key={t.label}>
-                              <button
-                                onClick={() => setActiveTheme(t.label)}
-                                className="font-medium italic text-foreground underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-smooth"
-                                aria-label={`See reflections about ${t.label}`}
-                              >
+                  <section className="overflow-hidden rounded-[1.28rem] border border-border/76 bg-gradient-module shadow-soft">
+                    <div className="space-y-4 px-4 py-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 space-y-1.5">
+                          <p className={layout.sectionLabel}>Recent themes</p>
+                          <p className="max-w-[29ch] text-[13px] leading-[1.62] text-foreground/84">
+                            Recurring threads across your recent reflections.
+                          </p>
+                        </div>
+                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/86">
+                          <Waypoints
+                            className="h-4 w-4 text-foreground/76"
+                            strokeWidth={1.8}
+                          />
+                        </span>
+                      </div>
+
+                      <div className="space-y-2 border-t border-border/55 pt-3.5">
+                        {themes.map((t) => (
+                          <button
+                            key={t.label}
+                            onClick={() => setActiveTheme(t.label)}
+                            aria-label={`See reflections about ${t.label}`}
+                            className="group flex w-full items-center justify-between gap-3 rounded-[1rem] border border-border/62 bg-background/78 px-3.5 py-3 text-left transition-smooth hover:border-border/84 hover:bg-background/94"
+                          >
+                            <div className="min-w-0">
+                              <p className="font-display text-[1.08rem] leading-[1.05] text-foreground">
                                 {t.label}
-                              </button>
-                              {i < themes.length - 1 && <span className="text-muted-foreground"> and </span>}
-                            </span>
-                          ))}
-                          .
-                        </p>
+                              </p>
+                              <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/86">
+                                {t.count} {t.count === 1 ? "reflection" : "reflections"}
+                              </p>
+                            </div>
+                            <ArrowRight
+                              className="h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground"
+                              strokeWidth={1.8}
+                            />
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </section>
@@ -394,18 +437,37 @@ const Index = () => {
 
       {/* Daily quote — quiet, rotates each day */}
       <section className={cn(layout.pageSection, "mb-10 [animation-delay:80ms]")}>
-        <figure className={cn("rounded-[1.25rem] border border-border/72 px-4 py-4 shadow-soft", moment ? MOMENT_SURFACE[moment] : "bg-gradient-module")}>
-          <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.28em] text-foreground/58">
-            Today
-          </p>
-          <blockquote className="max-w-[24ch] font-display text-[1.24rem] leading-[1.4] text-foreground italic">
-            "{quote.text}"
-          </blockquote>
-          {quote.author && (
-            <figcaption className="mt-3 text-[12px] text-muted-foreground/94">
-              — {quote.author}
-            </figcaption>
+        <figure
+          className={cn(
+            "overflow-hidden rounded-[1.3rem] border border-border/76 shadow-soft",
+            moment ? MOMENT_SURFACE[moment] : "bg-gradient-module",
           )}
+        >
+          <div className="space-y-4 px-4 py-4">
+            <div className="flex items-end justify-between gap-3 border-b border-border/50 pb-3">
+              <div className="space-y-1.5">
+                <p className={layout.sectionLabel}>Today</p>
+                <p className="text-[13px] leading-none text-muted-foreground/88">
+                  A line to carry into the day.
+                </p>
+              </div>
+              {moment && (
+                <span className="rounded-full border border-border/68 bg-background/84 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/76">
+                  {MOMENT_CHIP[moment]}
+                </span>
+              )}
+            </div>
+
+            <blockquote className="max-w-[22ch] font-display text-[1.42rem] leading-[1.28] text-foreground">
+              {quote.text}
+            </blockquote>
+
+            {quote.author && (
+              <figcaption className="border-t border-border/45 pt-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/86">
+                {quote.author}
+              </figcaption>
+            )}
+          </div>
         </figure>
       </section>
 
