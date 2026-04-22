@@ -47,6 +47,7 @@ import { SunGlyphChip } from "@/components/SunGlyphChip";
 import { layout } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 import { getInsightMoment } from "@/lib/insightMoment";
+import { buildWeeklyInsights } from "@/lib/weeklyInsights";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
@@ -169,39 +170,16 @@ const Index = () => {
   const week = useMemo(() => buildWeek(insights), [insights]);
   const tint = getMomentTint(moment);
   const currentWeekId = useMemo(() => getCurrentWeekId(), []);
-  const weekInsights = useMemo(() => {
-    const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    return insights.filter((insight) => new Date(insight.created_at).getTime() >= cutoff);
-  }, [insights]);
-  const checkedInDays = useMemo(
-    () => week.filter((day) => day.filled).length,
-    [week],
-  );
-  const weeklyThemes = useMemo(
-    () => detectRecentThemes(weekInsights, 7),
-    [weekInsights],
-  );
+  const weeklyInsights = useMemo(() => buildWeeklyInsights(insights, week), [insights, week]);
+  const weekInsights = weeklyInsights.weekInsights;
+  const checkedInDays = weeklyInsights.checkedInDays;
+  const weeklyThemes = weeklyInsights.themes;
   const weeklySynthesis = useMemo<WeeklySynthesis | null>(() => {
     const cached = readCachedSynthesis();
     return cached?.weekId === currentWeekId ? cached : null;
   }, [currentWeekId, weeklyOffer]);
-  const weeklyMomentCounts = useMemo(() => {
-    const counts = new Map<MomentNeed, number>();
-    for (const insight of weekInsights) {
-      const savedMoment = getInsightMoment(insight.id);
-      if (!savedMoment) continue;
-      counts.set(savedMoment, (counts.get(savedMoment) ?? 0) + 1);
-    }
-    return [...counts.entries()]
-      .map(([moment, count]) => ({ moment, count }))
-      .sort((a, b) => b.count - a.count);
-  }, [weekInsights]);
-  const weeklyTakeaways = useMemo(() => {
-    return weekInsights
-      .flatMap((insight) => insight.cards.map((card) => card.name))
-      .filter((value, index, list) => list.indexOf(value) === index)
-      .slice(0, 3);
-  }, [weekInsights]);
+  const weeklyMomentCounts = weeklyInsights.momentCounts;
+  const weeklyTakeaways = weeklyInsights.takeaways;
 
   const greeting = useMemo(() => {
     const name = profile?.firstName;
@@ -512,10 +490,12 @@ const Index = () => {
         week={week}
         reflectionCount={weekInsights.length}
         checkedInDays={checkedInDays}
+        weekRangeLabel={weeklyInsights.weekRangeLabel}
         themes={weeklyThemes}
         momentCounts={weeklyMomentCounts}
         synthesis={weeklySynthesis}
         takeaways={weeklyTakeaways}
+        repeatedFocusArea={weeklyInsights.repeatedFocusArea}
         surfaceClassName={moment ? MOMENT_SURFACE[moment] : undefined}
       />
 

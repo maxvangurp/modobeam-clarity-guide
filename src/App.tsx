@@ -13,6 +13,7 @@ import Preferences from "./pages/Preferences.tsx";
 import Readings from "./pages/Readings.tsx";
 import LifeAreas from "./pages/LifeAreas.tsx";
 import LifeAreaDetail from "./pages/LifeAreaDetail.tsx";
+import WeeklyInsights from "./pages/WeeklyInsights.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
           <Route path="/reading/:id" element={<Reading />} />
           <Route path="/insight/:id" element={<Insight />} />
           <Route path="/history" element={<History />} />
+          <Route path="/insights/weekly" element={<WeeklyInsights />} />
           <Route path="/life-areas" element={<LifeAreas />} />
           <Route path="/life-areas/:id" element={<LifeAreaDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
