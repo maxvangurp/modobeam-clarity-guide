@@ -2,8 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { getReadingType } from "@/data/readingTypes";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
 import { getSessionId } from "@/lib/session";
@@ -27,10 +25,15 @@ import {
 } from "@/data/lifeAreas";
 import { KeepThisCard } from "@/components/KeepThisCard";
 import { NotQuiteIt } from "@/components/NotQuiteIt";
+import { ReflectionComposer } from "@/components/insight/ReflectionComposer";
 import { toast } from "sonner";
 import {
+  buildQuickChoiceSet,
+  composeQuickReflection,
+  type ReflectionMode,
+} from "@/lib/reflectionResponses";
+import {
   Loader2,
-  Check,
   Sparkles,
   Bookmark,
   CalendarDays,
@@ -72,6 +75,10 @@ const Insight = () => {
   const [activePromptIdx, setActivePromptIdx] = useState(0);
   const [keepOpen, setKeepOpen] = useState(false);
   const [showNotQuite, setShowNotQuite] = useState(false);
+  const [reflectionMode, setReflectionMode] = useState<ReflectionMode>("write");
+  const [quickSelections, setQuickSelections] = useState<string[]>([]);
+  const [quickNote, setQuickNote] = useState("");
+  const [voiceJournal, setVoiceJournal] = useState("");
 
   const summaryRef = useRef<HTMLDivElement | null>(null);
   const nextStepsRef = useRef<HTMLDivElement | null>(null);
@@ -150,10 +157,38 @@ const Insight = () => {
   const tint = getMomentTint(moment);
   const tintedSoftBg = tint ? `hsl(${tint.bg} / 0.55)` : undefined;
   const tintedRing = tint ? `hsl(${tint.ring})` : undefined;
-  const tintedAccentBg = tint
-    ? `linear-gradient(135deg, hsl(${tint.bg}) 0%, hsl(${tint.hsl} / 0.85) 100%)`
-    : undefined;
-  const tintedGlow = tint ? `0 0 28px hsl(${tint.hsl} / 0.35)` : undefined;
+  const prompts = Array.from(new Set(cards.flatMap((c) => c.prompts))).slice(
+    0,
+    3,
+  );
+  const activePrompt = prompts[activePromptIdx];
+  const quickChoiceSet = useMemo(
+    () =>
+      buildQuickChoiceSet({
+        prompt: activePrompt,
+        cards,
+        reading,
+      }),
+    [activePrompt, cards, reading],
+  );
+  const finalReflectionText = useMemo(() => {
+    if (reflectionMode === "quick") {
+      return composeQuickReflection(activePrompt, quickSelections, quickNote);
+    }
+
+    if (reflectionMode === "voice") {
+      return voiceJournal.trim();
+    }
+
+    return journal.trim();
+  }, [
+    activePrompt,
+    journal,
+    quickNote,
+    quickSelections,
+    reflectionMode,
+    voiceJournal,
+  ]);
 
   const fetchSummary = async (text: string) => {
     if (!text.trim() || !insight) return;
@@ -190,12 +225,12 @@ const Insight = () => {
   };
 
   const saveJournal = async () => {
-    if (!journal.trim() || !id) return;
+    if (!finalReflectionText || !id) return;
     setSaving(true);
     const { error } = await supabase.from("journal_entries").insert({
       insight_id: id,
       session_id: getSessionId(),
-      content: journal.trim(),
+      content: finalReflectionText,
     });
     setSaving(false);
     if (error) {
@@ -206,7 +241,7 @@ const Insight = () => {
     haptic("save");
     const { count, isNewDay } = recordReflectionSaved();
     // Quietly recognize depth without scoring it visibly.
-    const wordCount = journal.trim().split(/\s+/).filter(Boolean).length;
+    const wordCount = finalReflectionText.split(/\s+/).filter(Boolean).length;
     const landed = wordCount >= 80;
     if (landed) {
       toast.success("That landed");
@@ -217,7 +252,7 @@ const Insight = () => {
     } else {
       toast.success("Saved");
     }
-    fetchSummary(journal);
+    fetchSummary(finalReflectionText);
   };
 
   const skipJournal = () => {
@@ -249,11 +284,6 @@ const Insight = () => {
       </AppShell>
     );
   }
-
-  const prompts = Array.from(new Set(cards.flatMap((c) => c.prompts))).slice(
-    0,
-    3,
-  );
 
   const showSummarySection = saved || summaryLoading || summary;
   const showNextSteps = saved || skippedJournal;
@@ -493,7 +523,7 @@ const Insight = () => {
           Take a moment to <span className="font-medium italic">reflect</span>.
         </h2>
         <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-          A few honest lines is enough. Nothing has to be polished.
+          Choose the response that fits your energy — write, tap a few truths, or speak it out.
         </p>
 
         {prompts.length > 0 && (
@@ -523,45 +553,62 @@ const Insight = () => {
           </div>
         )}
 
-        <Textarea
-          value={journal}
-          onChange={(e) => {
-            setJournal(e.target.value);
+        <ReflectionComposer
+          mode={reflectionMode}
+          onModeChange={(mode) => {
+            setReflectionMode(mode);
+            setSaved(false);
+            setSummary("");
+            setSkippedJournal(false);
+          }}
+          writeValue={journal}
+          onWriteChange={(value) => {
+            setJournal(value);
             setSaved(false);
             setSummary("");
           }}
-          placeholder="Write freely…"
-          rows={6}
-          className="mt-5 resize-none rounded-2xl bg-card/80 border-border/60 backdrop-blur text-base"
-        />
+          quickChoices={quickChoiceSet.options}
+          quickSelections={quickSelections}
+          quickAllowMultiple={quickChoiceSet.allowMultiple}
+          onToggleQuickChoice={(choice) => {
+            setQuickSelections((current) => {
+              const isSelected = current.includes(choice);
 
-        <div className="flex justify-between items-center mt-3 gap-3">
-          <button
-            onClick={skipJournal}
-            type="button"
-            disabled={skippedJournal || saved}
-            className="text-sm text-muted-foreground hover:text-foreground transition-smooth disabled:opacity-50"
-          >
-            Not right now
-          </button>
-          <Button
-            onClick={saveJournal}
-            disabled={!journal.trim() || saving || saved}
-            className={`rounded-full bg-gradient-button text-primary-foreground px-6 shadow-cta hover:scale-[1.01] active:scale-[0.99] transition-transform ${
-              saved ? "animate-save-glow" : ""
-            }`}
-          >
-            {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : saved ? (
-              <>
-                <Check className="h-4 w-4 mr-1.5" /> Saved
-              </>
-            ) : (
-              "Save reflection"
-            )}
-          </Button>
-        </div>
+              if (quickChoiceSet.allowMultiple) {
+                return isSelected
+                  ? current.filter((item) => item !== choice)
+                  : [...current, choice];
+              }
+
+              return isSelected ? [] : [choice];
+            });
+            setSaved(false);
+            setSummary("");
+          }}
+          quickNote={quickNote}
+          onQuickNoteChange={(value) => {
+            setQuickNote(value);
+            setSaved(false);
+            setSummary("");
+          }}
+          voiceValue={voiceJournal}
+          onVoiceChange={(value) => {
+            setVoiceJournal(value);
+            setSaved(false);
+            setSummary("");
+          }}
+          onVoiceAppend={(value) => {
+            setVoiceJournal((current) => `${current}${current.trim() ? " " : ""}${value}`.trim());
+            setSaved(false);
+            setSummary("");
+          }}
+          onSave={saveJournal}
+          onSkip={skipJournal}
+          canSave={Boolean(finalReflectionText)}
+          saving={saving}
+          saved={saved}
+          skipped={skippedJournal}
+        />
 
         {/* Mood snapshot — appears when the user skips. One quiet tap. */}
         {skippedJournal && !saved && (
