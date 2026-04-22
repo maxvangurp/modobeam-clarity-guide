@@ -295,35 +295,35 @@ const Insight = () => {
       {/* Header — tinted by the moment chosen for this reading */}
       <section className={cn(layout.pageHeader, layout.pageSection)}>
         <div className={layout.pageIntro}>
-        <div className="flex items-center gap-2">
-          <p
-            className={layout.eyebrow}
-            style={tint ? { color: tintedRing } : undefined}
-          >
-            Your reflection
-          </p>
-          {tint && moment && (
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] border"
-              style={{
-                backgroundColor: tintedSoftBg,
-                borderColor: `hsl(${tint.ring} / 0.35)`,
-                color: tintedRing,
-              }}
+          <div className="flex flex-wrap items-center gap-2">
+            <p
+              className={layout.eyebrow}
+              style={tint ? { color: tintedRing } : undefined}
             >
+              Your reflection
+            </p>
+            {tint && moment && (
               <span
-                className="h-1 w-1 rounded-full"
-                style={{ backgroundColor: tintedRing }}
-              />
-              {MOMENT_LABELS[moment]}
-            </span>
+                className="inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.18em]"
+                style={{
+                  backgroundColor: tintedSoftBg,
+                  borderColor: `hsl(${tint.ring} / 0.35)`,
+                  color: tintedRing,
+                }}
+              >
+                <span
+                  className="h-1 w-1 rounded-full"
+                  style={{ backgroundColor: tintedRing }}
+                />
+                {MOMENT_LABELS[moment]}
+              </span>
+            )}
+          </div>
+          {insight.intention && (
+            <p className="text-sm italic text-muted-foreground">
+              "{insight.intention}"
+            </p>
           )}
-        </div>
-        {insight.intention && (
-          <p className="text-sm italic text-muted-foreground">
-            "{insight.intention}"
-          </p>
-        )}
         </div>
       </section>
 
