@@ -62,7 +62,7 @@ export const AppShell = ({
               Back
             </Link>
           ) : (
-            <ModobeamLogo />
+            <ModobeamLogo descriptor="Daily Clarity" />
           )}
           <Link
             to="/preferences"

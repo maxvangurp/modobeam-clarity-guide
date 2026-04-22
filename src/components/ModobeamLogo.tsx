@@ -1,6 +1,14 @@
 import { cn } from "@/lib/utils";
 
-export const ModobeamLogo = ({ className }: { className?: string }) => (
+interface ModobeamLogoProps {
+  className?: string;
+  descriptor?: string;
+}
+
+export const ModobeamLogo = ({
+  className,
+  descriptor,
+}: ModobeamLogoProps) => (
   <div className={cn("inline-flex items-center gap-2.5", className)}>
     <div className="relative h-8 w-8 shrink-0">
       <div className="absolute inset-[-2px] rounded-full bg-primary/12 blur-md" />
@@ -12,8 +20,16 @@ export const ModobeamLogo = ({ className }: { className?: string }) => (
       <div className="absolute right-[6px] top-[8px] h-[4.5px] w-[4.5px] rounded-full bg-beam-soft/90" />
       <div className="absolute inset-0 rounded-full bg-gradient-beam animate-beam opacity-80" />
     </div>
-    <span className="font-display text-[1.05rem] font-semibold tracking-[0.01em] text-foreground">
-      Modo<span className="font-light text-foreground/72">beam</span>
-    </span>
+
+    <div className="flex min-w-0 flex-col leading-none">
+      <span className="font-display text-[1.05rem] font-semibold tracking-[0.01em] text-foreground">
+        Modo<span className="font-light text-foreground/72">beam</span>
+      </span>
+      {descriptor ? (
+        <span className="mt-1 pl-px font-display text-[0.64rem] font-medium tracking-[0.08em] text-muted-foreground/82">
+          {descriptor}
+        </span>
+      ) : null}
+    </div>
   </div>
 );
