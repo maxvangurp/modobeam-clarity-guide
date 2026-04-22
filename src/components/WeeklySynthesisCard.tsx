@@ -84,7 +84,7 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
 
   return (
     <section className="mt-2 mb-8 animate-fade-up">
-      <div className="relative rounded-[1.9rem] border border-border/50 bg-gradient-dawn px-5 py-5.5 shadow-soft">
+      <div className="relative rounded-[1.35rem] border border-border/70 bg-card px-5 py-5 shadow-soft">
         <button
           onClick={() => {
             dismissWeeklySynthesis(weekId);
@@ -96,7 +96,7 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
           <X className="h-3.5 w-3.5" />
         </button>
 
-        <p className="mb-2.5 text-[10px] font-medium uppercase tracking-[0.28em] text-ink-soft/78">
+        <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.26em] text-foreground/56">
           Your week, in one breath
         </p>
 
@@ -110,12 +110,12 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
         {synth && (
           <>
             {synth.corePattern && (
-              <p className="font-display text-[18px] leading-[1.2] text-foreground italic">
+              <p className="font-display text-[18px] leading-[1.18] text-foreground italic">
                 {synth.corePattern}
               </p>
             )}
             {synth.summary && (
-              <p className="mt-3.5 max-w-[30ch] text-[13.5px] leading-[1.7] text-foreground/84">
+              <p className="mt-3.5 max-w-[30ch] text-[13.5px] leading-[1.68] text-foreground/88">
                 {synth.summary}
               </p>
             )}
@@ -124,7 +124,7 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
                 {synth.themes.map((t) => (
                   <span
                     key={t}
-                    className="rounded-full border border-border/45 bg-background/68 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground/86"
+                    className="rounded-full border border-border/55 bg-background/82 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-foreground/60"
                   >
                     {t}
                   </span>

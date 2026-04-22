@@ -577,36 +577,30 @@ const ExploreCarousel = ({
   };
 
   return (
-    <section className={cn(layout.surface, "animate-fade-up overflow-hidden px-0 py-6.5 [animation-delay:300ms]")}>
-      <div className="space-y-5.5 px-5">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between gap-4">
-            <p className={layout.sectionLabel}>
-              Or try a different way in
-            </p>
-            <Link
-              to="/readings"
-              className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-foreground/70 transition-smooth hover:text-foreground shrink-0"
-            >
-              See all
-              <ArrowRight className="h-3 w-3" />
-            </Link>
-          </div>
-          <div className="space-y-2">
-            <h2 className="font-display text-[16px] font-medium leading-tight text-foreground">
+    <section className="animate-fade-up space-y-5 [animation-delay:300ms]">
+      <div className="space-y-3.5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-2 min-w-0">
+            <p className={layout.sectionLabel}>Explore</p>
+            <h2 className="font-display text-[1.42rem] font-semibold leading-[1.02] text-foreground">
               Explore deeper readings
             </h2>
-            <p className="text-[12px] leading-relaxed text-muted-foreground/78">
-              A slower way in when one card isn&apos;t quite enough.
-            </p>
           </div>
+          <Link
+            to="/readings"
+            className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/66 transition-smooth hover:text-foreground"
+          >
+            See all
+            <ArrowRight className="h-3 w-3" />
+          </Link>
         </div>
+        <p className="max-w-[31ch] text-[12.5px] leading-[1.6] text-muted-foreground/90">
+          A slower way in when one card isn&apos;t quite enough.
+        </p>
       </div>
 
-      {/* Horizontal scroller — bleeds slightly into the page padding so the
-          last card peeks, signalling there's more to scroll. */}
-      <div className="border-t border-border/30 pt-4">
-        <div className="flex gap-4 overflow-x-auto px-5 pb-2 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <div className="border-y border-border/55 py-4">
+        <div className="flex gap-3.5 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {featuredReal.map((r) => {
             const unlocked = isReadingUnlocked(r.id, totalReflections);
             const remaining = readingsRemainingToUnlock(r.id, totalReflections);
