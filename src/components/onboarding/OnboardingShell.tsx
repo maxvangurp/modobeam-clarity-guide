@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import { ChevronLeft } from "lucide-react";
 import { ModobeamLogo } from "@/components/ModobeamLogo";
+import { cn } from "@/lib/utils";
+import { layout } from "@/lib/layout";
 
 interface Props {
   step: number;
@@ -12,8 +14,8 @@ interface Props {
 export const OnboardingShell = ({ step, total, onBack, children }: Props) => {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-dawn">
-      <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/40">
-        <div className="mx-auto max-w-md px-5 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-background/48 backdrop-blur-xl">
+        <div className={cn(layout.shellInner, "flex h-15 items-center justify-between") }>
           {onBack ? (
             <button
               onClick={onBack}
@@ -29,7 +31,7 @@ export const OnboardingShell = ({ step, total, onBack, children }: Props) => {
             {step} / {total}
           </span>
         </div>
-        <div className="mx-auto max-w-md px-5 pb-3">
+        <div className={cn(layout.shellInner, "pb-4") }>
           <div className="h-[2px] w-full bg-border/60 rounded-full overflow-hidden">
             <div
               className="h-full bg-foreground/70 transition-all duration-700 ease-out"
@@ -39,7 +41,7 @@ export const OnboardingShell = ({ step, total, onBack, children }: Props) => {
         </div>
       </header>
 
-      <main className="flex-1 mx-auto w-full max-w-md px-5 pt-6 pb-12 flex flex-col">
+      <main className={cn(layout.shellInner, "flex flex-1 flex-col pb-12 pt-6") }>
         {children}
       </main>
     </div>
