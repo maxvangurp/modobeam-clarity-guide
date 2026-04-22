@@ -8,50 +8,57 @@
 @layer base {
   :root {
     /* Quiet Sky palette */
-    --background: 40 25% 95%;          /* #f5f3ee warm off-white */
-    --foreground: 218 35% 14%;         /* #1a2332 deep ink */
+    --background: 38 24% 95%;
+    --foreground: 221 37% 13%;
 
-    --card: 40 30% 97%;
-    --card-foreground: 218 35% 14%;
+    --card: 40 24% 97%;
+    --card-foreground: 221 37% 13%;
 
-    --popover: 40 30% 97%;
-    --popover-foreground: 218 35% 14%;
+    --popover: 40 24% 97%;
+    --popover-foreground: 221 37% 13%;
 
-    --primary: 211 27% 48%;            /* #5a7a9b dusty blue */
-    --primary-foreground: 40 30% 97%;
+    --primary: 217 34% 40%;
+    --primary-foreground: 40 24% 97%;
 
-    --secondary: 211 28% 84%;          /* #c8d4e0 soft sky */
-    --secondary-foreground: 218 35% 14%;
+    --secondary: 213 26% 86%;
+    --secondary-foreground: 221 37% 13%;
 
-    --muted: 40 18% 90%;
-    --muted-foreground: 218 15% 42%;
+    --muted: 36 16% 90%;
+    --muted-foreground: 219 14% 38%;
 
-    --accent: 211 28% 84%;
-    --accent-foreground: 218 35% 14%;
+    --accent: 212 28% 84%;
+    --accent-foreground: 221 37% 13%;
 
     --destructive: 0 65% 55%;
-    --destructive-foreground: 40 30% 97%;
+    --destructive-foreground: 40 24% 97%;
 
-    --border: 40 15% 86%;
-    --input: 40 15% 86%;
-    --ring: 211 27% 48%;
+    --border: 34 13% 84%;
+    --input: 34 13% 84%;
+    --ring: 217 34% 40%;
 
-    --radius: 1.25rem;
+    --radius: 1rem;
 
     /* Modobeam tokens */
-    --beam: 211 60% 70%;               /* light beam highlight */
-    --beam-soft: 211 50% 88%;
-    --ink-soft: 218 25% 28%;
+    --beam: 214 56% 72%;
+    --beam-soft: 214 42% 89%;
+    --ink-soft: 220 24% 24%;
 
-    --gradient-sky: linear-gradient(180deg, hsl(40 24% 96%) 0%, hsl(211 18% 93%) 100%);
-    --gradient-dawn: linear-gradient(135deg, hsl(40 28% 97%) 0%, hsl(211 22% 92%) 55%, hsl(211 24% 89%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(40 30% 98%) 0%, hsl(211 25% 92%) 100%);
+    --gradient-sky: linear-gradient(180deg, hsl(38 22% 96%) 0%, hsl(211 16% 93%) 100%);
+    --gradient-dawn: linear-gradient(180deg, hsl(40 24% 97%) 0%, hsl(211 18% 94%) 60%, hsl(214 20% 91%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(40 26% 98%) 0%, hsl(214 20% 94%) 100%);
     --gradient-card-back: linear-gradient(135deg, hsl(218 35% 18%) 0%, hsl(211 35% 28%) 50%, hsl(211 40% 22%) 100%);
-    --gradient-beam: radial-gradient(circle at 50% 0%, hsl(211 60% 80% / 0.5) 0%, transparent 70%);
+    --gradient-beam: radial-gradient(circle at 50% 0%, hsl(214 62% 80% / 0.34) 0%, transparent 68%);
     --gradient-mark: linear-gradient(145deg, hsl(232 42% 23%) 0%, hsl(214 42% 35%) 52%, hsl(251 28% 30%) 100%);
     /* Richer button — deep indigo to dusty blue, with a hint of violet sheen */
-    --gradient-button: linear-gradient(135deg, hsl(232 45% 22%) 0%, hsl(211 38% 32%) 55%, hsl(245 30% 30%) 100%);
-    --gradient-button-hover: linear-gradient(135deg, hsl(232 50% 26%) 0%, hsl(211 42% 36%) 55%, hsl(245 34% 34%) 100%);
+    --gradient-button: linear-gradient(135deg, hsl(230 42% 20%) 0%, hsl(214 39% 30%) 56%, hsl(242 28% 29%) 100%);
+    --gradient-button-hover: linear-gradient(135deg, hsl(230 46% 24%) 0%, hsl(214 42% 34%) 56%, hsl(242 30% 32%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(40 25% 97% / 0.96) 0%, hsl(214 22% 93% / 0.9) 100%);
+    --gradient-module: linear-gradient(180deg, hsl(40 22% 98% / 0.94) 0%, hsl(213 18% 94% / 0.88) 100%);
+    --tone-clarity: linear-gradient(180deg, hsl(207 55% 97% / 0.96) 0%, hsl(211 48% 92% / 0.9) 100%);
+    --tone-calm: linear-gradient(180deg, hsl(122 20% 96% / 0.96) 0%, hsl(153 24% 91% / 0.88) 100%);
+    --tone-direction: linear-gradient(180deg, hsl(222 36% 96% / 0.96) 0%, hsl(226 30% 90% / 0.9) 100%);
+    --tone-uncertain: linear-gradient(180deg, hsl(276 24% 96% / 0.96) 0%, hsl(258 18% 91% / 0.9) 100%);
+    --tone-reflect: linear-gradient(180deg, hsl(36 30% 97% / 0.96) 0%, hsl(30 18% 92% / 0.88) 100%);
 
     /* Screen-mood gradients — each surface gets its own quiet atmosphere */
     /* Draw / anticipation — deep indigo wash drifting into the page */
@@ -67,12 +74,12 @@
     --gradient-mood-history: radial-gradient(120% 80% at 30% 0%, hsl(218 35% 75% / 0.12) 0%, transparent 58%),
                              radial-gradient(80% 60% at 90% 80%, hsl(245 28% 75% / 0.08) 0%, transparent 62%);
 
-    --shadow-soft: 0 1px 2px hsl(218 30% 14% / 0.04), 0 6px 18px hsl(218 30% 14% / 0.06);
-    --shadow-card: 0 3px 12px hsl(218 30% 14% / 0.08), 0 18px 36px hsl(218 30% 14% / 0.10);
+    --shadow-soft: 0 1px 2px hsl(221 30% 13% / 0.05), 0 8px 20px hsl(221 30% 13% / 0.06);
+    --shadow-card: 0 4px 14px hsl(221 30% 13% / 0.08), 0 18px 34px hsl(221 30% 13% / 0.11);
     --shadow-card-turn: 0 10px 26px hsl(218 30% 14% / 0.1), 0 30px 72px hsl(218 30% 14% / 0.15);
     --shadow-glow: 0 0 60px hsl(211 60% 70% / 0.35);
     --shadow-mark: 0 6px 18px hsl(232 45% 16% / 0.16), 0 18px 40px hsl(232 45% 16% / 0.16), inset 0 1px 0 hsl(40 30% 98% / 0.14);
-    --shadow-cta: 0 1px 2px hsl(232 50% 14% / 0.18), 0 12px 28px hsl(232 50% 14% / 0.22), 0 0 32px hsl(245 40% 35% / 0.18);
+    --shadow-cta: 0 2px 4px hsl(232 50% 14% / 0.18), 0 14px 30px hsl(232 50% 14% / 0.24), 0 0 28px hsl(242 32% 34% / 0.12);
 
     --transition-smooth: cubic-bezier(0.32, 0.72, 0, 1);
 
@@ -140,6 +147,13 @@
   .bg-gradient-beam { background-image: var(--gradient-beam); }
   .bg-gradient-button { background-image: var(--gradient-button); }
   .bg-gradient-mark { background-image: var(--gradient-mark); }
+  .bg-gradient-hero { background-image: var(--gradient-hero); }
+  .bg-gradient-module { background-image: var(--gradient-module); }
+  .bg-tone-clarity { background-image: var(--tone-clarity); }
+  .bg-tone-calm { background-image: var(--tone-calm); }
+  .bg-tone-direction { background-image: var(--tone-direction); }
+  .bg-tone-uncertain { background-image: var(--tone-uncertain); }
+  .bg-tone-reflect { background-image: var(--tone-reflect); }
   .bg-gradient-button:hover { background-image: var(--gradient-button-hover); }
 
   /* Per-screen mood washes — layered above the base body gradient */
