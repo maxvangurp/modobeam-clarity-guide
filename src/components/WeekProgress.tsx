@@ -12,10 +12,10 @@ export function WeekProgress({ week }: Props) {
   const filledCount = week.filter((d) => d.filled).length;
   return (
     <div
-      className="inline-flex min-h-10 items-center gap-2.5 rounded-full border border-border/40 bg-card/40 px-3.5 py-2 backdrop-blur"
+      className="inline-flex min-h-11 items-center gap-3 rounded-full border border-border/55 bg-card/78 px-3.5 py-2.5 shadow-soft backdrop-blur-xl"
       aria-label={`This week: ${filledCount} of 7 days reflected on`}
     >
-      <span className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground/80">
+      <span className="text-[10px] font-medium uppercase tracking-[0.26em] text-muted-foreground/88">
         This week
       </span>
       <div className="flex items-center gap-1.5 pt-px">
@@ -26,10 +26,10 @@ export function WeekProgress({ week }: Props) {
             className={[
               "h-1.5 w-1.5 rounded-full transition-smooth",
               d.filled
-                ? "bg-foreground/70"
-                : "bg-foreground/15",
+                ? "bg-foreground/78"
+                : "bg-foreground/18",
               d.isToday
-                ? "ring-2 ring-offset-1 ring-offset-background ring-foreground/30 scale-125"
+                ? "ring-2 ring-offset-[3px] ring-offset-background ring-foreground/24 scale-[1.35]"
                 : "",
             ].join(" ")}
           />

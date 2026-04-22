@@ -68,11 +68,11 @@ export const ReadingPreviewCard = ({
   const inner = (
     <div
       className={cn(
-        "relative h-full rounded-2xl border backdrop-blur transition-smooth overflow-hidden",
+        "relative h-full overflow-hidden rounded-[1.7rem] border backdrop-blur-xl transition-smooth",
         interactive
-          ? "shadow-soft hover:shadow-card hover:-translate-y-0.5"
+          ? "shadow-soft hover:-translate-y-0.5 hover:shadow-card"
           : "shadow-soft",
-        isCarousel ? "px-5 py-5" : "px-5 py-5",
+        isCarousel ? "px-5 py-5.5" : "px-5 py-5.5",
         state !== "ready" && "opacity-90",
         className,
       )}
@@ -82,7 +82,7 @@ export const ReadingPreviewCard = ({
       }}
     >
       {/* Top row — orb + depth chip */}
-      <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-4" : "mb-4")}>
+      <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-4.5" : "mb-4.5")}>
         <span
           className="h-9 w-9 rounded-full flex items-center justify-center shrink-0"
           style={{
@@ -101,7 +101,7 @@ export const ReadingPreviewCard = ({
         </span>
 
         <span
-          className="text-[9px] uppercase tracking-[0.18em] rounded-full px-2 py-0.5 border whitespace-nowrap"
+          className="whitespace-nowrap rounded-full border px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.18em]"
           style={{
             color: `hsl(${accent.ring})`,
             borderColor: `hsl(${accent.ring} / 0.3)`,
@@ -113,17 +113,17 @@ export const ReadingPreviewCard = ({
       </div>
 
       {/* Title + subtitle */}
-      <div className={cn(isCarousel ? "min-h-[3.8rem]" : "space-y-1.5")}>
+      <div className={cn(isCarousel ? "min-h-[4.4rem] space-y-1.5" : "space-y-2")}>
         <p
           className={cn(
-            "font-display font-medium text-foreground leading-tight",
-            isCarousel ? "text-[15px]" : "text-[15.5px]",
+            "font-display leading-[1.14] text-foreground",
+            isCarousel ? "text-[1.1rem] font-semibold" : "text-[1rem] font-semibold",
           )}
         >
           {label}
         </p>
         {subtitle && (
-          <p className="text-[12px] leading-tight text-muted-foreground">
+          <p className="max-w-[18ch] text-[13px] leading-[1.45] text-muted-foreground/88">
             {subtitle}
           </p>
         )}
@@ -131,21 +131,21 @@ export const ReadingPreviewCard = ({
 
       {/* Description (stacked only) */}
       {!isCarousel && description && (
-        <p className={cn("text-[12.5px] leading-relaxed text-muted-foreground/90", layout.sectionHint)}>
+        <p className={cn("pt-0.5 text-[12.5px] leading-[1.65] text-muted-foreground/86", layout.sectionHint)}>
           {description}
         </p>
       )}
 
       {/* State footer */}
       {state === "locked" && (
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 mt-3">
+        <p className="mt-4 text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground/76">
           {unlockIn && unlockIn > 0
             ? `${unlockIn} more reflection${unlockIn === 1 ? "" : "s"}`
             : "Locked"}
         </p>
       )}
       {state === "coming-soon" && (
-        <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 mt-3">
+        <p className="mt-4 text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground/76">
           Coming soon
         </p>
       )}
@@ -157,8 +157,8 @@ export const ReadingPreviewCard = ({
       <Link
         to={to!}
           className={cn(
-            "group block focus:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-2xl",
-            isCarousel ? "w-[16.25rem] shrink-0" : "w-full",
+            "group block rounded-[1.7rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            isCarousel ? "w-[17rem] shrink-0" : "w-full",
           )}
         aria-label={`Open ${label}`}
       >
@@ -170,7 +170,7 @@ export const ReadingPreviewCard = ({
   return (
     <div
       className={cn(
-        isCarousel ? "w-[16.25rem] shrink-0" : "w-full",
+        isCarousel ? "w-[17rem] shrink-0" : "w-full",
         "cursor-default",
       )}
       aria-disabled

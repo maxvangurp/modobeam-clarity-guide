@@ -217,22 +217,22 @@ const Index = () => {
       )}
 
       {/* 1. Welcome + continuity */}
-      <section className={cn(layout.pageSection, "pt-4 pb-7")}>
-        <div className="space-y-4">
-          <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="text-sm tracking-wide text-muted-foreground">
+      <section className={cn(layout.pageSection, "pt-5 pb-8")}>
+        <div className="space-y-5">
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <p className="text-[13px] tracking-[0.02em] text-muted-foreground/88">
                 {greeting}
               </p>
               <SunGlyphChip />
             </div>
 
             {(insights.length > 0 || streak.count > 0) && (
-              <div className="flex flex-wrap items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-3">
                 {insights.length > 0 && <WeekProgress week={week} />}
                 {streak.count > 0 && (
                   <div
-                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/50 bg-card/60 px-3.5 py-2 backdrop-blur"
+                    className="inline-flex min-h-11 items-center gap-2.5 rounded-full border border-border/55 bg-card/78 px-3.5 py-2.5 shadow-soft backdrop-blur-xl"
                     title={
                       streak.savedToday
                         ? "You've reflected today"
@@ -246,7 +246,7 @@ const Index = () => {
                           : "bg-muted-foreground/40"
                       }`}
                     />
-                    <span className="text-[11px] tabular-nums text-foreground/80">
+                    <span className="text-[11px] font-medium tabular-nums text-foreground/84">
                       {streak.count} {streak.count === 1 ? "moment" : "moments"} of reflection
                     </span>
                   </div>
@@ -264,7 +264,7 @@ const Index = () => {
             />
           )}
 
-          <h1 className={layout.title}>
+          <h1 className={cn(layout.title, "max-w-[11ch]")}>
             Take a breath.
             <br />
             <span className="font-medium italic">Begin</span> when you're ready.
@@ -272,7 +272,7 @@ const Index = () => {
 
           {/* Continuity: link back to last reflection */}
           {last && lastCardName && (
-            <p className="text-[13px] text-muted-foreground leading-relaxed">
+            <p className="max-w-[31ch] text-[13px] leading-[1.7] text-muted-foreground/82">
               Last time you reflected on{" "}
               <span className="text-foreground/80 italic">{lastCardName}</span>
               {" — "}
@@ -288,12 +288,12 @@ const Index = () => {
 
           {/* Pattern awareness — recurring themes across recent reflections */}
           {themes.length > 0 && (
-            <div className="inline-flex items-start gap-2 rounded-2xl border border-border/40 bg-card/40 px-3.5 py-2.5 backdrop-blur">
+            <div className="inline-flex items-start gap-2.5 rounded-[1.35rem] border border-border/50 bg-card/72 px-4 py-3 shadow-soft backdrop-blur-xl">
               <Waypoints
-                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/70"
+                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/76"
                 strokeWidth={1.8}
               />
-              <p className="text-[12px] leading-relaxed text-foreground/80">
+              <p className="max-w-[30ch] text-[12.5px] leading-[1.65] text-foreground/82">
                 Lately you've been moving around{" "}
                 {themes.map((t, i) => (
                   <span key={t.label}>
@@ -372,16 +372,16 @@ const Index = () => {
       />
 
       {/* Daily quote — quiet, rotates each day */}
-      <section className={cn(layout.pageSection, "mb-7 [animation-delay:80ms]")}>
-        <figure className="rounded-3xl bg-gradient-dawn border border-border/40 px-6 py-5 shadow-soft">
-          <p className="text-[11px] uppercase tracking-[0.25em] text-ink-soft/80 mb-2">
+      <section className={cn(layout.pageSection, "mb-8 [animation-delay:80ms]")}>
+        <figure className="rounded-[1.9rem] border border-border/50 bg-gradient-dawn px-6 py-5.5 shadow-soft">
+          <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.28em] text-ink-soft/82">
             Today
           </p>
-          <blockquote className="font-display text-[16px] leading-snug text-foreground/95 italic">
+          <blockquote className="max-w-[26ch] font-display text-[17px] leading-[1.35] text-foreground/96 italic">
             "{quote.text}"
           </blockquote>
           {quote.author && (
-            <figcaption className="text-[12px] text-muted-foreground mt-2">
+            <figcaption className="mt-2.5 text-[12px] text-muted-foreground/84">
               — {quote.author}
             </figcaption>
           )}
@@ -389,15 +389,15 @@ const Index = () => {
       </section>
 
       {/* 2. Moment check-in — light, optional, inline */}
-      <section className={cn(layout.pageSection, "mb-11 [animation-delay:120ms]")}>
-        <div className={cn(layout.surfaceSoft, "space-y-5 px-5 py-5.5") }>
-          <div className="space-y-2">
+      <section className={cn(layout.pageSection, "mb-12 [animation-delay:120ms]")}>
+        <div className={cn(layout.surfaceSoft, "space-y-6 px-5 py-5.5") }>
+          <div className="space-y-2.5">
             <p className={layout.sectionLabel}>What feels closest right now?</p>
-            <p className="text-[12px] leading-relaxed text-muted-foreground/78">
+            <p className="max-w-[28ch] text-[13px] leading-[1.65] text-foreground/78">
               Choose a tone for this moment, or leave the space open.
             </p>
           </div>
-          <div className={cn(layout.chipRow, "gap-2.5")}>
+          <div className={cn(layout.chipRow, "gap-3")}>
             {MOMENT_ORDER.map((id) => {
               const selected = moment === id;
               const t = MOMENT_TINTS[id];
@@ -418,10 +418,10 @@ const Index = () => {
                         }
                       : undefined
                   }
-                  className={`min-h-11 px-4 py-2.5 rounded-full text-[13px] border transition-smooth backdrop-blur ${
+                   className={`min-h-11 rounded-full border px-4 py-2.5 text-[13px] transition-smooth backdrop-blur ${
                     selected
-                      ? "font-medium"
-                      : "bg-card/70 text-foreground/80 border-border/60 hover:bg-card hover:text-foreground"
+                      ? "font-medium shadow-soft"
+                      : "bg-background/66 text-foreground/82 border-border/55 hover:bg-card hover:text-foreground"
                   }`}
                 >
                   {MOMENT_CHIP[id]}
@@ -429,8 +429,8 @@ const Index = () => {
               );
             })}
           </div>
-          <div className={cn(layout.helperRow, "border-t border-border/35 pt-4") }>
-            <p className="text-[11px] text-muted-foreground/70">
+          <div className={cn(layout.helperRow, "border-t border-border/40 pt-4.5") }>
+            <p className="text-[11px] text-muted-foreground/74">
               Optional — shapes this reading only.
             </p>
             <button
@@ -448,7 +448,7 @@ const Index = () => {
       </section>
 
       {/* 3. Primary action — one clear CTA */}
-      <section className={cn(layout.pageSection, "mt-12 [animation-delay:240ms]")}>
+      <section className={cn(layout.pageSection, "mt-14 [animation-delay:240ms]")}>
         <Button
           size="lg"
           onClick={startDaily}
@@ -457,7 +457,7 @@ const Index = () => {
               ? { boxShadow: `0 0 0 1px hsl(${tint.hsl} / 0.25), 0 0 32px hsl(${tint.hsl} / 0.18)` }
               : undefined
           }
-          className="w-full h-auto min-h-[10.5rem] px-6 py-7 rounded-[2rem] bg-gradient-button text-primary-foreground hover:opacity-95 shadow-soft justify-between group transition-smooth"
+          className="group w-full h-auto min-h-[10.75rem] justify-between rounded-[2rem] bg-gradient-button px-6 py-7 text-primary-foreground shadow-cta transition-smooth hover:opacity-95"
         >
           <span className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
@@ -467,7 +467,7 @@ const Index = () => {
               <span className="block font-display text-[1.05rem] font-medium leading-tight">
                 {isReturning ? "Continue your reflection" : "Start your daily clarity"}
               </span>
-              <span className="mt-1 block text-[12px] opacity-72 font-body">
+              <span className="mt-1.5 block text-[12px] font-body opacity-72">
                 One card · one focus
               </span>
             </span>
@@ -479,7 +479,7 @@ const Index = () => {
 
       </section>
 
-      <section className={cn(layout.pageSection, "mt-12 [animation-delay:300ms]")}>
+      <section className={cn(layout.pageSection, "mt-14 [animation-delay:300ms]")}>
         <ExploreCarousel
           totalReflections={insights.length}
           moment={moment}
@@ -488,8 +488,8 @@ const Index = () => {
 
       {/* Soft suggestion — only when something newly unlocked */}
       {suggestion && !suggestionDismissed && !readingHint && (
-        <section className="mt-12 animate-fade-up [animation-delay:320ms]">
-          <div className="rounded-[1.75rem] border border-border/40 bg-card/50 px-5 py-5.5 backdrop-blur shadow-soft">
+        <section className="mt-14 animate-fade-up [animation-delay:320ms]">
+          <div className="rounded-[1.75rem] border border-border/50 bg-card/74 px-5 py-5.5 shadow-soft backdrop-blur-xl">
             <div className="flex items-start gap-3">
             <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
               <suggestion.icon
@@ -498,13 +498,13 @@ const Index = () => {
               />
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-1">
+              <p className="mb-1.5 text-[10px] font-medium uppercase tracking-[0.26em] text-muted-foreground/84">
                 You might find this helpful
               </p>
-              <p className="text-[14px] font-display font-medium text-foreground leading-tight">
+              <p className="font-display text-[15px] font-semibold leading-tight text-foreground">
                 {suggestion.label}
               </p>
-              <p className="text-[12px] text-muted-foreground leading-relaxed mt-1">
+              <p className="mt-1.5 max-w-[29ch] text-[12.5px] leading-[1.65] text-muted-foreground/84">
                 {suggestion.description}
               </p>
               <button

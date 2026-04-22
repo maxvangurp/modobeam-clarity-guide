@@ -16,7 +16,7 @@ export const BottomNav = () => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
       <div className={cn(layout.shellInner, "pb-[max(1rem,env(safe-area-inset-bottom))] pointer-events-auto") }>
-        <div className="flex items-center justify-between rounded-full border border-border/60 bg-card/88 px-2.5 py-2.5 shadow-soft backdrop-blur-xl">
+        <div className="flex items-center justify-between rounded-full border border-border/70 bg-card/92 px-2.5 py-2.5 shadow-soft backdrop-blur-xl">
           {links.map(({ to, label, icon: Icon }) => {
             // "Explore" lights up on the readings library and on every
             // draw / reading / insight surface — they all live under
@@ -38,7 +38,7 @@ export const BottomNav = () => {
                 className={cn(
                   "flex min-w-[5.4rem] flex-col items-center gap-1 rounded-full px-4 py-2.5 transition-smooth",
                   active
-                    ? "text-foreground"
+                    ? "bg-background/72 text-foreground shadow-[inset_0_1px_0_hsl(var(--background)/0.85)]"
                     : "text-muted-foreground hover:text-foreground",
                 )}
                 aria-current={active ? "page" : undefined}
@@ -50,7 +50,7 @@ export const BottomNav = () => {
                   )}
                   strokeWidth={active ? 2.2 : 1.6}
                 />
-                <span className="text-[10px] font-medium tracking-wide">
+                <span className="text-[10px] font-medium tracking-[0.04em]">
                   {label}
                 </span>
               </Link>

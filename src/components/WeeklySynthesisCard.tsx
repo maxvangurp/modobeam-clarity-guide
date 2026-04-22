@@ -83,8 +83,8 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
   if (error && !synth) return null;
 
   return (
-    <section className="mt-2 mb-6 animate-fade-up">
-      <div className="rounded-3xl bg-gradient-dawn border border-border/40 px-5 py-5 shadow-soft relative">
+    <section className="mt-2 mb-8 animate-fade-up">
+      <div className="relative rounded-[1.9rem] border border-border/50 bg-gradient-dawn px-5 py-5.5 shadow-soft">
         <button
           onClick={() => {
             dismissWeeklySynthesis(weekId);
@@ -96,7 +96,7 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
           <X className="h-3.5 w-3.5" />
         </button>
 
-        <p className="text-[10px] uppercase tracking-[0.28em] text-ink-soft/70 mb-2">
+        <p className="mb-2.5 text-[10px] font-medium uppercase tracking-[0.28em] text-ink-soft/78">
           Your week, in one breath
         </p>
 
@@ -110,21 +110,21 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
         {synth && (
           <>
             {synth.corePattern && (
-              <p className="font-display text-[17px] leading-snug text-foreground italic">
+              <p className="font-display text-[18px] leading-[1.2] text-foreground italic">
                 {synth.corePattern}
               </p>
             )}
             {synth.summary && (
-              <p className="mt-3 text-[14px] leading-relaxed text-foreground/85">
+              <p className="mt-3.5 max-w-[30ch] text-[13.5px] leading-[1.7] text-foreground/84">
                 {synth.summary}
               </p>
             )}
             {synth.themes.length > 0 && (
-              <div className="mt-4 flex flex-wrap gap-1.5">
+              <div className="mt-4.5 flex flex-wrap gap-2">
                 {synth.themes.map((t) => (
                   <span
                     key={t}
-                    className="text-[11px] px-2.5 py-0.5 rounded-full bg-background/60 text-muted-foreground border border-border/40"
+                    className="rounded-full border border-border/45 bg-background/68 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground/86"
                   >
                     {t}
                   </span>
