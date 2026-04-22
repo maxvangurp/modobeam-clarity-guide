@@ -600,64 +600,78 @@ const ExploreCarousel = ({
     return `/draw/${id}${params.toString() ? `?${params}` : ""}`;
   };
 
+  const leadReading = featuredReal[0] ?? null;
+  const railItems = [
+    ...featuredReal.slice(1).map((reading) => ({ type: "real" as const, item: reading })),
+    ...featuredComing.map((reading) => ({ type: "coming" as const, item: reading })),
+  ];
+
   return (
-    <section className="animate-fade-up space-y-5 [animation-delay:300ms]">
-      <div className="rounded-[1.45rem] border border-border/78 bg-gradient-module px-5 py-5 shadow-soft">
-        <div className="flex items-start justify-between gap-4">
-          <p className={layout.sectionLabel}>Explore</p>
+    <section className="animate-fade-up [animation-delay:300ms]">
+      <div className="rounded-[1.55rem] border border-border/78 bg-gradient-module px-5 py-5 shadow-soft">
+        <div className="flex items-start justify-between gap-4 border-b border-border/55 pb-4">
+          <div className="space-y-2">
+            <p className={layout.sectionLabel}>Explore</p>
+            <h2 className="max-w-[11ch] font-display text-[1.9rem] font-semibold leading-[0.95] text-foreground">
+              Go deeper,
+              <br />
+              with intention.
+            </h2>
+          </div>
           <Link
             to="/readings"
-            className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/66 transition-smooth hover:text-foreground"
+            className="inline-flex shrink-0 items-center gap-1 pt-0.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/66 transition-smooth hover:text-foreground"
           >
-            See all
+            Library
             <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
 
-        <div className="mt-4 space-y-2.5">
-          <h2 className="max-w-[12ch] font-display text-[1.78rem] font-semibold leading-[1] text-foreground">
-            Explore deeper readings
-          </h2>
-          <p className="max-w-[28ch] text-[13px] leading-[1.65] text-muted-foreground/96">
-            A slower way in when one card isn&apos;t quite enough.
-          </p>
-        </div>
-      </div>
+        <p className="mt-4 max-w-[29ch] text-[13px] leading-[1.68] text-muted-foreground/96">
+          Longer spreads when you want more context, friction, or emotional shape than the daily card can hold.
+        </p>
 
-      <div className="-mx-1 rounded-[1.45rem] border border-border/72 bg-card/80 py-4 shadow-soft">
-        <div className="flex gap-3 overflow-x-auto px-4 pb-1 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          {featuredReal.map((r) => {
-            const unlocked = isReadingUnlocked(r.id, totalReflections);
-            const remaining = readingsRemainingToUnlock(r.id, totalReflections);
+        <div className="mt-5 space-y-3">
+          {leadReading && (() => {
+            const unlocked = isReadingUnlocked(leadReading.id, totalReflections);
+            const remaining = readingsRemainingToUnlock(leadReading.id, totalReflections);
+
             return (
-              <div key={r.id} className="snap-start">
-                <ReadingPreviewCard
-                  to={unlocked ? buildTo(r.id) : undefined}
-                  label={r.label}
-                  subtitle={r.subtitle}
-                  cardCount={r.cardCount}
-                  icon={r.icon}
-                  category={r.category}
-                  state={unlocked ? "ready" : "locked"}
-                  unlockIn={remaining}
-                  size="carousel"
-                />
-              </div>
-            );
-          })}
-          {featuredComing.map((m) => (
-            <div key={m.id} className="snap-start">
               <ReadingPreviewCard
-                label={m.label}
-                subtitle={m.subtitle}
-                cardCount={m.cardCount}
-                icon={m.icon}
-                category={m.category}
-                state="coming-soon"
-                size="carousel"
+                to={unlocked ? buildTo(leadReading.id) : undefined}
+                label={leadReading.label}
+                subtitle={leadReading.subtitle}
+                cardCount={leadReading.cardCount}
+                icon={leadReading.icon}
+                category={leadReading.category}
+                state={unlocked ? "ready" : "locked"}
+                unlockIn={remaining}
+                size="feature"
               />
-            </div>
-          ))}
+            );
+          })()}
+
+          <div className="space-y-2.5 border-t border-border/50 pt-3">
+            {railItems.map(({ type, item }) => {
+              const unlocked = type === "real" ? isReadingUnlocked(item.id, totalReflections) : false;
+              const remaining = type === "real" ? readingsRemainingToUnlock(item.id, totalReflections) : undefined;
+
+              return (
+                <ReadingPreviewCard
+                  key={item.id}
+                  to={type === "real" && unlocked ? buildTo(item.id) : undefined}
+                  label={item.label}
+                  subtitle={item.subtitle}
+                  cardCount={item.cardCount}
+                  icon={item.icon}
+                  category={item.category}
+                  state={type === "coming" ? "coming-soon" : unlocked ? "ready" : "locked"}
+                  unlockIn={remaining}
+                  size="compact"
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
