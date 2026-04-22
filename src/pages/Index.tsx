@@ -217,45 +217,43 @@ const Index = () => {
       )}
 
       {/* 1. Welcome + continuity */}
-      <section className={cn(layout.pageSection, "pt-6 pb-8")}>
-        <div className={layout.sectionStack}>
-          <div className={layout.splitHeader}>
-            <div className="flex min-w-0 items-center gap-2">
-              <p className="truncate text-sm tracking-wide text-muted-foreground">
+      <section className={cn(layout.pageSection, "pt-4 pb-7")}>
+        <div className="space-y-4">
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="text-sm tracking-wide text-muted-foreground">
                 {greeting}
               </p>
               <SunGlyphChip />
             </div>
-            {streak.count > 0 && (
-              <div
-                className="inline-flex items-center gap-1.5 rounded-full border border-border/50 bg-card/60 px-2.5 py-1 backdrop-blur"
-                title={
-                  streak.savedToday
-                    ? "You've reflected today"
-                    : "Your gentle rhythm so far"
-                }
-              >
-                <span
-                  className={`h-1.5 w-1.5 rounded-full ${
-                    streak.savedToday
-                      ? "bg-foreground/80 animate-gentle-breathe"
-                      : "bg-muted-foreground/40"
-                  }`}
-                />
-                <span className="text-[11px] tabular-nums text-foreground/80">
-                  {streak.count} {streak.count === 1 ? "moment" : "moments"} of reflection
-                </span>
+
+            {(insights.length > 0 || streak.count > 0) && (
+              <div className="flex flex-wrap items-center gap-2.5">
+                {insights.length > 0 && <WeekProgress week={week} />}
+                {streak.count > 0 && (
+                  <div
+                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-border/50 bg-card/60 px-3.5 py-2 backdrop-blur"
+                    title={
+                      streak.savedToday
+                        ? "You've reflected today"
+                        : "Your gentle rhythm so far"
+                    }
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        streak.savedToday
+                          ? "bg-foreground/80 animate-gentle-breathe"
+                          : "bg-muted-foreground/40"
+                      }`}
+                    />
+                    <span className="text-[11px] tabular-nums text-foreground/80">
+                      {streak.count} {streak.count === 1 ? "moment" : "moments"} of reflection
+                    </span>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        </div>
-
-        {/* Soft weekly progress — 7 days, no judgment */}
-        {insights.length > 0 && (
-          <div className="mt-3">
-            <WeekProgress week={week} />
-          </div>
-        )}
 
         {/* Weekly synthesis — once per week, only when there's enough material */}
         {weeklyOffer && !weeklyDismissed && (
@@ -371,7 +369,7 @@ const Index = () => {
       />
 
       {/* Daily quote — quiet, rotates each day */}
-      <section className="mb-8 animate-fade-up [animation-delay:80ms]">
+      <section className={cn(layout.pageSection, "[animation-delay:80ms]")}>
         <figure className="rounded-3xl bg-gradient-dawn border border-border/40 px-6 py-5 shadow-soft">
           <p className="text-[11px] uppercase tracking-[0.25em] text-ink-soft/80 mb-2">
             Today
@@ -388,11 +386,9 @@ const Index = () => {
       </section>
 
       {/* 2. Moment check-in — light, optional, inline */}
-      <section className={cn(layout.pageSection, "[animation-delay:120ms]")}>
-        <p className={layout.sectionLabel}>
-          What feels closest right now?
-        </p>
-        <div className={layout.chipRow}>
+      <section className={cn(layout.pageSection, "space-y-3 [animation-delay:120ms]")}>
+        <p className={layout.sectionLabel}>What feels closest right now?</p>
+        <div className={cn(layout.chipRow, "gap-2.5")}>
           {MOMENT_ORDER.map((id) => {
             const selected = moment === id;
             const t = MOMENT_TINTS[id];
@@ -413,7 +409,7 @@ const Index = () => {
                       }
                     : undefined
                 }
-                className={`px-4 py-2 rounded-full text-[13px] border transition-smooth backdrop-blur ${
+                className={`min-h-11 px-4 py-2.5 rounded-full text-[13px] border transition-smooth backdrop-blur ${
                   selected
                     ? "font-medium"
                     : "bg-card/70 text-foreground/80 border-border/60 hover:bg-card hover:text-foreground"
@@ -424,7 +420,7 @@ const Index = () => {
             );
           })}
         </div>
-        <div className={layout.helperRow}>
+        <div className={cn(layout.helperRow, "pt-0.5")}>
           <p className="text-[11px] text-muted-foreground/70">
             Optional — shapes this reading only.
           </p>
@@ -443,7 +439,7 @@ const Index = () => {
       </section>
 
       {/* 3. Primary action — one clear CTA */}
-      <section className={cn(layout.pageSection, "mt-10 [animation-delay:240ms]")}>
+      <section className={cn(layout.pageSection, "mt-9 space-y-7 [animation-delay:240ms]")}>
         <Button
           size="lg"
           onClick={startDaily}
@@ -452,17 +448,17 @@ const Index = () => {
               ? { boxShadow: `0 0 0 1px hsl(${tint.hsl} / 0.25), 0 0 32px hsl(${tint.hsl} / 0.18)` }
               : undefined
           }
-          className="w-full h-auto py-5 px-6 rounded-2xl bg-gradient-button text-primary-foreground hover:opacity-95 shadow-soft justify-between group transition-smooth"
+          className="w-full h-auto min-h-[9.25rem] px-6 py-5 rounded-[1.75rem] bg-gradient-button text-primary-foreground hover:opacity-95 shadow-soft justify-between group transition-smooth"
         >
           <span className="flex items-center gap-3">
-            <span className="h-9 w-9 rounded-full bg-white/10 flex items-center justify-center">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
               <Sparkles className="h-4 w-4" />
             </span>
             <span className="text-left">
-              <span className="block font-display text-base font-medium">
+              <span className="block font-display text-[1.05rem] font-medium leading-tight">
                 {isReturning ? "Continue your reflection" : "Start your daily clarity"}
               </span>
-              <span className="block text-xs opacity-70 font-body">
+              <span className="mt-1 block text-[12px] opacity-72 font-body">
                 One card · one focus
               </span>
             </span>
@@ -481,7 +477,7 @@ const Index = () => {
 
       {/* Soft suggestion — only when something newly unlocked */}
       {suggestion && !suggestionDismissed && !readingHint && (
-        <section className="mt-8 animate-fade-up [animation-delay:320ms]">
+        <section className="mt-7 animate-fade-up [animation-delay:320ms]">
           <div className="rounded-2xl bg-card/50 backdrop-blur border border-border/40 px-5 py-4 flex items-start gap-3">
             <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
               <suggestion.icon
