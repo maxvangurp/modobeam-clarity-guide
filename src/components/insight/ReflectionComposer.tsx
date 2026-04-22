@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useSpeechToText } from "@/hooks/useSpeechToText";
+import { layout } from "@/lib/layout";
 import type { ReflectionMode } from "@/lib/reflectionResponses";
 import { cn } from "@/lib/utils";
 
@@ -91,7 +92,7 @@ export const ReflectionComposer = ({
             rows={6}
             className="resize-none rounded-2xl border-border/60 bg-background/75 text-base"
           />
-          <p className="mt-3 px-1 text-[12px] leading-relaxed text-muted-foreground">
+          <p className={cn("mt-3 px-1", layout.sectionHint)}>
             A few honest lines is enough. Nothing has to be polished.
           </p>
         </TabsContent>
@@ -107,7 +108,7 @@ export const ReflectionComposer = ({
                 : "Pick the one response that feels closest right now."}
             </p>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className={cn("mt-4", layout.chipRow)}>
               {quickChoices.map((choice) => {
                 const selected = quickSelections.includes(choice);
 
@@ -176,7 +177,7 @@ export const ReflectionComposer = ({
               </button>
             </div>
 
-            <p className="mt-4 text-[12px] text-muted-foreground">
+            <p className={cn("mt-4", layout.sectionHint)}>
               {!isSupported
                 ? "Voice input isn't available in this browser, but writing is always here."
                 : isListening
@@ -203,7 +204,7 @@ export const ReflectionComposer = ({
         </TabsContent>
       </Tabs>
 
-      <div className="mt-4 flex items-center justify-between gap-3 px-1">
+      <div className={cn("mt-4 px-1", layout.helperRow)}>
         <button
           onClick={onSkip}
           type="button"

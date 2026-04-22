@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Home, Compass, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { layout } from "@/lib/layout";
 
 const links = [
   { to: "/", label: "Home", icon: Home },
@@ -14,8 +15,8 @@ export const BottomNav = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none">
-      <div className="mx-auto max-w-md px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pointer-events-auto">
-        <div className="flex items-center justify-between rounded-full border border-border/60 bg-card/88 px-2 py-2.5 shadow-soft backdrop-blur-xl">
+      <div className={cn(layout.shellInner, "pb-[max(1rem,env(safe-area-inset-bottom))] pointer-events-auto") }>
+        <div className="flex items-center justify-between rounded-full border border-border/60 bg-card/88 px-2 py-2 shadow-soft backdrop-blur-xl">
           {links.map(({ to, label, icon: Icon }) => {
             // "Explore" lights up on the readings library and on every
             // draw / reading / insight surface — they all live under
@@ -35,7 +36,7 @@ export const BottomNav = () => {
                 key={to}
                 to={to}
                 className={cn(
-                  "flex min-w-[5.25rem] flex-col items-center gap-1 rounded-full px-4 py-1.5 transition-smooth",
+                  "flex min-w-[5.25rem] flex-col items-center gap-1 rounded-full px-4 py-2 transition-smooth",
                   active
                     ? "text-foreground"
                     : "text-muted-foreground hover:text-foreground",
