@@ -53,7 +53,7 @@ export const AppShell = ({
         />
       )}
       <header className="sticky top-0 z-30 border-b border-border/40 bg-background/72 backdrop-blur-xl">
-        <div className={cn(layout.shellInner, "flex h-15 items-center justify-between") }>
+        <div className={cn(layout.shellInner, "flex min-h-[4.5rem] items-center justify-between gap-4 py-3") }>
           {showBack ? (
             <Link
               to={backTo ?? "/"}
@@ -68,7 +68,7 @@ export const AppShell = ({
           <Link
             to="/preferences"
             aria-label="Preferences"
-            className="text-muted-foreground hover:text-foreground transition-smooth p-2 -mr-2"
+            className="-mr-2 flex h-10 w-10 items-center justify-center rounded-full text-muted-foreground transition-smooth hover:bg-card/50 hover:text-foreground"
           >
             <Settings2 className="h-[18px] w-[18px]" strokeWidth={1.6} />
           </Link>

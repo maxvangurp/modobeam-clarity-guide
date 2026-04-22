@@ -255,110 +255,113 @@ const Index = () => {
             )}
           </div>
 
-        {/* Weekly synthesis — once per week, only when there's enough material */}
-        {weeklyOffer && !weeklyDismissed && (
-          <WeeklySynthesisCard
-            weekId={weeklyOffer.weekId}
-            recent={weeklyOffer.recent}
-            onDismiss={() => setWeeklyDismissed(true)}
-          />
-        )}
-
-        <h1 className={layout.title}>
-          Take a breath.
-          <br />
-          <span className="font-medium italic">Begin</span> when you're ready.
-        </h1>
-
-        {/* Continuity: link back to last reflection */}
-        {last && lastCardName && (
-          <p className="text-[13px] text-muted-foreground mt-4 leading-relaxed">
-            Last time you reflected on{" "}
-            <span className="text-foreground/80 italic">{lastCardName}</span>
-            {" — "}
-            <Link
-              to={`/insight/${last.id}`}
-              className="underline underline-offset-4 decoration-muted-foreground/40 hover:text-foreground hover:decoration-foreground transition-smooth"
-            >
-              return to it
-            </Link>
-            .
-          </p>
-        )}
-
-        {/* Pattern awareness — recurring themes across recent reflections */}
-        {themes.length > 0 && (
-          <div className="mt-4 inline-flex items-start gap-2 rounded-2xl bg-card/40 backdrop-blur border border-border/40 px-3.5 py-2.5">
-            <Waypoints
-              className="h-3.5 w-3.5 text-muted-foreground/70 mt-0.5 shrink-0"
-              strokeWidth={1.8}
+          {/* Weekly synthesis — once per week, only when there's enough material */}
+          {weeklyOffer && !weeklyDismissed && (
+            <WeeklySynthesisCard
+              weekId={weeklyOffer.weekId}
+              recent={weeklyOffer.recent}
+              onDismiss={() => setWeeklyDismissed(true)}
             />
-            <p className="text-[12px] text-foreground/80 leading-relaxed">
-              Lately you've been moving around{" "}
-              {themes.map((t, i) => (
-                <span key={t.label}>
-                  <button
-                    onClick={() => setActiveTheme(t.label)}
-                    className="italic text-foreground underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-smooth"
-                    aria-label={`See reflections about ${t.label}`}
-                  >
-                    {t.label}
-                  </button>
-                  {i < themes.length - 1 && (
-                    <span className="text-muted-foreground"> and </span>
-                  )}
-                </span>
-              ))}
+          )}
+
+          <h1 className={layout.title}>
+            Take a breath.
+            <br />
+            <span className="font-medium italic">Begin</span> when you're ready.
+          </h1>
+
+          {/* Continuity: link back to last reflection */}
+          {last && lastCardName && (
+            <p className="text-[13px] text-muted-foreground leading-relaxed">
+              Last time you reflected on{" "}
+              <span className="text-foreground/80 italic">{lastCardName}</span>
+              {" — "}
+              <Link
+                to={`/insight/${last.id}`}
+                className="underline underline-offset-4 decoration-muted-foreground/40 hover:text-foreground hover:decoration-foreground transition-smooth"
+              >
+                return to it
+              </Link>
               .
             </p>
-          </div>
-        )}
+          )}
 
-        {/* Theme-driven reading hint — surfaces when a recurring thread
-            naturally points to a deeper reading they haven't opened yet. */}
-        {readingHint && !hintDismissed && (
-          <div className="mt-4 rounded-2xl bg-gradient-dawn border border-border/50 px-4 py-3.5 flex items-start gap-3 animate-fade-up shadow-soft">
-            <span className="h-8 w-8 rounded-full bg-background/40 flex items-center justify-center shrink-0">
-              <readingHint.reading.icon
-                className="h-3.5 w-3.5 text-foreground/80"
+          {/* Pattern awareness — recurring themes across recent reflections */}
+          {themes.length > 0 && (
+            <div className="inline-flex items-start gap-2 rounded-2xl border border-border/40 bg-card/40 px-3.5 py-2.5 backdrop-blur">
+              <Waypoints
+                className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground/70"
                 strokeWidth={1.8}
               />
-            </span>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-ink-soft/80">
-                Something in your reflections
+              <p className="text-[12px] leading-relaxed text-foreground/80">
+                Lately you've been moving around{" "}
+                {themes.map((t, i) => (
+                  <span key={t.label}>
+                    <button
+                      onClick={() => setActiveTheme(t.label)}
+                      className="italic text-foreground underline underline-offset-4 decoration-muted-foreground/40 hover:decoration-foreground transition-smooth"
+                      aria-label={`See reflections about ${t.label}`}
+                    >
+                      {t.label}
+                    </button>
+                    {i < themes.length - 1 && (
+                      <span className="text-muted-foreground"> and </span>
+                    )}
+                  </span>
+                ))}
+                .
               </p>
-              <p className="text-[13px] text-foreground/90 leading-relaxed mt-1">
-                <span className="italic">"{readingHint.hint.matchedTheme}"</span>{" "}
-                keeps surfacing. A{" "}
-                <span className="font-medium">
-                  {readingHint.reading.label.toLowerCase()}
-                </span>{" "}
-                reading might meet it.
-              </p>
-              <button
-                onClick={() => {
-                  haptic("select");
-                  const params = new URLSearchParams();
-                  if (moment) params.set("moment", moment);
-                  navigate(
-                    `/draw/${readingHint.reading.id}${params.toString() ? `?${params}` : ""}`,
-                  );
-                }}
-                className="mt-2 text-[11px] uppercase tracking-[0.2em] text-foreground/80 hover:text-foreground transition-smooth"
-              >
-                Try it →
-              </button>
             </div>
-            <button
-              onClick={() => setHintDismissed(true)}
-              aria-label="Dismiss"
-              className="text-muted-foreground/60 hover:text-foreground transition-smooth -mr-1 -mt-0.5"
-            >
-              <X className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        )}
+          )}
+
+          {/* Theme-driven reading hint — surfaces when a recurring thread
+              naturally points to a deeper reading they haven't opened yet. */}
+          {readingHint && !hintDismissed && (
+            <div className="animate-fade-up rounded-2xl border border-border/50 bg-gradient-dawn px-4 py-3.5 shadow-soft">
+              <div className="flex items-start gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-background/40">
+                  <readingHint.reading.icon
+                    className="h-3.5 w-3.5 text-foreground/80"
+                    strokeWidth={1.8}
+                  />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-ink-soft/80">
+                    Something in your reflections
+                  </p>
+                  <p className="mt-1 text-[13px] leading-relaxed text-foreground/90">
+                    <span className="italic">"{readingHint.hint.matchedTheme}"</span>{" "}
+                    keeps surfacing. A{" "}
+                    <span className="font-medium">
+                      {readingHint.reading.label.toLowerCase()}
+                    </span>{" "}
+                    reading might meet it.
+                  </p>
+                  <button
+                    onClick={() => {
+                      haptic("select");
+                      const params = new URLSearchParams();
+                      if (moment) params.set("moment", moment);
+                      navigate(
+                        `/draw/${readingHint.reading.id}${params.toString() ? `?${params}` : ""}`,
+                      );
+                    }}
+                    className="mt-2 text-[11px] uppercase tracking-[0.2em] text-foreground/80 transition-smooth hover:text-foreground"
+                  >
+                    Try it →
+                  </button>
+                </div>
+                <button
+                  onClick={() => setHintDismissed(true)}
+                  aria-label="Dismiss"
+                  className="-mr-1 -mt-0.5 text-muted-foreground/60 transition-smooth hover:text-foreground"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
 
       <ThemeReflectionsSheet
@@ -561,8 +564,8 @@ const ExploreCarousel = ({
   };
 
   return (
-    <div className="mt-8 animate-fade-up [animation-delay:300ms]">
-      <div className={cn(layout.splitHeader, "mb-3")}>
+    <div className="animate-fade-up space-y-4 [animation-delay:300ms]">
+      <div className={layout.splitHeader}>
         <div className="space-y-1">
           <p className={layout.sectionLabel}>
             Or try a different way in
@@ -583,7 +586,7 @@ const ExploreCarousel = ({
       {/* Horizontal scroller — bleeds slightly into the page padding so the
           last card peeks, signalling there's more to scroll. */}
       <div className="-mx-5 px-5">
-        <div className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {featuredReal.map((r) => {
             const unlocked = isReadingUnlocked(r.id, totalReflections);
             const remaining = readingsRemainingToUnlock(r.id, totalReflections);
