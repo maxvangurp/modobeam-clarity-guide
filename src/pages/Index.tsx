@@ -389,9 +389,9 @@ const Index = () => {
       </section>
 
       {/* 2. Moment check-in — light, optional, inline */}
-      <section className={cn(layout.pageSection, "mb-9 [animation-delay:120ms]")}>
-        <div className={cn(layout.surfaceSoft, "space-y-4 px-4 py-4.5") }>
-          <div className="space-y-1.5">
+      <section className={cn(layout.pageSection, "mb-10 [animation-delay:120ms]")}>
+        <div className={cn(layout.surfaceSoft, "space-y-4.5 px-4.5 py-5") }>
+          <div className="space-y-2">
             <p className={layout.sectionLabel}>What feels closest right now?</p>
             <p className="text-[12px] leading-relaxed text-muted-foreground/78">
               Choose a tone for this moment, or leave the space open.
@@ -429,7 +429,7 @@ const Index = () => {
               );
             })}
           </div>
-          <div className={cn(layout.helperRow, "border-t border-border/35 pt-3") }>
+          <div className={cn(layout.helperRow, "border-t border-border/35 pt-3.5") }>
             <p className="text-[11px] text-muted-foreground/70">
               Optional — shapes this reading only.
             </p>
@@ -448,7 +448,7 @@ const Index = () => {
       </section>
 
       {/* 3. Primary action — one clear CTA */}
-      <section className={cn(layout.pageSection, "mt-10 space-y-9 [animation-delay:240ms]")}>
+      <section className={cn(layout.pageSection, "mt-12 space-y-10 [animation-delay:240ms]")}>
         <Button
           size="lg"
           onClick={startDaily}
@@ -457,7 +457,7 @@ const Index = () => {
               ? { boxShadow: `0 0 0 1px hsl(${tint.hsl} / 0.25), 0 0 32px hsl(${tint.hsl} / 0.18)` }
               : undefined
           }
-          className="w-full h-auto min-h-[9.75rem] px-6 py-6 rounded-[1.75rem] bg-gradient-button text-primary-foreground hover:opacity-95 shadow-soft justify-between group transition-smooth"
+          className="w-full h-auto min-h-[10.25rem] px-6 py-6.5 rounded-[2rem] bg-gradient-button text-primary-foreground hover:opacity-95 shadow-soft justify-between group transition-smooth"
         >
           <span className="flex items-center gap-3">
             <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10">
@@ -486,8 +486,8 @@ const Index = () => {
 
       {/* Soft suggestion — only when something newly unlocked */}
       {suggestion && !suggestionDismissed && !readingHint && (
-        <section className="mt-7 animate-fade-up [animation-delay:320ms]">
-          <div className="rounded-[1.75rem] border border-border/40 bg-card/50 px-5 py-4.5 backdrop-blur">
+        <section className="mt-10 animate-fade-up [animation-delay:320ms]">
+          <div className="rounded-[1.75rem] border border-border/40 bg-card/50 px-5 py-5 backdrop-blur">
             <div className="flex items-start gap-3">
             <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
               <suggestion.icon
@@ -572,9 +572,9 @@ const ExploreCarousel = ({
   };
 
   return (
-    <section className={cn(layout.surface, "animate-fade-up overflow-hidden px-0 py-5 [animation-delay:300ms]")}>
-      <div className="space-y-4 px-5">
-        <div className="space-y-2">
+    <section className={cn(layout.surface, "animate-fade-up overflow-hidden px-0 py-6 [animation-delay:300ms]")}>
+      <div className="space-y-5 px-5">
+        <div className="space-y-2.5">
           <div className="flex items-center justify-between gap-4">
             <p className={layout.sectionLabel}>
               Or try a different way in
@@ -600,8 +600,8 @@ const ExploreCarousel = ({
 
       {/* Horizontal scroller — bleeds slightly into the page padding so the
           last card peeks, signalling there's more to scroll. */}
-      <div className="pt-1">
-        <div className="flex gap-3 overflow-x-auto px-5 pb-3 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <div className="pt-2">
+        <div className="flex gap-3.5 overflow-x-auto px-5 pb-1.5 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {featuredReal.map((r) => {
             const unlocked = isReadingUnlocked(r.id, totalReflections);
             const remaining = readingsRemainingToUnlock(r.id, totalReflections);
