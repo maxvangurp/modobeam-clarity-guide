@@ -218,7 +218,7 @@ const Index = () => {
       {/* 1. Welcome + continuity */}
       <section className="animate-fade-up pt-6 pb-8">
         <div className={layout.sectionStack}>
-        <div className={layout.splitHeader}>
+          <div className={layout.splitHeader}>
           <div className="flex items-center gap-2 min-w-0">
             <p className="text-sm text-muted-foreground tracking-wide truncate">
               {greeting}
@@ -360,7 +360,6 @@ const Index = () => {
             </button>
           </div>
         )}
-        </div>
       </section>
 
       <ThemeReflectionsSheet
