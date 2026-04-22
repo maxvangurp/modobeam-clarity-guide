@@ -42,6 +42,7 @@ import { checkReturnAndStamp } from "@/lib/returnGap";
 import { haptic } from "@/lib/haptics";
 import { SunGlyphChip } from "@/components/SunGlyphChip";
 import { layout } from "@/lib/layout";
+import { cn } from "@/lib/utils";
 
 const MOMENT_ORDER: MomentNeed[] = [
   "clarity",
