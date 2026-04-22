@@ -264,6 +264,34 @@ const Insight = () => {
     0,
     3,
   );
+  const activePrompt = prompts[activePromptIdx];
+  const quickChoiceSet = useMemo(
+    () =>
+      buildQuickChoiceSet({
+        prompt: activePrompt,
+        cards,
+        reading,
+      }),
+    [activePrompt, cards, reading],
+  );
+  const finalReflectionText = useMemo(() => {
+    if (reflectionMode === "quick") {
+      return composeQuickReflection(activePrompt, quickSelections, quickNote);
+    }
+
+    if (reflectionMode === "voice") {
+      return voiceJournal.trim();
+    }
+
+    return journal.trim();
+  }, [
+    activePrompt,
+    journal,
+    quickNote,
+    quickSelections,
+    reflectionMode,
+    voiceJournal,
+  ]);
 
   const showSummarySection = saved || summaryLoading || summary;
   const showNextSteps = saved || skippedJournal;
