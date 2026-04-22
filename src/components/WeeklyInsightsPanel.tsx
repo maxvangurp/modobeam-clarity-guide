@@ -83,7 +83,12 @@ export function WeeklyInsightsPanel({
   };
 
   return (
-    <div className={cn("space-y-4", mode === "page" ? "pb-6" : undefined)}>
+    <div
+      className={cn(
+        "space-y-4",
+        mode === "page" ? "pb-6" : "mx-auto max-w-[920px] pb-2",
+      )}
+    >
       <section
         className={cn(
           "rounded-[1.24rem] border border-border/68 bg-background/84 px-4 py-4",
@@ -115,7 +120,7 @@ export function WeeklyInsightsPanel({
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-2.5">
+      <section className="grid gap-2.5 sm:grid-cols-2">
         {metricCards.map((card) => (
           <div
             key={card.label}
@@ -184,11 +189,11 @@ export function WeeklyInsightsPanel({
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
             Recent tones
           </p>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-3 flex flex-wrap gap-2.5">
             {momentCounts.map(({ moment, count }) => (
               <span
                 key={moment}
-                className="rounded-full border border-border/60 bg-background/84 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/76"
+                className="rounded-full border border-border/60 bg-background/84 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/76"
               >
                 {MOMENT_LABELS[moment]} · {count}
               </span>
@@ -204,10 +209,7 @@ export function WeeklyInsightsPanel({
           </p>
           <div className="mt-3 space-y-2">
             {takeaways.map((takeaway) => (
-              <div
-                key={takeaway}
-                className="rounded-[0.95rem] border border-border/60 bg-background/82 px-3 py-2.5"
-              >
+              <div key={takeaway} className="rounded-[0.95rem] border border-border/60 bg-background/82 px-3 py-3">
                 <p className="text-[13px] leading-[1.55] text-foreground/86">{takeaway}</p>
               </div>
             ))}

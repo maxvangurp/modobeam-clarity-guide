@@ -46,7 +46,7 @@ export function WeeklyOverviewSheet({
       <SheetContent
         side="bottom"
         className={cn(
-          "max-h-[85vh] overflow-y-auto rounded-t-[1.7rem] border-border/60 bg-background/96 px-0 backdrop-blur-xl",
+          "inset-x-auto left-1/2 right-auto bottom-3 max-h-[88vh] w-[calc(100vw-1rem)] max-w-[980px] -translate-x-1/2 overflow-y-auto rounded-[1.7rem] border border-border/60 bg-background/96 px-0 backdrop-blur-xl [&>button]:hidden md:bottom-5 md:w-[calc(100vw-2rem)]",
           surfaceClassName,
         )}
       >
