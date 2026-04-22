@@ -137,13 +137,13 @@ const Preferences = () => {
     <AppShell showBack backTo="/">
       <section className={cn(layout.pageHeader, layout.pageSection)}>
         <div className={layout.pageIntro}>
-        <p className={layout.eyebrow}>
+          <p className={layout.eyebrow}>
           Preferences
         </p>
-        <h1 className={layout.title}>
+          <h1 className={layout.title}>
           How Modobeam fits you.
         </h1>
-        <p className={layout.body}>
+          <p className={layout.body}>
           Adjust anything, anytime. These shape the baseline tone — your
           moment-of choices still come first.
         </p>
@@ -362,10 +362,10 @@ const Section = ({
   <section className="mt-9 animate-fade-up">
     <div className="mb-4 space-y-3">
       <p className={layout.eyebrow}>
-      {kicker}
+        {kicker}
       </p>
       <h2 className="font-display text-[1.1rem] leading-snug text-foreground font-light">
-      {title}
+        {title}
       </h2>
     </div>
     {children}
