@@ -48,6 +48,7 @@
     --gradient-card: linear-gradient(145deg, hsl(40 30% 98%) 0%, hsl(211 25% 92%) 100%);
     --gradient-card-back: linear-gradient(135deg, hsl(218 35% 18%) 0%, hsl(211 35% 28%) 50%, hsl(211 40% 22%) 100%);
     --gradient-beam: radial-gradient(circle at 50% 0%, hsl(211 60% 80% / 0.5) 0%, transparent 70%);
+    --gradient-mark: linear-gradient(145deg, hsl(232 42% 23%) 0%, hsl(214 42% 35%) 52%, hsl(251 28% 30%) 100%);
     /* Richer button — deep indigo to dusty blue, with a hint of violet sheen */
     --gradient-button: linear-gradient(135deg, hsl(232 45% 22%) 0%, hsl(211 38% 32%) 55%, hsl(245 30% 30%) 100%);
     --gradient-button-hover: linear-gradient(135deg, hsl(232 50% 26%) 0%, hsl(211 42% 36%) 55%, hsl(245 34% 34%) 100%);
@@ -69,6 +70,7 @@
     --shadow-soft: 0 1px 2px hsl(218 30% 14% / 0.04), 0 8px 24px hsl(218 30% 14% / 0.06);
     --shadow-card: 0 4px 16px hsl(218 30% 14% / 0.08), 0 24px 48px hsl(218 30% 14% / 0.12);
     --shadow-glow: 0 0 60px hsl(211 60% 70% / 0.35);
+    --shadow-mark: 0 6px 18px hsl(232 45% 16% / 0.16), 0 18px 40px hsl(232 45% 16% / 0.16), inset 0 1px 0 hsl(40 30% 98% / 0.14);
     --shadow-cta: 0 1px 2px hsl(232 50% 14% / 0.18), 0 12px 28px hsl(232 50% 14% / 0.22), 0 0 32px hsl(245 40% 35% / 0.18);
 
     --transition-smooth: cubic-bezier(0.32, 0.72, 0, 1);
@@ -136,6 +138,7 @@
   .bg-gradient-card-back { background-image: var(--gradient-card-back); }
   .bg-gradient-beam { background-image: var(--gradient-beam); }
   .bg-gradient-button { background-image: var(--gradient-button); }
+  .bg-gradient-mark { background-image: var(--gradient-mark); }
   .bg-gradient-button:hover { background-image: var(--gradient-button-hover); }
 
   /* Per-screen mood washes — layered above the base body gradient */
@@ -147,6 +150,7 @@
   .shadow-soft { box-shadow: var(--shadow-soft); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-glow { box-shadow: var(--shadow-glow); }
+  .shadow-mark { box-shadow: var(--shadow-mark); }
   .shadow-cta { box-shadow: var(--shadow-cta); }
 
   .transition-smooth { transition: all 0.5s var(--transition-smooth); }
