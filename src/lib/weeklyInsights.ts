@@ -19,6 +19,28 @@ export interface WeeklyInsightsModel {
   repeatedFocusArea: string | null;
 }
 
+export function getWeeklySummaryText(
+  summary: string | null | undefined,
+  model: Pick<
+    WeeklyInsightsModel,
+    "reflectionCount" | "checkedInDays" | "themes" | "momentCounts"
+  >,
+): string {
+  if (summary?.trim()) return summary.trim();
+
+  const leadingTheme = model.themes[0]?.label;
+  const leadingTone = model.momentCounts[0]?.moment;
+  const toneCopy = leadingTone
+    ? `The strongest tone around your reflections was ${leadingTone}.`
+    : "The week carries a quiet throughline even where it stayed light.";
+
+  if (leadingTheme) {
+    return `This week returns to ${leadingTheme.toLowerCase()}. You checked in on ${model.checkedInDays} of 7 days and left ${model.reflectionCount} ${model.reflectionCount === 1 ? "reflection" : "reflections"}. ${toneCopy}`;
+  }
+
+  return `You checked in on ${model.checkedInDays} of 7 days and left ${model.reflectionCount} ${model.reflectionCount === 1 ? "reflection" : "reflections"} this week. ${toneCopy}`;
+}
+
 function formatRangeDate(date: Date): string {
   return date.toLocaleDateString(undefined, {
     month: "short",
