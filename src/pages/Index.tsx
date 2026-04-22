@@ -566,8 +566,8 @@ const ExploreCarousel = ({
   };
 
   return (
-    <div className="animate-fade-up space-y-3 [animation-delay:300ms]">
-      <div className="space-y-2">
+    <div className="animate-fade-up space-y-2.5 [animation-delay:300ms]">
+      <div className="space-y-1.5">
         <div className="flex items-center justify-between gap-4">
           <p className={layout.sectionLabel}>
             Or try a different way in
@@ -587,8 +587,8 @@ const ExploreCarousel = ({
 
       {/* Horizontal scroller — bleeds slightly into the page padding so the
           last card peeks, signalling there's more to scroll. */}
-      <div className="-mx-5 pl-5 pr-2">
-        <div className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <div className="-mx-5 pl-5 pr-3">
+        <div className="flex gap-2.5 overflow-x-auto pb-2.5 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {featuredReal.map((r) => {
             const unlocked = isReadingUnlocked(r.id, totalReflections);
             const remaining = readingsRemainingToUnlock(r.id, totalReflections);
