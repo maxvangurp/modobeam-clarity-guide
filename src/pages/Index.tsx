@@ -372,7 +372,7 @@ const Index = () => {
       />
 
       {/* Daily quote — quiet, rotates each day */}
-      <section className={cn(layout.pageSection, "[animation-delay:80ms]")}>
+      <section className={cn(layout.pageSection, "mb-7 [animation-delay:80ms]")}>
         <figure className="rounded-3xl bg-gradient-dawn border border-border/40 px-6 py-5 shadow-soft">
           <p className="text-[11px] uppercase tracking-[0.25em] text-ink-soft/80 mb-2">
             Today
@@ -389,7 +389,7 @@ const Index = () => {
       </section>
 
       {/* 2. Moment check-in — light, optional, inline */}
-      <section className={cn(layout.pageSection, "space-y-3 [animation-delay:120ms]")}>
+      <section className={cn(layout.pageSection, "mb-7 space-y-3 [animation-delay:120ms]")}>
         <p className={layout.sectionLabel}>What feels closest right now?</p>
         <div className={cn(layout.chipRow, "gap-2.5")}>
           {MOMENT_ORDER.map((id) => {
@@ -481,7 +481,8 @@ const Index = () => {
       {/* Soft suggestion — only when something newly unlocked */}
       {suggestion && !suggestionDismissed && !readingHint && (
         <section className="mt-7 animate-fade-up [animation-delay:320ms]">
-          <div className="rounded-2xl bg-card/50 backdrop-blur border border-border/40 px-5 py-4 flex items-start gap-3">
+          <div className="rounded-[1.75rem] border border-border/40 bg-card/50 px-5 py-4.5 backdrop-blur">
+            <div className="flex items-start gap-3">
             <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center shrink-0">
               <suggestion.icon
                 className="h-3.5 w-3.5 text-muted-foreground"
@@ -515,6 +516,7 @@ const Index = () => {
             >
               <X className="h-3.5 w-3.5" />
             </button>
+            </div>
           </div>
         </section>
       )}
