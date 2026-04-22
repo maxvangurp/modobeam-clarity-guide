@@ -61,18 +61,18 @@ export const ReadingPreviewCard = ({
   const interactive = state === "ready" && !!to;
 
   // Sharper editorial surface — light accent wash without soft fog.
-  const surfaceBg = `linear-gradient(180deg, hsl(var(--card)) 0%, hsl(${accent.bg} / 0.38) 100%)`;
+   const surfaceBg = `linear-gradient(180deg, hsl(var(--card)) 0%, hsl(${accent.bg} / 0.22) 52%, hsl(${accent.bg} / 0.42) 100%)`;
   const orbBg = `linear-gradient(135deg, hsl(${accent.bg}) 0%, hsl(${accent.hsl}) 100%)`;
   const orbGlow = `0 6px 18px hsl(${accent.hsl} / 0.16)`;
 
   const inner = (
     <div
       className={cn(
-        "relative h-full overflow-hidden rounded-[1rem] border bg-card transition-smooth",
+         "relative h-full overflow-hidden rounded-[0.95rem] border bg-card transition-smooth",
         interactive
           ? "shadow-soft hover:-translate-y-0.5 hover:shadow-card"
           : "shadow-soft",
-        isCarousel ? "px-4.5 py-4.5" : "px-5 py-5",
+         isCarousel ? "px-4.5 py-4.5" : "px-5 py-5",
         state !== "ready" && "opacity-90",
         className,
       )}
@@ -87,7 +87,7 @@ export const ReadingPreviewCard = ({
         style={{ backgroundColor: `hsl(${accent.ring} / 0.36)` }}
       />
       {/* Top row — orb + depth chip */}
-      <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-4" : "mb-4.5")}>
+       <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-4.5" : "mb-4.5")}>
         <span
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border"
           style={{
@@ -107,11 +107,11 @@ export const ReadingPreviewCard = ({
         </span>
 
         <span
-          className="whitespace-nowrap rounded-full border px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.18em]"
+           className="whitespace-nowrap rounded-full border px-2.5 py-1 text-[8px] font-semibold uppercase tracking-[0.18em]"
           style={{
-            color: `hsl(${accent.ring})`,
-            borderColor: `hsl(${accent.ring} / 0.22)`,
-            backgroundColor: `hsl(${accent.bg} / 0.28)`,
+             color: `hsl(${accent.ring} / 0.96)`,
+             borderColor: `hsl(${accent.ring} / 0.2)`,
+             backgroundColor: `hsl(${accent.bg} / 0.22)`,
           }}
         >
           {cardCount} {cardCount === 1 ? "card" : "cards"} · {depth}
@@ -119,17 +119,17 @@ export const ReadingPreviewCard = ({
       </div>
 
       {/* Title + subtitle */}
-      <div className={cn(isCarousel ? "min-h-[4.75rem] space-y-1.5" : "space-y-1.5")}>
+      <div className={cn(isCarousel ? "min-h-[5.2rem] space-y-1.5" : "space-y-1.5")}>
         <p
           className={cn(
             "font-display leading-[1.14] text-foreground",
-            isCarousel ? "text-[1.18rem] font-semibold" : "text-[1.05rem] font-semibold",
+             isCarousel ? "text-[1.24rem] font-semibold" : "text-[1.08rem] font-semibold",
           )}
         >
           {label}
         </p>
         {subtitle && (
-          <p className="max-w-[19ch] text-[11.5px] leading-[1.45] text-muted-foreground/88">
+          <p className="max-w-[19ch] text-[11.5px] leading-[1.5] text-muted-foreground/96">
             {subtitle}
           </p>
         )}
