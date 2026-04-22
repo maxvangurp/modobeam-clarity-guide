@@ -442,7 +442,7 @@ const Index = () => {
       </section>
 
       {/* 3. Primary action — one clear CTA */}
-      <section className={cn(layout.pageSection, "mt-9 space-y-7 [animation-delay:240ms]")}>
+      <section className={cn(layout.pageSection, "mt-8 space-y-5 [animation-delay:240ms]")}>
         <Button
           size="lg"
           onClick={startDaily}
@@ -566,29 +566,29 @@ const ExploreCarousel = ({
   };
 
   return (
-    <div className="animate-fade-up space-y-4 [animation-delay:300ms]">
-      <div className={layout.splitHeader}>
-        <div className="space-y-1">
+    <div className="animate-fade-up space-y-3 [animation-delay:300ms]">
+      <div className="space-y-2">
+        <div className="flex items-center justify-between gap-4">
           <p className={layout.sectionLabel}>
             Or try a different way in
           </p>
-          <p className="font-display text-[16px] font-medium text-foreground mt-0.5">
-            Explore deeper readings
-          </p>
+          <Link
+            to="/readings"
+            className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-foreground/70 transition-smooth hover:text-foreground shrink-0"
+          >
+            See all
+            <ArrowRight className="h-3 w-3" />
+          </Link>
         </div>
-        <Link
-          to="/readings"
-          className="inline-flex items-center gap-1 text-[11px] uppercase tracking-[0.2em] text-foreground/70 hover:text-foreground transition-smooth shrink-0"
-        >
-          See all
-          <ArrowRight className="h-3 w-3" />
-        </Link>
+        <h2 className="font-display text-[16px] font-medium leading-tight text-foreground">
+          Explore deeper readings
+        </h2>
       </div>
 
       {/* Horizontal scroller — bleeds slightly into the page padding so the
           last card peeks, signalling there's more to scroll. */}
-      <div className="-mx-5 px-5">
-        <div className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+      <div className="-mx-5 pl-5 pr-2">
+        <div className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           {featuredReal.map((r) => {
             const unlocked = isReadingUnlocked(r.id, totalReflections);
             const remaining = readingsRemainingToUnlock(r.id, totalReflections);
