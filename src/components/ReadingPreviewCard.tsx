@@ -68,11 +68,11 @@ export const ReadingPreviewCard = ({
   const inner = (
     <div
       className={cn(
-        "relative h-full overflow-hidden rounded-[1.7rem] border backdrop-blur-xl transition-smooth",
+        "relative h-full overflow-hidden rounded-[1.2rem] border transition-smooth",
         interactive
           ? "shadow-soft hover:-translate-y-0.5 hover:shadow-card"
           : "shadow-soft",
-        isCarousel ? "px-5 py-5.5" : "px-5 py-5.5",
+        isCarousel ? "px-5 py-5" : "px-5 py-5",
         state !== "ready" && "opacity-90",
         className,
       )}
@@ -82,9 +82,9 @@ export const ReadingPreviewCard = ({
       }}
     >
       {/* Top row — orb + depth chip */}
-      <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-4.5" : "mb-4.5")}>
+      <div className={cn("flex items-start justify-between gap-3", isCarousel ? "mb-4" : "mb-4.5")}>
         <span
-          className="h-9 w-9 rounded-full flex items-center justify-center shrink-0"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
           style={{
             backgroundImage: state === "ready" ? orbBg : undefined,
             backgroundColor: state === "ready" ? undefined : "hsl(var(--secondary) / 0.5)",
@@ -101,7 +101,7 @@ export const ReadingPreviewCard = ({
         </span>
 
         <span
-          className="whitespace-nowrap rounded-full border px-2.5 py-1 text-[9px] font-medium uppercase tracking-[0.18em]"
+          className="whitespace-nowrap rounded-full border px-2.5 py-1 text-[8.5px] font-semibold uppercase tracking-[0.16em]"
           style={{
             color: `hsl(${accent.ring})`,
             borderColor: `hsl(${accent.ring} / 0.3)`,
@@ -113,17 +113,17 @@ export const ReadingPreviewCard = ({
       </div>
 
       {/* Title + subtitle */}
-      <div className={cn(isCarousel ? "min-h-[4.4rem] space-y-1.5" : "space-y-2")}>
+      <div className={cn(isCarousel ? "min-h-[4.05rem] space-y-1" : "space-y-1.5")}>
         <p
           className={cn(
             "font-display leading-[1.14] text-foreground",
-            isCarousel ? "text-[1.1rem] font-semibold" : "text-[1rem] font-semibold",
+            isCarousel ? "text-[1.08rem] font-semibold" : "text-[1rem] font-semibold",
           )}
         >
           {label}
         </p>
         {subtitle && (
-          <p className="max-w-[18ch] text-[13px] leading-[1.45] text-muted-foreground/88">
+          <p className="max-w-[19ch] text-[12px] leading-[1.45] text-muted-foreground/92">
             {subtitle}
           </p>
         )}
@@ -157,8 +157,8 @@ export const ReadingPreviewCard = ({
       <Link
         to={to!}
           className={cn(
-            "group block rounded-[1.7rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-            isCarousel ? "w-[17rem] shrink-0" : "w-full",
+            "group block rounded-[1.2rem] focus:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            isCarousel ? "w-[16rem] shrink-0" : "w-full",
           )}
         aria-label={`Open ${label}`}
       >
@@ -170,7 +170,7 @@ export const ReadingPreviewCard = ({
   return (
     <div
       className={cn(
-        isCarousel ? "w-[17rem] shrink-0" : "w-full",
+        isCarousel ? "w-[16rem] shrink-0" : "w-full",
         "cursor-default",
       )}
       aria-disabled
