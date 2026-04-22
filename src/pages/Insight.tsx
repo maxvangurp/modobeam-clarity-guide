@@ -526,7 +526,7 @@ const Insight = () => {
           Take a moment to <span className="font-medium italic">reflect</span>.
         </h2>
         <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-          A few honest lines is enough. Nothing has to be polished.
+          Choose the response that fits your energy — write, tap a few truths, or speak it out.
         </p>
 
         {prompts.length > 0 && (
@@ -556,45 +556,62 @@ const Insight = () => {
           </div>
         )}
 
-        <Textarea
-          value={journal}
-          onChange={(e) => {
-            setJournal(e.target.value);
+        <ReflectionComposer
+          mode={reflectionMode}
+          onModeChange={(mode) => {
+            setReflectionMode(mode);
+            setSaved(false);
+            setSummary("");
+            setSkippedJournal(false);
+          }}
+          writeValue={journal}
+          onWriteChange={(value) => {
+            setJournal(value);
             setSaved(false);
             setSummary("");
           }}
-          placeholder="Write freely…"
-          rows={6}
-          className="mt-5 resize-none rounded-2xl bg-card/80 border-border/60 backdrop-blur text-base"
-        />
+          quickChoices={quickChoiceSet.options}
+          quickSelections={quickSelections}
+          quickAllowMultiple={quickChoiceSet.allowMultiple}
+          onToggleQuickChoice={(choice) => {
+            setQuickSelections((current) => {
+              const isSelected = current.includes(choice);
 
-        <div className="flex justify-between items-center mt-3 gap-3">
-          <button
-            onClick={skipJournal}
-            type="button"
-            disabled={skippedJournal || saved}
-            className="text-sm text-muted-foreground hover:text-foreground transition-smooth disabled:opacity-50"
-          >
-            Not right now
-          </button>
-          <Button
-            onClick={saveJournal}
-            disabled={!journal.trim() || saving || saved}
-            className={`rounded-full bg-gradient-button text-primary-foreground px-6 shadow-cta hover:scale-[1.01] active:scale-[0.99] transition-transform ${
-              saved ? "animate-save-glow" : ""
-            }`}
-          >
-            {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : saved ? (
-              <>
-                <Check className="h-4 w-4 mr-1.5" /> Saved
-              </>
-            ) : (
-              "Save reflection"
-            )}
-          </Button>
-        </div>
+              if (quickChoiceSet.allowMultiple) {
+                return isSelected
+                  ? current.filter((item) => item !== choice)
+                  : [...current, choice];
+              }
+
+              return isSelected ? [] : [choice];
+            });
+            setSaved(false);
+            setSummary("");
+          }}
+          quickNote={quickNote}
+          onQuickNoteChange={(value) => {
+            setQuickNote(value);
+            setSaved(false);
+            setSummary("");
+          }}
+          voiceValue={voiceJournal}
+          onVoiceChange={(value) => {
+            setVoiceJournal(value);
+            setSaved(false);
+            setSummary("");
+          }}
+          onVoiceAppend={(value) => {
+            setVoiceJournal((current) => `${current}${current.trim() ? " " : ""}${value}`.trim());
+            setSaved(false);
+            setSummary("");
+          }}
+          onSave={saveJournal}
+          onSkip={skipJournal}
+          canSave={Boolean(finalReflectionText)}
+          saving={saving}
+          saved={saved}
+          skipped={skippedJournal}
+        />
 
         {/* Mood snapshot — appears when the user skips. One quiet tap. */}
         {skippedJournal && !saved && (
