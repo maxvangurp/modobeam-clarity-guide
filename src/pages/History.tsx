@@ -8,6 +8,7 @@ import { getSessionId } from "@/lib/session";
 import { Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { layout } from "@/lib/layout";
+import { cn } from "@/lib/utils";
 
 /* ── types ── */
 
@@ -332,7 +333,7 @@ const PeriodSummaryCard = ({
   // Auto-fetch on mount
   useEffect(() => {
     if (!summary && !loading) fetchSummary();
-  }, []);
+  }, [fetchSummary, loading, summary]);
 
   const top = topCards(items);
 
