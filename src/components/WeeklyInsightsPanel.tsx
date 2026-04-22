@@ -82,6 +82,16 @@ export function WeeklyInsightsPanel({
     onNavigate?.();
   };
 
+  const blockClassName =
+    mode === "sheet"
+      ? "rounded-[1.2rem] border border-border/72 bg-card shadow-soft"
+      : "rounded-[1.2rem] border border-border/68 bg-background/84";
+
+  const itemClassName =
+    mode === "sheet"
+      ? "border border-border/62 bg-background"
+      : "border border-border/60 bg-background/82";
+
   return (
     <div
       className={cn(
@@ -91,8 +101,9 @@ export function WeeklyInsightsPanel({
     >
       <section
         className={cn(
-          "rounded-[1.24rem] border border-border/68 bg-background/84 px-4 py-4",
-          surfaceClassName,
+          "rounded-[1.24rem] border border-border/72 px-4 py-4 shadow-soft",
+          mode === "sheet" ? "bg-card" : "bg-background/84",
+          mode === "page" ? surfaceClassName : undefined,
         )}
       >
         <div className="flex items-start gap-3">
@@ -124,7 +135,7 @@ export function WeeklyInsightsPanel({
         {metricCards.map((card) => (
           <div
             key={card.label}
-            className="rounded-[1.15rem] border border-border/65 bg-background/82 px-3.5 py-3.5"
+            className={cn("rounded-[1.15rem] px-3.5 py-3.5", itemClassName)}
           >
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/56">
               {card.label}
@@ -137,7 +148,7 @@ export function WeeklyInsightsPanel({
         ))}
       </section>
 
-      <section className="rounded-[1.2rem] border border-border/68 bg-background/78 px-4 py-4">
+      <section className={cn(blockClassName, "px-4 py-4")}>
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
@@ -155,7 +166,7 @@ export function WeeklyInsightsPanel({
       </section>
 
       {themes.length > 0 && (
-        <section className="rounded-[1.2rem] border border-border/68 bg-background/80 px-4 py-4">
+        <section className={cn(blockClassName, "px-4 py-4")}>
           <div className="flex items-start gap-3">
             <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/84">
               <Waypoints className="h-3.5 w-3.5 text-foreground/74" strokeWidth={1.8} />
@@ -168,7 +179,10 @@ export function WeeklyInsightsPanel({
                 {themes.map((theme) => (
                   <div
                     key={theme.label}
-                    className="flex items-center justify-between gap-3 rounded-[0.95rem] border border-border/60 bg-background/80 px-3 py-2.5"
+                    className={cn(
+                      "flex items-center justify-between gap-3 rounded-[0.95rem] px-3 py-2.5",
+                      itemClassName,
+                    )}
                   >
                     <p className="font-display text-[1rem] leading-none text-foreground">
                       {theme.label}
@@ -185,7 +199,7 @@ export function WeeklyInsightsPanel({
       )}
 
       {momentCounts.length > 0 && (
-        <section className="rounded-[1.2rem] border border-border/68 bg-background/80 px-4 py-4">
+        <section className={cn(blockClassName, "px-4 py-4")}>
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
             Recent tones
           </p>
@@ -193,7 +207,10 @@ export function WeeklyInsightsPanel({
             {momentCounts.map(({ moment, count }) => (
               <span
                 key={moment}
-                className="rounded-full border border-border/60 bg-background/84 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/76"
+                className={cn(
+                  "rounded-full px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-foreground/76",
+                  itemClassName,
+                )}
               >
                 {MOMENT_LABELS[moment]} · {count}
               </span>
@@ -203,13 +220,13 @@ export function WeeklyInsightsPanel({
       )}
 
       {takeaways.length > 0 && (
-        <section className="rounded-[1.2rem] border border-border/68 bg-background/80 px-4 py-4">
+        <section className={cn(blockClassName, "px-4 py-4")}>
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
             Recent takeaways
           </p>
           <div className="mt-3 space-y-2">
             {takeaways.map((takeaway) => (
-              <div key={takeaway} className="rounded-[0.95rem] border border-border/60 bg-background/82 px-3 py-3">
+              <div key={takeaway} className={cn("rounded-[0.95rem] px-3 py-3", itemClassName)}>
                 <p className="text-[13px] leading-[1.55] text-foreground/86">{takeaway}</p>
               </div>
             ))}
@@ -217,7 +234,7 @@ export function WeeklyInsightsPanel({
         </section>
       )}
 
-      <section className="rounded-[1.2rem] border border-border/68 bg-background/84 px-4 py-4">
+      <section className={cn(blockClassName, "px-4 py-4")}>
         <div className="flex items-start justify-between gap-3 border-b border-border/50 pb-3">
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
@@ -234,7 +251,10 @@ export function WeeklyInsightsPanel({
           <button
             type="button"
             onClick={() => handleNavigate("/history")}
-            className="group flex w-full items-center justify-between rounded-[0.95rem] border border-border/60 bg-background/82 px-3.5 py-3 text-left transition-smooth hover:bg-background/94"
+            className={cn(
+              "group flex w-full items-center justify-between rounded-[0.95rem] px-3.5 py-3 text-left transition-smooth hover:bg-background/94",
+              itemClassName,
+            )}
           >
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/58">
@@ -250,7 +270,10 @@ export function WeeklyInsightsPanel({
           <button
             type="button"
             onClick={handleMonthlyOverview}
-            className="group flex w-full items-center justify-between rounded-[0.95rem] border border-border/60 bg-background/82 px-3.5 py-3 text-left transition-smooth hover:bg-background/94"
+            className={cn(
+              "group flex w-full items-center justify-between rounded-[0.95rem] px-3.5 py-3 text-left transition-smooth hover:bg-background/94",
+              itemClassName,
+            )}
           >
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/58">
@@ -275,7 +298,10 @@ export function WeeklyInsightsPanel({
             <Link
               to="/preferences"
               onClick={onNavigate}
-              className="inline-flex items-center justify-between rounded-[0.95rem] border border-border/60 bg-background/82 px-3.5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/72 transition-smooth hover:bg-background/94"
+              className={cn(
+                "inline-flex items-center justify-between rounded-[0.95rem] px-3.5 py-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/72 transition-smooth hover:bg-background/94",
+                itemClassName,
+              )}
             >
               Reflection preferences
               <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.8} />
