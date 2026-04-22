@@ -83,8 +83,8 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
   if (error && !synth) return null;
 
   return (
-    <section className="mt-2 mb-8 animate-fade-up">
-      <div className="relative rounded-[1.35rem] border border-border/70 bg-card px-5 py-5 shadow-soft">
+    <section className="mt-1 mb-2 animate-fade-up">
+      <div className="relative overflow-hidden rounded-[1.35rem] border border-border/76 bg-gradient-module px-5 py-5 shadow-soft">
         <button
           onClick={() => {
             dismissWeeklySynthesis(weekId);
@@ -96,7 +96,7 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
           <X className="h-3.5 w-3.5" />
         </button>
 
-        <p className="mb-2.5 text-[10px] font-semibold uppercase tracking-[0.26em] text-foreground/56">
+        <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.26em] text-foreground/60">
           Your week, in one breath
         </p>
 
@@ -110,12 +110,12 @@ export const WeeklySynthesisCard = ({ weekId, recent, onDismiss }: Props) => {
         {synth && (
           <>
             {synth.corePattern && (
-              <p className="font-display text-[18px] leading-[1.18] text-foreground italic">
+              <p className="max-w-[16ch] font-display text-[1.28rem] leading-[1.15] text-foreground italic">
                 {synth.corePattern}
               </p>
             )}
             {synth.summary && (
-              <p className="mt-3.5 max-w-[30ch] text-[13.5px] leading-[1.68] text-foreground/88">
+              <p className="mt-3.5 max-w-[31ch] text-[13.5px] leading-[1.68] text-foreground/92">
                 {synth.summary}
               </p>
             )}

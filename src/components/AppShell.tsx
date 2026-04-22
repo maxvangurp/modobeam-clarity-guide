@@ -52,8 +52,8 @@ export const AppShell = ({
           )}
         />
       )}
-      <header className="sticky top-0 z-30 border-b border-border/65 bg-background/92 backdrop-blur-md">
-        <div className={cn(layout.shellInner, "flex min-h-[4.75rem] items-center justify-between gap-4 py-3") }>
+      <header className="sticky top-0 z-30 border-b border-border/72 bg-background/94 backdrop-blur-xl">
+        <div className={cn(layout.shellInner, "flex min-h-[4.9rem] items-center justify-between gap-4 py-3") }>
           {showBack ? (
             <Link
               to={backTo ?? "/"}
@@ -68,14 +68,14 @@ export const AppShell = ({
           <Link
             to="/preferences"
             aria-label="Preferences"
-            className="-mr-1 flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-smooth hover:border-border/65 hover:bg-card hover:text-foreground"
+            className="-mr-1 flex h-10 w-10 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-smooth hover:border-border/72 hover:bg-card/92 hover:text-foreground"
           >
             <Settings2 className="h-[18px] w-[18px]" strokeWidth={1.6} />
           </Link>
         </div>
       </header>
 
-      <main className={cn(layout.shellInner, "flex-1 pb-32 pt-5") }>
+      <main className={cn(layout.shellInner, "flex-1 pb-36 pt-5") }>
         {children}
       </main>
 
