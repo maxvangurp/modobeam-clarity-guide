@@ -106,9 +106,12 @@ export const ReflectionCard = ({
   }, [controlled]);
 
   useEffect(() => {
+    const activeHoldTimer = holdTimer.current;
+    const activeRevealTimers = revealTimers.current;
+
     return () => {
-      if (holdTimer.current) clearTimeout(holdTimer.current);
-      revealTimers.current.forEach((timer) => clearTimeout(timer));
+      if (activeHoldTimer) clearTimeout(activeHoldTimer);
+      activeRevealTimers.forEach((timer) => clearTimeout(timer));
     };
   }, []);
 
@@ -121,7 +124,6 @@ export const ReflectionCard = ({
       onPointerLeave={endHold}
       onPointerCancel={endHold}
       onContextMenu={(e) => revealed && e.preventDefault()}
-      disabled={false}
       className={cn(
         "relative perspective-1200 group outline-none transition-transform duration-500",
         sizes[size],
@@ -164,9 +166,9 @@ export const ReflectionCard = ({
           revealStage === "turning" && "-translate-y-1.5 scale-[1.015]",
           !revealed && !pressing && "group-hover:-translate-y-1",
           revealStage === "settled" && "animate-card-settle",
-          showRevealAtmosphere ? "duration-[1600ms]" : "duration-500",
+          showRevealAtmosphere ? "duration-700" : "duration-500",
         )}
-        style={{ perspective: "1200px" }}
+        style={{ perspective: "1200px", transitionDuration: showRevealAtmosphere ? "1600ms" : "500ms" }}
       >
         {/* Inner flip wrapper — only handles rotateY, smoothly animated */}
         <div
@@ -237,9 +239,10 @@ export const ReflectionCard = ({
               alt={`${card.name} card`}
               loading="lazy"
               className={cn(
-                "absolute inset-0 h-full w-full object-cover transition-transform duration-[1800ms] ease-out",
+                "absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out",
                 revealStage === "turning" && "scale-[1.02]",
               )}
+              style={{ transitionDuration: "1800ms" }}
             />
           ) : (
             <>
