@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Constellation } from "@/components/Constellation";
+import { ArrowRight, Clock3, Sparkles, Waypoints } from "lucide-react";
 import { toast } from "sonner";
 import {
   GUIDANCE_LABELS,
@@ -177,6 +178,37 @@ const Preferences = () => {
           </div>
         </section>
       )}
+
+      <Section kicker="Reflection insights" title="Pattern memory and deeper views">
+        <div className="space-y-3">
+          <InsightLink
+            to="/insights/weekly"
+            label="Weekly overview"
+            description="Open your weekly snapshot, rhythm, and returning themes."
+            icon={Sparkles}
+          />
+          <InsightButton
+            label="Monthly overview"
+            description="A wider pattern view across the last month."
+            icon={Clock3}
+            onClick={() => toast("Monthly overview is coming soon")}
+          />
+          <InsightButton
+            label="Pattern history"
+            description="Trace recurring themes and tones across your reflection history."
+            icon={Waypoints}
+            onClick={() => toast("Pattern history is coming soon")}
+          />
+          <div className="rounded-[1.15rem] border border-border/60 bg-card/70 px-4 py-3.5">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/58">
+              Reflection preferences
+            </p>
+            <p className="mt-2 text-[13px] leading-[1.62] text-muted-foreground/92">
+              Tone, rhythm, and guidance settings live below so your weekly insights connect back to how Modobeam speaks to you.
+            </p>
+          </div>
+        </div>
+      </Section>
 
       <Section
         kicker="How you use it"
@@ -371,3 +403,61 @@ const Section = ({
 );
 
 export default Preferences;
+
+const InsightLink = ({
+  to,
+  label,
+  description,
+  icon: Icon,
+}: {
+  to: string;
+  label: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+}) => (
+  <button
+    type="button"
+    onClick={() => (window.location.href = to)}
+    className="group flex w-full items-start justify-between gap-3 rounded-[1.15rem] border border-border/60 bg-card/70 px-4 py-3.5 text-left shadow-soft transition-smooth hover:bg-card/92"
+  >
+    <div className="flex min-w-0 gap-3">
+      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/84">
+        <Icon className="h-4 w-4 text-foreground/74" strokeWidth={1.8} />
+      </span>
+      <div className="min-w-0">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/62">{label}</p>
+        <p className="mt-1 text-[13px] leading-[1.58] text-foreground/86">{description}</p>
+      </div>
+    </div>
+    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground" strokeWidth={1.8} />
+  </button>
+);
+
+const InsightButton = ({
+  label,
+  description,
+  icon: Icon,
+  onClick,
+}: {
+  label: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  onClick: () => void;
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    className="group flex w-full items-start justify-between gap-3 rounded-[1.15rem] border border-border/60 bg-card/70 px-4 py-3.5 text-left transition-smooth hover:bg-card/92"
+  >
+    <div className="flex min-w-0 gap-3">
+      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/84">
+        <Icon className="h-4 w-4 text-foreground/74" strokeWidth={1.8} />
+      </span>
+      <div className="min-w-0">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/62">{label}</p>
+        <p className="mt-1 text-[13px] leading-[1.58] text-foreground/86">{description}</p>
+      </div>
+    </div>
+    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground" strokeWidth={1.8} />
+  </button>
+);
