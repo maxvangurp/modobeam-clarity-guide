@@ -92,16 +92,21 @@ export function WeeklyInsightsPanel({
       ? "border border-border/62 bg-background"
       : "border border-border/60 bg-background/82";
 
+  const eyebrowClassName =
+    "text-[10px] font-semibold uppercase tracking-[0.2em] text-foreground/58";
+  const bodyClassName = "text-[13px] font-normal leading-[1.62] text-foreground/84";
+  const metaClassName = "text-[11px] font-medium leading-[1.45] text-muted-foreground/88";
+
   return (
     <div
       className={cn(
-        "space-y-4",
+        "space-y-5 sm:space-y-4",
         mode === "page" ? "pb-6" : "mx-auto max-w-[920px] pb-2",
       )}
     >
       <section
         className={cn(
-          "rounded-[1.24rem] border border-border/72 px-4 py-4 shadow-soft",
+          "rounded-[1.24rem] border border-border/72 px-4 py-5 shadow-soft",
           mode === "sheet" ? "bg-card" : "bg-background/84",
           mode === "page" ? surfaceClassName : undefined,
         )}
@@ -113,7 +118,7 @@ export function WeeklyInsightsPanel({
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
+                <p className={eyebrowClassName}>
                   Weekly summary
                 </p>
                 <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/84">
@@ -121,12 +126,12 @@ export function WeeklyInsightsPanel({
                 </p>
               </div>
               {synthesis?.corePattern && (
-                <p className="max-w-[13ch] text-right font-display text-[1rem] leading-[1.02] text-foreground/84">
+                <p className="max-w-[13ch] text-right font-display text-[1rem] font-medium leading-[1.08] text-foreground/84">
                   {synthesis.corePattern}
                 </p>
               )}
             </div>
-            <p className="mt-3 text-[14px] leading-[1.68] text-foreground/88">{summaryText}</p>
+            <p className="mt-3 text-[13.5px] font-normal leading-[1.7] text-foreground/88">{summaryText}</p>
           </div>
         </div>
       </section>
@@ -135,26 +140,26 @@ export function WeeklyInsightsPanel({
         {metricCards.map((card) => (
           <div
             key={card.label}
-            className={cn("rounded-[1.15rem] px-3.5 py-3.5", itemClassName)}
+            className={cn("rounded-[1.15rem] px-3.5 py-4", itemClassName)}
           >
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/56">
+            <p className={eyebrowClassName}>
               {card.label}
             </p>
-            <p className="mt-2 font-display text-[1.3rem] leading-[1.04] text-foreground">
+            <p className="mt-2 font-display text-[1.3rem] font-medium leading-[1.08] text-foreground">
               {card.value}
             </p>
-            <p className="mt-1 text-[11px] leading-[1.4] text-muted-foreground/88">{card.meta}</p>
+            <p className={cn("mt-1", metaClassName)}>{card.meta}</p>
           </div>
         ))}
       </section>
 
-      <section className={cn(blockClassName, "px-4 py-4")}>
+      <section className={cn(blockClassName, "px-4 py-5")}>
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
+            <p className={eyebrowClassName}>
               Week map
             </p>
-            <p className="mt-1 text-[13px] leading-[1.6] text-foreground/84">
+            <p className={cn("mt-1", bodyClassName)}>
               See where you checked in across the last seven days.
             </p>
           </div>
@@ -166,25 +171,25 @@ export function WeeklyInsightsPanel({
       </section>
 
       {themes.length > 0 && (
-        <section className={cn(blockClassName, "px-4 py-4")}>
+        <section className={cn(blockClassName, "px-4 py-5")}>
           <div className="flex items-start gap-3">
             <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/84">
               <Waypoints className="h-3.5 w-3.5 text-foreground/74" strokeWidth={1.8} />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
+              <p className={eyebrowClassName}>
                 Returning themes
               </p>
-              <div className="mt-3 space-y-2">
+              <div className="mt-3.5 space-y-2.5">
                 {themes.map((theme) => (
                   <div
                     key={theme.label}
                     className={cn(
-                      "flex items-center justify-between gap-3 rounded-[0.95rem] px-3 py-2.5",
+                      "flex items-center justify-between gap-3 rounded-[0.95rem] px-3 py-3",
                       itemClassName,
                     )}
                   >
-                    <p className="font-display text-[1rem] leading-none text-foreground">
+                    <p className="font-display text-[1rem] font-medium leading-[1.12] text-foreground">
                       {theme.label}
                     </p>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/84">
@@ -199,11 +204,11 @@ export function WeeklyInsightsPanel({
       )}
 
       {momentCounts.length > 0 && (
-        <section className={cn(blockClassName, "px-4 py-4")}>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
+        <section className={cn(blockClassName, "px-4 py-5")}>
+          <p className={eyebrowClassName}>
             Recent tones
           </p>
-          <div className="mt-3 flex flex-wrap gap-2.5">
+          <div className="mt-3.5 flex flex-wrap gap-2.5">
             {momentCounts.map(({ moment, count }) => (
               <span
                 key={moment}
@@ -220,34 +225,34 @@ export function WeeklyInsightsPanel({
       )}
 
       {takeaways.length > 0 && (
-        <section className={cn(blockClassName, "px-4 py-4")}>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
+        <section className={cn(blockClassName, "px-4 py-5")}>
+          <p className={eyebrowClassName}>
             Recent takeaways
           </p>
-          <div className="mt-3 space-y-2">
+          <div className="mt-3.5 space-y-2.5">
             {takeaways.map((takeaway) => (
               <div key={takeaway} className={cn("rounded-[0.95rem] px-3 py-3", itemClassName)}>
-                <p className="text-[13px] leading-[1.55] text-foreground/86">{takeaway}</p>
+                <p className={bodyClassName}>{takeaway}</p>
               </div>
             ))}
           </div>
         </section>
       )}
 
-      <section className={cn(blockClassName, "px-4 py-4")}>
+      <section className={cn(blockClassName, "px-4 py-5")}>
         <div className="flex items-start justify-between gap-3 border-b border-border/50 pb-3">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/58">
+            <p className={eyebrowClassName}>
               Next steps
             </p>
-            <p className="mt-1 text-[13px] leading-[1.6] text-foreground/84">
+            <p className={cn("mt-1", bodyClassName)}>
               Keep this week connected to the rest of your reflection history.
             </p>
           </div>
           <Compass className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground/58" strokeWidth={1.8} />
         </div>
 
-        <div className="mt-3 grid gap-2.5">
+        <div className="mt-3.5 grid gap-2.5">
           <button
             type="button"
             onClick={() => handleNavigate("/history")}
@@ -257,10 +262,10 @@ export function WeeklyInsightsPanel({
             )}
           >
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/58">
+              <p className={eyebrowClassName}>
                 View all reflections
               </p>
-              <p className="mt-1 text-[13px] leading-[1.5] text-foreground/84">
+              <p className={cn("mt-1", bodyClassName)}>
                 Open your full reflection history and longer patterns.
               </p>
             </div>
@@ -276,10 +281,10 @@ export function WeeklyInsightsPanel({
             )}
           >
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/58">
+              <p className={eyebrowClassName}>
                 Monthly overview
               </p>
-              <p className="mt-1 text-[13px] leading-[1.5] text-foreground/84">
+              <p className={cn("mt-1", bodyClassName)}>
                 Step back further once you want a wider pattern view.
               </p>
             </div>

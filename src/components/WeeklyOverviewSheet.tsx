@@ -49,17 +49,17 @@ export function WeeklyOverviewSheet({
           "inset-x-auto left-1/2 right-auto bottom-3 max-h-[88vh] w-[calc(100vw-1rem)] max-w-[980px] -translate-x-1/2 overflow-y-auto rounded-[1.7rem] border border-border/70 bg-card px-0 shadow-card [&>button]:hidden md:bottom-5 md:w-[calc(100vw-2rem)]",
         )}
       >
-        <div className="px-5 pb-6 pt-3">
+        <div className="px-5 pb-7 pt-4">
           <SheetHeader className="text-left">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-foreground/58">
                   This week
                 </p>
-                <SheetTitle className="mt-1 max-w-[12ch] font-display text-[2rem] font-semibold leading-[0.96] text-foreground">
+                <SheetTitle className="mt-1 max-w-[12ch] font-display text-[2rem] font-semibold leading-[1] text-foreground">
                   Reflection insights.
                 </SheetTitle>
-                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/82">
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.18em] leading-none text-muted-foreground/82">
                   {weekRangeLabel}
                 </p>
               </div>
@@ -74,7 +74,7 @@ export function WeeklyOverviewSheet({
             </div>
           </SheetHeader>
 
-          <div className="mt-5">
+          <div className="mt-6">
             <WeeklyInsightsPanel
               week={week}
               weekRangeLabel={weekRangeLabel}
