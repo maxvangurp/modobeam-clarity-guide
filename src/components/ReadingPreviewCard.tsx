@@ -71,7 +71,7 @@ export const ReadingPreviewCard = ({
         interactive
           ? "shadow-soft hover:shadow-card hover:-translate-y-0.5"
           : "shadow-soft",
-        isCarousel ? "p-4" : "px-5 py-4",
+        isCarousel ? "px-4 py-4.5" : "px-5 py-4.5",
         state !== "ready" && "opacity-90",
         className,
       )}
@@ -81,7 +81,7 @@ export const ReadingPreviewCard = ({
       }}
     >
       {/* Top row — orb + depth chip */}
-      <div className="flex items-start justify-between gap-2 mb-3">
+      <div className="mb-3.5 flex items-start justify-between gap-3">
         <span
           className="h-9 w-9 rounded-full flex items-center justify-center shrink-0"
           style={{
@@ -112,7 +112,7 @@ export const ReadingPreviewCard = ({
       </div>
 
       {/* Title + subtitle */}
-      <div className={cn(isCarousel ? "min-h-[3.5rem]" : "")}>
+      <div className={cn(isCarousel ? "min-h-[3.75rem]" : "space-y-1")}>
         <p
           className={cn(
             "font-display font-medium text-foreground leading-tight",
@@ -122,7 +122,7 @@ export const ReadingPreviewCard = ({
           {label}
         </p>
         {subtitle && (
-          <p className="text-[12px] text-muted-foreground mt-0.5 leading-tight">
+          <p className="text-[12px] leading-tight text-muted-foreground">
             {subtitle}
           </p>
         )}
@@ -130,7 +130,7 @@ export const ReadingPreviewCard = ({
 
       {/* Description (stacked only) */}
       {!isCarousel && description && (
-        <p className="text-[12.5px] text-muted-foreground/90 leading-relaxed mt-2">
+        <p className="mt-2.5 text-[12.5px] leading-relaxed text-muted-foreground/90">
           {description}
         </p>
       )}

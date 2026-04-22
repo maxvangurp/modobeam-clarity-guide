@@ -92,7 +92,7 @@ export const HistoryRiver = ({ insights, className }: Props) => {
         ))}
       </svg>
       {active && (
-        <p className="text-center text-[11px] text-muted-foreground mt-1 italic truncate">
+        <p className="mt-2 text-center text-[11px] italic text-muted-foreground truncate px-2">
           {active.cardName ?? active.reading} ·{" "}
           {new Date(active.date).toLocaleDateString(undefined, {
             month: "short",
@@ -101,7 +101,7 @@ export const HistoryRiver = ({ insights, className }: Props) => {
         </p>
       )}
       {!active && (
-        <p className="text-center text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60 mt-1">
+        <p className="mt-2 px-2 text-center text-[10px] uppercase tracking-[0.25em] text-muted-foreground/60">
           {dots.length} {dots.length === 1 ? "moment" : "moments"}
         </p>
       )}
