@@ -137,16 +137,14 @@ const Preferences = () => {
     <AppShell showBack backTo="/">
       <section className={cn(layout.pageHeader, layout.pageSection)}>
         <div className={layout.pageIntro}>
-          <p className={layout.eyebrow}>
-          Preferences
-        </p>
+          <p className={layout.eyebrow}>Preferences</p>
           <h1 className={layout.title}>
-          How Modobeam fits you.
-        </h1>
+            How Modobeam fits you.
+          </h1>
           <p className={layout.body}>
-          Adjust anything, anytime. These shape the baseline tone — your
-          moment-of choices still come first.
-        </p>
+            Adjust anything, anytime. These shape the baseline tone — your
+            moment-of choices still come first.
+          </p>
         </div>
       </section>
 
@@ -359,12 +357,12 @@ const Section = ({
   title: string;
   children: React.ReactNode;
 }) => (
-  <section className="mt-9 animate-fade-up">
-    <div className="mb-4 space-y-3">
+  <section className={cn(layout.pageSection, "mt-9") }>
+    <div className={layout.pageIntro}>
       <p className={layout.eyebrow}>
         {kicker}
       </p>
-      <h2 className="font-display text-[1.1rem] leading-snug text-foreground font-light">
+      <h2 className="font-display text-[1.1rem] font-light leading-snug text-foreground">
         {title}
       </h2>
     </div>
