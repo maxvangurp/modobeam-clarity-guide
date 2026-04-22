@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { ChevronLeft, Settings2 } from "lucide-react";
 import type { MomentNeed } from "@/lib/profile";
 import { cn } from "@/lib/utils";
+import { layout } from "@/lib/layout";
 
 /**
  * The four screen-level color moods. Each one layers a soft radial wash
@@ -51,12 +52,12 @@ export const AppShell = ({
           )}
         />
       )}
-      <header className="sticky top-0 z-30 backdrop-blur-xl bg-background/70 border-b border-border/40">
-        <div className="mx-auto max-w-md px-5 h-14 flex items-center justify-between">
+      <header className="sticky top-0 z-30 border-b border-border/40 bg-background/72 backdrop-blur-xl">
+        <div className={cn(layout.shellInner, "flex h-15 items-center justify-between") }>
           {showBack ? (
             <Link
               to={backTo ?? "/"}
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-smooth -ml-1"
+              className="-ml-1 inline-flex items-center gap-1 text-sm text-muted-foreground transition-smooth hover:text-foreground"
             >
               <ChevronLeft className="h-4 w-4" />
               Back
@@ -74,7 +75,7 @@ export const AppShell = ({
         </div>
       </header>
 
-      <main className="flex-1 mx-auto w-full max-w-md px-5 pb-32 pt-4">
+      <main className={cn(layout.shellInner, "flex-1 pb-32 pt-5") }>
         {children}
       </main>
 
