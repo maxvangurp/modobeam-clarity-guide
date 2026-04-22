@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ModobeamLogo } from "@/components/ModobeamLogo";
 import { OnboardingShell } from "@/components/onboarding/OnboardingShell";
 import { ChoiceCard } from "@/components/onboarding/ChoiceCard";
 import {
@@ -97,6 +98,12 @@ const Onboarding = () => {
             hint="Modobeam is a guided reflection experience — built around cards, layered insight, and your own honest words."
           >
             <div className="mt-2 rounded-3xl bg-card/60 backdrop-blur border border-border/50 p-6 shadow-soft">
+              <div className="mb-5 space-y-2">
+                <ModobeamLogo className="justify-center" />
+                <p className="text-center font-display text-[13px] text-foreground/72">
+                  A clearer way to reflect.
+                </p>
+              </div>
               <div className="relative h-36 mb-5 flex items-center justify-center">
                 {/* Soft floating card stack — purely decorative */}
                 <div
