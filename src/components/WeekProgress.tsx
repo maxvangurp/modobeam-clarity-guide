@@ -12,13 +12,13 @@ export function WeekProgress({ week }: Props) {
   const filledCount = week.filter((d) => d.filled).length;
   return (
     <div
-      className="inline-flex min-h-9 items-center gap-2.5 rounded-full border border-border/40 bg-card/40 px-3.5 py-1.5 backdrop-blur"
+      className="inline-flex min-h-10 items-center gap-2.5 rounded-full border border-border/40 bg-card/40 px-3.5 py-2 backdrop-blur"
       aria-label={`This week: ${filledCount} of 7 days reflected on`}
     >
-      <span className="text-[10px] uppercase tracking-[0.22em] text-muted-foreground/80">
+      <span className="text-[10px] uppercase tracking-[0.24em] text-muted-foreground/80">
         This week
       </span>
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5 pt-px">
         {week.map((d) => (
           <span
             key={d.key}
