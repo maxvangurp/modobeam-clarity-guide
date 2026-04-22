@@ -2,8 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { getReadingType } from "@/data/readingTypes";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
 import { getSessionId } from "@/lib/session";
@@ -36,7 +34,6 @@ import {
 } from "@/lib/reflectionResponses";
 import {
   Loader2,
-  Check,
   Sparkles,
   Bookmark,
   CalendarDays,
