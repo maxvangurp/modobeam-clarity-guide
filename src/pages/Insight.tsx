@@ -338,15 +338,15 @@ const Insight = () => {
           return (
             <article
               key={card.id}
-              className="rounded-3xl border bg-card/70 p-5 shadow-soft backdrop-blur"
+              className="rounded-[1.6rem] border bg-card/84 p-5 shadow-soft backdrop-blur"
               style={
                 tint
                   ? { borderColor: `hsl(${tint.ring} / 0.22)` }
                   : { borderColor: `hsl(${accent.ring} / 0.18)` }
               }
             >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div>
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="min-w-0 flex-1">
                   <p
                     className="text-[10px] uppercase tracking-[0.2em] mb-1 inline-flex items-center gap-1.5"
                     style={{ color: `hsl(${accent.ring})` }}
@@ -360,9 +360,6 @@ const Insight = () => {
                   <h3 className="font-display text-xl font-medium">
                     {card.name}
                   </h3>
-                  <p className="text-sm text-muted-foreground italic">
-                    {card.keyword}
-                  </p>
                 </div>
                 <div
                   className="h-10 w-10 rounded-full shrink-0"
@@ -372,10 +369,18 @@ const Insight = () => {
                   }}
                 />
               </div>
-              <p className="text-[15px] leading-relaxed text-foreground/90">
+              <p className="text-[16px] leading-[1.65] text-foreground/94">
                 {card.shortMeaning}
               </p>
-              <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center rounded-full border border-border/70 bg-background/78 px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] text-foreground/72">
+                  Keyword
+                </span>
+                <p className="text-[12px] uppercase tracking-[0.16em] text-muted-foreground">
+                  {card.keyword}
+                </p>
+              </div>
+              <p className="mt-3 text-[14px] leading-[1.7] text-muted-foreground">
                 {card.deeperMeaning}
               </p>
             </article>
@@ -387,7 +392,7 @@ const Insight = () => {
       {(combined.theme || combined.tension || combined.combined) && (
         <section className="mt-7 animate-fade-up [animation-delay:160ms]">
           <div
-            className="rounded-3xl bg-gradient-dawn p-6 shadow-soft border"
+            className="rounded-[1.6rem] bg-gradient-dawn p-6 shadow-soft border"
             style={
               tint
                 ? {
@@ -397,7 +402,7 @@ const Insight = () => {
                 : { borderColor: "hsl(var(--border) / 0.4)" }
             }
           >
-            <div className="flex items-center justify-between gap-3 mb-3">
+            <div className="flex items-center justify-between gap-3 mb-4">
               <div className="flex items-center gap-2">
                 <Sparkles
                   className="h-3.5 w-3.5"
@@ -419,20 +424,38 @@ const Insight = () => {
               )}
             </div>
 
-            {combined.tension ? (
-              <p className="font-display text-[17px] leading-snug text-foreground">
-                {combined.tension}
+            {combined.theme && (
+              <p className="text-[11px] uppercase tracking-[0.2em] text-foreground/62">
+                Primary thread
               </p>
-            ) : combined.theme ? (
-              <p className="font-display text-[17px] leading-snug text-foreground">
+            )}
+
+            {combined.theme && (
+              <p className="mt-2 font-display text-[22px] leading-[1.18] text-foreground">
                 {combined.theme}
               </p>
-            ) : null}
+            )}
+
+            {combined.tension && (
+              <div className="mt-4 border-l border-border/70 pl-4">
+                <p className="text-[11px] uppercase tracking-[0.2em] text-foreground/62">
+                  Tension to notice
+                </p>
+                <p className="mt-1.5 text-[15px] leading-[1.6] text-foreground/90">
+                  {combined.tension}
+                </p>
+              </div>
+            )}
 
             {combined.combined && (
-              <p className="mt-4 text-[14px] leading-relaxed text-foreground/80">
-                {combined.combined}
-              </p>
+              <div className="mt-5 border-t border-border/55 pt-4">
+                <p className="text-[11px] uppercase tracking-[0.2em] text-foreground/62">
+                  Combined insight
+                </p>
+                <p className="mt-2 text-[15px] leading-[1.7] text-foreground/84">
+                  {combined.combined}
+                </p>
+              </div>
             )}
           </div>
         </section>
