@@ -25,6 +25,7 @@ import { getDailyQuote } from "@/lib/dailyQuote";
 import { recordMomentForStreak, shouldOfferRare, explainRareCard } from "@/lib/rareCard";
 import { drawCards as drawDeck } from "@/data/deck";
 import { haptic } from "@/lib/haptics";
+import { cn } from "@/lib/utils";
 import {
   buildAstroContext,
   getCachedChart,
@@ -316,6 +317,12 @@ const Draw = () => {
         : count === 4
           ? "grid grid-cols-2 gap-3 justify-items-center max-w-[280px] mx-auto"
           : "grid grid-cols-3 gap-2 justify-items-center";
+  const revealNoteClass =
+    count >= 4
+      ? "max-w-[8.25rem] px-2.5 py-2.5"
+      : count === 3
+        ? "max-w-[9.25rem] px-3 py-2.5"
+        : "max-w-[18rem] px-4 py-3.5";
 
   return (
     <AppShell showBack backTo="/" ambientMoment={moment} screenMood={allRevealed ? "reveal" : "draw"}>
@@ -387,7 +394,7 @@ const Draw = () => {
         {cardsToShow.map((card, i) => (
           <div
             key={card.id}
-            className="flex flex-col items-center gap-2"
+            className="flex flex-col items-center gap-2.5"
             style={{
               transform: shuffling
                 ? `translateY(${(i % 2 === 0 ? -1 : 1) * 4}px) rotate(${(i - (count - 1) / 2) * 1.5}deg)`
@@ -403,9 +410,34 @@ const Draw = () => {
               onReveal={() => reveal(i)}
             />
             {count > 1 && (
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground text-center max-w-[90px] leading-tight">
+              <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground text-center max-w-[110px] leading-tight">
                 {labels[i]}
               </span>
+            )}
+            {revealed[i] && (
+              <div
+                className={cn(
+                  "w-full rounded-[1.15rem] border border-border/70 bg-card/92 text-center shadow-soft animate-fade-up",
+                  revealNoteClass,
+                )}
+              >
+                <p
+                  className={cn(
+                    "text-foreground/92",
+                    count >= 4 ? "text-[11px] leading-[1.45]" : "text-[13px] leading-[1.55]",
+                  )}
+                >
+                  {card.shortMeaning}
+                </p>
+                <p
+                  className={cn(
+                    "mt-2 uppercase tracking-[0.18em] text-muted-foreground",
+                    count >= 4 ? "text-[9px]" : "text-[10px]",
+                  )}
+                >
+                  {card.keyword}
+                </p>
+              </div>
             )}
           </div>
         ))}
