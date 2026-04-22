@@ -27,7 +27,13 @@ import {
 } from "@/data/lifeAreas";
 import { KeepThisCard } from "@/components/KeepThisCard";
 import { NotQuiteIt } from "@/components/NotQuiteIt";
+import { ReflectionComposer } from "@/components/insight/ReflectionComposer";
 import { toast } from "sonner";
+import {
+  buildQuickChoiceSet,
+  composeQuickReflection,
+  type ReflectionMode,
+} from "@/lib/reflectionResponses";
 import {
   Loader2,
   Check,
@@ -72,6 +78,10 @@ const Insight = () => {
   const [activePromptIdx, setActivePromptIdx] = useState(0);
   const [keepOpen, setKeepOpen] = useState(false);
   const [showNotQuite, setShowNotQuite] = useState(false);
+  const [reflectionMode, setReflectionMode] = useState<ReflectionMode>("write");
+  const [quickSelections, setQuickSelections] = useState<string[]>([]);
+  const [quickNote, setQuickNote] = useState("");
+  const [voiceJournal, setVoiceJournal] = useState("");
 
   const summaryRef = useRef<HTMLDivElement | null>(null);
   const nextStepsRef = useRef<HTMLDivElement | null>(null);
