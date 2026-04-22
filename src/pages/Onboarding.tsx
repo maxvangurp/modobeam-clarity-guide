@@ -22,6 +22,7 @@ import {
   type Rhythm,
   type UsageMode,
 } from "@/lib/profile";
+import { layout } from "@/lib/layout";
 
 // Two intro screens (1 — what it is, 2 — how it works) come before the
 // six preference/personalization screens, so a new user understands the
@@ -394,15 +395,15 @@ const Step = ({
   children: React.ReactNode;
 }) => (
   <>
-    <div className="mb-7">
-      <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-3">
+    <div className="mb-8 space-y-3">
+      <p className={layout.eyebrow}>
         {kicker}
       </p>
-      <h1 className="font-display text-[1.75rem] leading-[1.15] font-light tracking-tight text-foreground">
+      <h1 className={layout.titleSm}>
         {title}
       </h1>
       {hint && (
-        <p className="text-sm text-muted-foreground mt-3 leading-relaxed">
+        <p className={layout.body}>
           {hint}
         </p>
       )}
@@ -412,7 +413,7 @@ const Step = ({
 );
 
 const Summary = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex items-baseline justify-between gap-3">
+  <div className="flex items-baseline justify-between gap-4">
     <span className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
       {label}
     </span>
@@ -433,7 +434,7 @@ const HowStep = ({
   title: string;
   body: string;
 }) => (
-  <div className="rounded-2xl bg-card/60 backdrop-blur border border-border/50 p-4 flex items-start gap-3 shadow-soft">
+  <div className="flex items-start gap-3 rounded-2xl border border-border/50 bg-card/60 p-4 shadow-soft backdrop-blur">
     <div className="relative shrink-0">
       <span className="h-10 w-10 rounded-full bg-gradient-to-br from-beam-soft/60 to-beam/40 border border-border/50 flex items-center justify-center text-foreground/85 shadow-glow">
         {icon}
@@ -442,11 +443,11 @@ const HowStep = ({
         {index}
       </span>
     </div>
-    <div className="flex-1 min-w-0">
+    <div className="min-w-0 flex-1 space-y-1.5">
       <p className="font-display text-[15px] font-medium text-foreground">
         {title}
       </p>
-      <p className="text-[13px] text-muted-foreground leading-relaxed mt-0.5">
+      <p className="text-[13px] leading-relaxed text-muted-foreground">
         {body}
       </p>
     </div>

@@ -26,6 +26,7 @@ import {
 import { fetchRecentInsights, type InsightLite } from "@/lib/progression";
 import { readKnowYou, shouldRegenerate, writeKnowYou } from "@/lib/aiKnowYou";
 import { supabase } from "@/integrations/supabase/client";
+import { layout } from "@/lib/layout";
 
 const Preferences = () => {
   const navigate = useNavigate();
@@ -355,13 +356,15 @@ const Section = ({
   title: string;
   children: React.ReactNode;
 }) => (
-  <section className="mt-8 animate-fade-up">
-    <p className="text-[11px] uppercase tracking-[0.25em] text-muted-foreground mb-2">
+  <section className="mt-9 animate-fade-up">
+    <div className="mb-4 space-y-2">
+      <p className={layout.eyebrow}>
       {kicker}
-    </p>
-    <h2 className="font-display text-[1.1rem] leading-snug text-foreground mb-4 font-light">
+      </p>
+      <h2 className="font-display text-[1.1rem] leading-snug text-foreground font-light">
       {title}
-    </h2>
+      </h2>
+    </div>
     {children}
   </section>
 );

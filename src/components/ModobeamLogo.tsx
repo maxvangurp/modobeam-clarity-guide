@@ -9,7 +9,7 @@ export const ModobeamLogo = ({
   className,
   descriptor,
 }: ModobeamLogoProps) => (
-  <div className={cn("inline-flex items-center gap-2.5", className)}>
+  <div className={cn("inline-flex items-center gap-3", className)}>
     <div className="relative h-8 w-8 shrink-0">
       <div className="absolute inset-[-2px] rounded-full bg-primary/12 blur-md" />
       <div className="absolute inset-0 rounded-full bg-gradient-mark shadow-mark" />
@@ -26,7 +26,7 @@ export const ModobeamLogo = ({
         Modo<span className="font-light text-foreground/72">beam</span>
       </span>
       {descriptor ? (
-        <span className="mt-1 pl-px font-display text-[0.64rem] font-medium tracking-[0.08em] text-muted-foreground/82">
+        <span className="mt-1.5 pl-px font-display text-[0.64rem] font-medium tracking-[0.08em] text-muted-foreground/82">
           {descriptor}
         </span>
       ) : null}
