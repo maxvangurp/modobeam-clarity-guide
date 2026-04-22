@@ -309,7 +309,7 @@ const Index = () => {
                     <div className="min-w-0 flex-1 space-y-2">
                       <div className="flex items-center justify-between gap-3">
                         <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-foreground/60">
-                          This week
+                          Weekly overview
                         </p>
                         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80">
                           {checkedInDays}/7 days
