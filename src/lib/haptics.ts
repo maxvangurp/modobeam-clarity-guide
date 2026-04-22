@@ -12,7 +12,7 @@ type Tap =
 
 const PATTERNS: Record<Tap, number | number[]> = {
   select: 8,
-  flip: [12, 40, 18],
+  flip: [8, 28, 12],
   save: [10, 30, 14, 30, 18],
   warm: 18,
 };

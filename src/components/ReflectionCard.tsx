@@ -21,6 +21,10 @@ const sizes = {
 };
 
 const HOLD_MS = 380;
+const REVEAL_PAUSE_MS = 110;
+const REVEAL_TURN_MS = 1480;
+
+type RevealStage = "idle" | "primed" | "turning" | "settled";
 
 export const ReflectionCard = ({
   card,
@@ -33,16 +37,37 @@ export const ReflectionCard = ({
   const [internal, setInternal] = useState(false);
   const [pressing, setPressing] = useState(false);
   const [holding, setHolding] = useState(false);
+  const [revealStage, setRevealStage] = useState<RevealStage>(
+    controlled ? "settled" : "idle",
+  );
   const holdTimer = useRef<number | null>(null);
+  const revealTimers = useRef<number[]>([]);
   const revealed = controlled ?? internal;
   const art = getCardArt(card.id);
+  const isAnimatingReveal = revealStage === "primed" || revealStage === "turning";
+  const showRevealAtmosphere = revealed || isAnimatingReveal;
 
   const handleClick = () => {
     if (holding) return; // a hold just ended; swallow the click
-    if (revealed) return;
-    haptic("flip");
-    setInternal(true);
-    onReveal?.();
+    if (revealed || isAnimatingReveal) return;
+
+    haptic("select");
+    setRevealStage("primed");
+
+    revealTimers.current.push(
+      window.setTimeout(() => {
+        haptic("flip");
+        setInternal(true);
+        setRevealStage("turning");
+        onReveal?.();
+      }, REVEAL_PAUSE_MS),
+    );
+
+    revealTimers.current.push(
+      window.setTimeout(() => {
+        setRevealStage("settled");
+      }, REVEAL_PAUSE_MS + REVEAL_TURN_MS),
+    );
   };
 
   const startHold = () => {
@@ -69,8 +94,24 @@ export const ReflectionCard = ({
   };
 
   useEffect(() => {
+    if (controlled === true) {
+      setRevealStage("settled");
+      return;
+    }
+
+    if (controlled === false) {
+      setRevealStage("idle");
+      setInternal(false);
+    }
+  }, [controlled]);
+
+  useEffect(() => {
+    const activeHoldTimer = holdTimer.current;
+    const activeRevealTimers = revealTimers.current;
+
     return () => {
-      if (holdTimer.current) clearTimeout(holdTimer.current);
+      if (activeHoldTimer) clearTimeout(activeHoldTimer);
+      activeRevealTimers.forEach((timer) => clearTimeout(timer));
     };
   }, []);
 
@@ -83,25 +124,35 @@ export const ReflectionCard = ({
       onPointerLeave={endHold}
       onPointerCancel={endHold}
       onContextMenu={(e) => revealed && e.preventDefault()}
-      disabled={false}
       className={cn(
         "relative perspective-1200 group outline-none transition-transform duration-500",
         sizes[size],
-        !revealed && "cursor-pointer",
+        !revealed && !isAnimatingReveal && "cursor-pointer",
         revealed && "cursor-default",
-        holding && "z-30 animate-hold-rise",
+        (holding || isAnimatingReveal) && "z-30",
+        holding && "animate-hold-rise",
       )}
       style={{ animationDelay: `${index * 120}ms` }}
       aria-label={revealed ? `${card.name} card — hold to focus` : "Tap to reveal"}
+      disabled={isAnimatingReveal}
     >
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute -inset-10 rounded-[2.4rem] opacity-0 transition-opacity duration-500",
+          "bg-[radial-gradient(ellipse_at_center,hsl(var(--beam)/0.18),transparent_72%)]",
+          showRevealAtmosphere && "animate-card-aura opacity-100",
+        )}
+      />
+
       {/* Subtle floor glow that intensifies during flip */}
       <div
         aria-hidden
         className={cn(
-          "pointer-events-none absolute -inset-6 rounded-[2rem] blur-2xl transition-opacity duration-700",
+          "pointer-events-none absolute -inset-6 rounded-[2rem] blur-2xl transition-all duration-700",
           "bg-[radial-gradient(ellipse_at_center,hsl(var(--beam)/0.25),transparent_70%)]",
           revealed ? "opacity-60" : "opacity-0 group-hover:opacity-30",
-          revealed && "animate-card-glow",
+          showRevealAtmosphere && "animate-card-glow scale-[1.04]",
           holding && "opacity-90",
         )}
       />
@@ -109,11 +160,15 @@ export const ReflectionCard = ({
       {/* Outer lift wrapper — handles press/hover translate so the inner 3D transform stays clean */}
       <div
         className={cn(
-          "relative h-full w-full transition-transform duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
+          "relative h-full w-full transition-transform [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
           !revealed && pressing && "scale-[0.97]",
+          revealStage === "primed" && "scale-[0.975] -translate-y-[1px]",
+          revealStage === "turning" && "-translate-y-1.5 scale-[1.015]",
           !revealed && !pressing && "group-hover:-translate-y-1",
+          revealStage === "settled" && "animate-card-settle",
+          showRevealAtmosphere ? "duration-700" : "duration-500",
         )}
-        style={{ perspective: "1200px" }}
+        style={{ perspective: "1200px", transitionDuration: showRevealAtmosphere ? "1600ms" : "500ms" }}
       >
         {/* Inner flip wrapper — only handles rotateY, smoothly animated */}
         <div
@@ -122,12 +177,22 @@ export const ReflectionCard = ({
             "transition-transform [transition-timing-function:cubic-bezier(0.22,1,0.36,1)]",
             revealed && "rotate-y-180",
           )}
-          style={{ transitionDuration: "1100ms" }}
+          style={{ transitionDuration: `${REVEAL_TURN_MS}ms` }}
         >
         {/* Back */}
-        <div className="absolute inset-0 backface-hidden rounded-[1.5rem] card-back-pattern shadow-card overflow-hidden">
+        <div className={cn(
+          "absolute inset-0 backface-hidden rounded-[1.5rem] card-back-pattern overflow-hidden transition-shadow duration-700",
+          showRevealAtmosphere ? "shadow-card-turn" : "shadow-card",
+        )}>
           <div className="absolute inset-0 bg-gradient-beam opacity-60 animate-beam" />
           <div className="absolute inset-3 rounded-[1.25rem] border border-white/10" />
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 bg-[linear-gradient(115deg,transparent_0%,hsl(var(--beam)/0.18)_48%,transparent_100%)] opacity-0",
+              isAnimatingReveal && "animate-card-sheen opacity-100",
+            )}
+          />
           {/* Soft sweep highlight invites the tap */}
           <div
             aria-hidden
@@ -150,13 +215,34 @@ export const ReflectionCard = ({
         </div>
 
         {/* Front */}
-        <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-[1.5rem] bg-gradient-card shadow-card overflow-hidden border border-border/60">
+        <div className={cn(
+          "absolute inset-0 backface-hidden rotate-y-180 rounded-[1.5rem] bg-gradient-card overflow-hidden border border-border/60 transition-shadow duration-700",
+          showRevealAtmosphere ? "shadow-card-turn" : "shadow-card",
+        )}>
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-0 opacity-0",
+              showRevealAtmosphere && "animate-soft-glow",
+            )}
+          />
+          <div
+            aria-hidden
+            className={cn(
+              "pointer-events-none absolute inset-0 opacity-0 bg-[radial-gradient(circle_at_50%_42%,hsl(var(--beam)/0.26),transparent_58%)]",
+              showRevealAtmosphere && "animate-color-bloom",
+            )}
+          />
           {art ? (
             <img
               src={art}
               alt={`${card.name} card`}
               loading="lazy"
-              className="absolute inset-0 h-full w-full object-cover"
+              className={cn(
+                "absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out",
+                revealStage === "turning" && "scale-[1.02]",
+              )}
+              style={{ transitionDuration: "1800ms" }}
             />
           ) : (
             <>
