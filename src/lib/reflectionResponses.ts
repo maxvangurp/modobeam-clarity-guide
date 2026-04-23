@@ -54,6 +54,30 @@ const CATEGORY_FALLBACKS: Record<CardCategory, string[]> = {
     "The season I'm in",
     "I'm still finding it",
   ],
+  Relationships: [
+    "A conversation that matters",
+    "More mutuality",
+    "A clearer boundary",
+    "Something unspoken",
+    "A softer connection",
+    "I'm still figuring it out",
+  ],
+  Growth: [
+    "More self-trust",
+    "The next version of me",
+    "A braver choice",
+    "A truer standard",
+    "Room to grow differently",
+    "I'm still becoming",
+  ],
+  "Inner World": [
+    "A quieter truth",
+    "What I'm actually feeling",
+    "More inner steadiness",
+    "Space to listen inward",
+    "A deeper breath",
+    "I need to sit with it",
+  ],
 };
 
 const QUICK_CHOICE_RULES: QuickChoiceRule[] = [
