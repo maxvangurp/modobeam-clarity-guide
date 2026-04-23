@@ -51,7 +51,7 @@ export const COMING_SOON_MODES: ComingSoonMode[] = [
     description: "A softer way in — explore a situation through someone else's lens.",
     cardCount: 3,
     icon: HelpCircle,
-    category: "Emotion",
+    category: "Relationships",
     group: "lens",
   },
   {

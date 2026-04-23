@@ -5,6 +5,7 @@ import { INNER_WORLD_CARDS } from "./innerWorld";
 import { LIFE_PATTERNS_CARDS } from "./lifePatterns";
 import { MIND_CARDS } from "./mind";
 import { RELATIONSHIP_CARDS } from "./relationships";
+import { RELATIONSHIP_CORE_CARDS } from "./relationshipsCore";
 import type { OracleCard } from "./types";
 
 export type { CardCategory, OracleCard } from "./types";
@@ -15,12 +16,20 @@ export const DECK: OracleCard[] = [
   ...ACTION_CARDS,
   ...LIFE_PATTERNS_CARDS,
   ...RELATIONSHIP_CARDS,
+  ...RELATIONSHIP_CORE_CARDS,
   ...GROWTH_CARDS,
   ...INNER_WORLD_CARDS,
 ];
 
+export const RELATIONSHIP_DECK: OracleCard[] = RELATIONSHIP_CORE_CARDS;
+
 export function drawCards(count: number): OracleCard[] {
   const shuffled = [...DECK].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+export function drawRelationshipCards(count: number): OracleCard[] {
+  const shuffled = [...RELATIONSHIP_DECK].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
 
