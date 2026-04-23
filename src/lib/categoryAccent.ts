@@ -53,6 +53,27 @@ export const CATEGORY_ACCENTS: Record<CardCategory, CategoryAccent> = {
     gradient:
       "linear-gradient(135deg, hsl(232 55% 82%) 0%, hsl(232 45% 46%) 100%)",
   },
+  Relationships: {
+    hsl: "342 46% 58%",
+    ring: "342 40% 48%",
+    bg: "342 48% 93%",
+    gradient:
+      "linear-gradient(135deg, hsl(342 58% 88%) 0%, hsl(342 44% 60%) 100%)",
+  },
+  Growth: {
+    hsl: "148 34% 48%",
+    ring: "148 30% 40%",
+    bg: "148 30% 92%",
+    gradient:
+      "linear-gradient(135deg, hsl(148 36% 86%) 0%, hsl(148 34% 50%) 100%)",
+  },
+  "Inner World": {
+    hsl: "196 34% 54%",
+    ring: "196 30% 44%",
+    bg: "196 38% 93%",
+    gradient:
+      "linear-gradient(135deg, hsl(196 42% 88%) 0%, hsl(196 34% 56%) 100%)",
+  },
 };
 
 export function getCategoryAccent(

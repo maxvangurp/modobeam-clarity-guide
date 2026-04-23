@@ -454,6 +454,9 @@ const CATEGORY_TO_HOUSES: Record<string, number[]> = {
   Emotion: [4, 7, 8],
   Action: [1, 6, 10],
   "Life Patterns": [11, 12],
+  Relationships: [5, 7],
+  Growth: [1, 9, 10],
+  "Inner World": [4, 8, 12],
 };
 
 export interface FocusArea {

@@ -125,6 +125,60 @@ export const CardSigil = ({ card, className }: Props) => {
         {elems}
       </g>
     );
+  } else if (card.category === "Relationships") {
+    const lines = 3 + Math.floor(rnd() * 2);
+    const elems: JSX.Element[] = [];
+    for (let i = 0; i < lines; i++) {
+      const y1 = 45 + i * 28 + (rnd() - 0.5) * 6;
+      const y2 = 58 + i * 26 + (rnd() - 0.5) * 6;
+      const c1x = 58 + rnd() * 24;
+      const c2x = 118 + rnd() * 24;
+      elems.push(
+        <path
+          key={i}
+          d={`M 36 ${y1} C ${c1x} ${y1 - 18}, ${c2x} ${y2 + 18}, 164 ${y2}`}
+          fill="none"
+          strokeLinecap="round"
+          opacity={0.56 + i * 0.08}
+        />,
+      );
+    }
+    motif = <g>{elems}</g>;
+  } else if (card.category === "Growth") {
+    const stems = 4 + Math.floor(rnd() * 2);
+    const elems = Array.from({ length: stems }).map((_, i) => {
+      const x = 42 + i * 28 + (rnd() - 0.5) * 8;
+      const height = 58 + rnd() * 34;
+      const bend = (rnd() - 0.5) * 18;
+      return (
+        <path
+          key={i}
+          d={`M ${x} 154 C ${x + bend} 130, ${x + bend * 0.4} ${154 - height}, ${x + bend * 0.8} ${154 - height - 18}`}
+          fill="none"
+          strokeLinecap="round"
+          opacity={0.54 + i * 0.08}
+        />
+      );
+    });
+    motif = <g>{elems}</g>;
+  } else if (card.category === "Inner World") {
+    const rings = 3 + Math.floor(rnd() * 2);
+    const elems = Array.from({ length: rings }).map((_, i) => {
+      const rx = 26 + i * 18 + rnd() * 6;
+      const ry = 18 + i * 12 + rnd() * 6;
+      return (
+        <ellipse
+          key={i}
+          cx={cx + (rnd() - 0.5) * 8}
+          cy={cy + (rnd() - 0.5) * 8}
+          rx={rx}
+          ry={ry}
+          fill="none"
+          opacity={0.52 + i * 0.1}
+        />
+      );
+    });
+    motif = <g>{elems}</g>;
   } else {
     // Life Patterns — orbital nodes
     const orbits = 2 + Math.floor(rnd() * 2);
