@@ -46,6 +46,11 @@ export function drawDirectionCards(count: number): OracleCard[] {
   return shuffled.slice(0, count);
 }
 
+export function drawShadowCards(count: number): OracleCard[] {
+  const shuffled = [...SHADOW_DECK].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
 export function getCardById(id: string): OracleCard | undefined {
   return DECK.find((card) => card.id === id);
 }

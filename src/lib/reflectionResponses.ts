@@ -86,6 +86,14 @@ const CATEGORY_FALLBACKS: Record<CardCategory, string[]> = {
     "A deeper breath",
     "I need to sit with it",
   ],
+  Shadow: [
+    "A pattern I keep repeating",
+    "Something I've been avoiding",
+    "An old wound asking to be seen",
+    "A part of me I've been hiding",
+    "A truer sentence about myself",
+    "I'm not ready to name it yet",
+  ],
 };
 
 const QUICK_CHOICE_RULES: QuickChoiceRule[] = [
