@@ -237,6 +237,25 @@ export const CardSigil = ({ card, className }: Props) => {
       ),
     );
     motif = <g>{elems}</g>;
+  } else if (card.category === "Micro") {
+    // Micro — a single small, quiet mark: one dot inside one ring.
+    // Fast to read, intentionally minimal — matches the lightness of the
+    // micro-card content itself.
+    const r = 22 + rnd() * 10;
+    const ox = (rnd() - 0.5) * 6;
+    const oy = (rnd() - 0.5) * 6;
+    motif = (
+      <g>
+        <circle cx={cx + ox} cy={cy + oy} r={r} fill="none" opacity={0.55} />
+        <circle
+          cx={cx + ox}
+          cy={cy + oy}
+          r={2.4}
+          fill="currentColor"
+          opacity={0.7}
+        />
+      </g>
+    );
   } else {
     // Life Patterns — orbital nodes
     const orbits = 2 + Math.floor(rnd() * 2);

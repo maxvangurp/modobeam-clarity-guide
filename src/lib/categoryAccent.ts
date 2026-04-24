@@ -88,6 +88,13 @@ export const CATEGORY_ACCENTS: Record<CardCategory, CategoryAccent> = {
     gradient:
       "linear-gradient(135deg, hsl(258 26% 72%) 0%, hsl(258 22% 38%) 100%)",
   },
+  Micro: {
+    hsl: "220 14% 56%",
+    ring: "220 12% 46%",
+    bg: "220 18% 94%",
+    gradient:
+      "linear-gradient(135deg, hsl(220 22% 90%) 0%, hsl(220 14% 58%) 100%)",
+  },
 };
 
 export function getCategoryAccent(
