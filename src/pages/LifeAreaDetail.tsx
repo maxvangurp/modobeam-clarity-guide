@@ -3,16 +3,18 @@ import { AppShell } from "@/components/AppShell";
 import { LifeAreaCard } from "@/components/LifeAreaCard";
 import { Button } from "@/components/ui/button";
 import { getLifeAreaById, LIFE_AREAS } from "@/data/lifeAreas";
+import { useBackNavigation } from "@/hooks/useBackNavigation";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const LifeAreaDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const backTo = useBackNavigation("/life-areas");
   const card = id ? getLifeAreaById(id) : undefined;
 
   if (!card) {
     return (
-      <AppShell showBack backTo="/life-areas">
+      <AppShell showBack backTo={backTo}>
         <section className="pt-10 text-center">
           <p className="text-muted-foreground">Life Area not found.</p>
           <Button
@@ -32,7 +34,7 @@ const LifeAreaDetail = () => {
   const next = idx < LIFE_AREAS.length - 1 ? LIFE_AREAS[idx + 1] : null;
 
   return (
-    <AppShell showBack backTo="/life-areas">
+    <AppShell showBack backTo={backTo}>
       <section className="pt-2 pb-6 animate-fade-up">
         <LifeAreaCard card={card} size="full" />
       </section>

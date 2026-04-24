@@ -203,6 +203,7 @@ const TimelineEntry = ({ r }: { r: Row }) => {
     <li>
       <Link
         to={`/insight/${r.id}`}
+        state={{ back: "/history" }}
         className="group block rounded-2xl bg-card/70 backdrop-blur border border-border/60 shadow-soft hover:shadow-card transition-smooth overflow-hidden"
         style={{
           borderLeft: `2px solid hsl(${accentHsl} / 0.35)`,
@@ -288,10 +289,13 @@ const PeriodSummaryCard = ({
   periodKey,
   period,
   items,
+  autoFetch = false,
 }: {
   periodKey: string;
   period: "week" | "month";
   items: Row[];
+  /** Only auto-fetch for the most recent period; older ones require a tap. */
+  autoFetch?: boolean;
 }) => {
   const [summary, setSummary] = useState<PeriodSummary | null>(
     summaryCache.get(periodKey) ?? null,
@@ -330,16 +334,32 @@ const PeriodSummaryCard = ({
     }
   }, [periodKey, period, items, summary, loading]);
 
-  // Auto-fetch on mount
+  // Only auto-fetch for the most recent period — older periods wait for a tap
+  // so we don't fire many simultaneous AI calls when the user first opens History.
   useEffect(() => {
-    if (!summary && !loading) fetchSummary();
-  }, [fetchSummary, loading, summary]);
+    if (autoFetch && !summary && !loading) fetchSummary();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoFetch]);
 
   const top = topCards(items);
 
   return (
     <div className="space-y-3">
       {/* AI summary */}
+      {!summary && !loading && (
+        <button
+          type="button"
+          onClick={fetchSummary}
+          className="w-full rounded-2xl bg-card/50 border border-border/40 px-5 py-3.5 text-left transition-smooth hover:bg-card/70 hover:border-border/60"
+        >
+          <p className="text-[11px] uppercase tracking-[0.22em] text-muted-foreground/70">
+            Reflect on this period
+          </p>
+          <p className="mt-0.5 text-[13px] text-foreground/70">
+            Tap to generate insights ↗
+          </p>
+        </button>
+      )}
       {loading && !summary && (
         <div className="rounded-2xl bg-card/60 border border-border/40 p-5 flex items-center gap-3">
           <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
@@ -409,7 +429,7 @@ const WeekView = ({ rows }: { rows: Row[] }) => {
 
   return (
     <div className="space-y-10 animate-fade-up">
-      {weeks.map((week) => (
+      {weeks.map((week, idx) => (
         <section key={week.key}>
           <h2 className={layout.eyebrow}>
             {week.label}
@@ -419,6 +439,7 @@ const WeekView = ({ rows }: { rows: Row[] }) => {
             periodKey={week.key}
             period="week"
             items={week.items}
+            autoFetch={idx === 0}
           />
 
           {/* Mini daily overview */}
@@ -427,6 +448,7 @@ const WeekView = ({ rows }: { rows: Row[] }) => {
               <li key={r.id}>
                 <Link
                   to={`/insight/${r.id}`}
+                  state={{ back: "/history" }}
                   className="flex items-center gap-3 py-2 px-2 -mx-2 rounded-xl hover:bg-card/50 transition-smooth group"
                 >
                   <span
@@ -458,7 +480,7 @@ const MonthView = ({ rows }: { rows: Row[] }) => {
 
   return (
     <div className="space-y-10 animate-fade-up">
-      {months.map((month) => {
+      {months.map((month, idx) => {
         // Category frequency
         const catFreq = new Map<string, number>();
         for (const r of month.items) {
@@ -482,6 +504,7 @@ const MonthView = ({ rows }: { rows: Row[] }) => {
               periodKey={month.key}
               period="month"
               items={month.items}
+              autoFetch={idx === 0}
             />
 
             {/* Stats row */}

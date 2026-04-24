@@ -15,6 +15,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
+import { useBackNavigation } from "@/hooks/useBackNavigation";
+import type { InsightRow, Combined } from "@/lib/insightTypes";
 import { ReflectionCard } from "@/components/ReflectionCard";
 import { LifeAreaGlyph } from "@/components/LifeAreaGlyph";
 import { FocusChip } from "@/components/FocusChip";
@@ -40,23 +42,6 @@ import {
   ChevronUp,
 } from "lucide-react";
 
-interface InsightRow {
-  id: string;
-  intention: string | null;
-  draw_type: string;
-  cards: { id: string; name: string }[];
-  combined_insight: string | null;
-  ai_reflection: string | null;
-  created_at: string;
-}
-
-interface Combined {
-  theme?: string;
-  tension?: string;
-  combined?: string;
-  focus?: { key: string; label: string } | null;
-}
-
 type StepKind =
   | "intro"
   | "card"
@@ -74,6 +59,7 @@ const Reading = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const backTo = useBackNavigation("/");
   const [insight, setInsight] = useState<InsightRow | null>(null);
   const [loading, setLoading] = useState(true);
   const [stepIdx, setStepIdx] = useState(0);
@@ -186,7 +172,7 @@ const Reading = () => {
 
   if (loading || !insight || !current) {
     return (
-      <AppShell showBack backTo="/">
+      <AppShell showBack backTo={backTo}>
         <div className="flex items-center justify-center pt-32">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
@@ -230,7 +216,7 @@ const Reading = () => {
     cards.flatMap((c) => c.prompts ?? []).find((p) => !!p) ?? "";
 
   return (
-    <AppShell showBack backTo="/" ambientMoment={moment} screenMood="reveal">
+    <AppShell showBack backTo={backTo} ambientMoment={moment} screenMood="reveal">
       <div
         {...swipe}
         className="flex flex-col min-h-[78vh] select-none touch-pan-y"

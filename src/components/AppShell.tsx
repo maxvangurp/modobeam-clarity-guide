@@ -20,6 +20,8 @@ interface Props {
   showNav?: boolean;
   showBack?: boolean;
   backTo?: string;
+  /** Custom label for the back button — defaults to "Back". */
+  backLabel?: string;
   ambientMoment?: MomentNeed | null;
   /** Adds a layered, screen-specific color wash on top of the ambient drift. */
   screenMood?: ScreenMood;
@@ -37,6 +39,7 @@ export const AppShell = ({
   showNav = true,
   showBack = false,
   backTo,
+  backLabel = "Back",
   ambientMoment = null,
   screenMood = null,
 }: Props) => {
@@ -60,7 +63,7 @@ export const AppShell = ({
               className="-ml-1 inline-flex items-center gap-1 text-sm text-muted-foreground transition-smooth hover:text-foreground"
             >
               <ChevronLeft className="h-4 w-4" />
-              Back
+              {backLabel}
             </Link>
           ) : (
             <ModobeamLogo descriptor="Daily Clarity" />

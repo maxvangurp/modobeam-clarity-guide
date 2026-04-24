@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
+import { useBackNavigation } from "@/hooks/useBackNavigation";
+import type { InsightRow, Combined } from "@/lib/insightTypes";
 import { getReadingType } from "@/data/readingTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
@@ -35,7 +37,6 @@ import {
 import {
   Loader2,
   Sparkles,
-  Bookmark,
   CalendarDays,
   Sunrise,
   ArrowRight,
@@ -45,26 +46,10 @@ import {
 import { layout } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 
-interface InsightRow {
-  id: string;
-  intention: string | null;
-  draw_type: string;
-  cards: { id: string; name: string }[];
-  combined_insight: string | null;
-  ai_reflection: string | null;
-  created_at: string;
-}
-
-interface Combined {
-  theme?: string;
-  tension?: string;
-  combined?: string;
-  focus?: { key: string; label: string } | null;
-}
-
 const Insight = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const backTo = useBackNavigation("/");
   const [insight, setInsight] = useState<InsightRow | null>(null);
   const [journal, setJournal] = useState("");
   const [saving, setSaving] = useState(false);
@@ -279,7 +264,7 @@ const Insight = () => {
 
   if (loading || !insight) {
     return (
-      <AppShell showBack backTo="/">
+      <AppShell showBack backTo={backTo}>
         <div className="flex items-center justify-center pt-32">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
@@ -288,10 +273,12 @@ const Insight = () => {
   }
 
   const showSummarySection = saved || summaryLoading || summary;
-  const showNextSteps = saved || skippedJournal;
+  // Next steps are always visible once the insight has loaded — users
+  // shouldn't need to journal or skip to find a way forward.
+  const showNextSteps = !loading;
 
   return (
-    <AppShell showBack backTo="/" screenMood="reflect">
+    <AppShell showBack backTo={backTo} screenMood="reflect">
       {/* Header — tinted by the moment chosen for this reading */}
       <section className={cn(layout.pageHeader, layout.pageSection)}>
         <div className={layout.pageIntro}>
@@ -517,6 +504,7 @@ const Insight = () => {
 
                 <Link
                   to={`/life-areas/${lifeArea.id}`}
+                  state={{ back: `/insight/${id}` }}
                   className="inline-flex items-center gap-1 text-[12px] text-foreground/70 hover:text-foreground transition-smooth"
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -777,12 +765,7 @@ const Insight = () => {
             />
             <NextStepLink
               to="/history"
-              icon={<Bookmark className="h-4 w-4" />}
-              title="Save this moment"
-              hint="It's already in your history"
-            />
-            <NextStepLink
-              to="/history"
+              state={{ back: `/insight/${insight.id}` }}
               icon={<CalendarDays className="h-4 w-4" />}
               title="See your week"
               hint="Notice what's been recurring"
@@ -806,14 +789,16 @@ const Insight = () => {
 
 interface StepProps {
   to: string;
+  state?: Record<string, string>;
   icon: React.ReactNode;
   title: string;
   hint: string;
 }
 
-const NextStepLink = ({ to, icon, title, hint }: StepProps) => (
+const NextStepLink = ({ to, state, icon, title, hint }: StepProps) => (
   <Link
     to={to}
+    state={state}
     className="group flex items-center gap-3 rounded-2xl bg-card/50 backdrop-blur border border-border/40 px-4 py-3.5 hover:bg-card/80 hover:border-border/70 transition-smooth"
   >
     <span className="h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center text-muted-foreground shrink-0 group-hover:text-foreground transition-smooth">
