@@ -60,6 +60,13 @@ export const CATEGORY_ACCENTS: Record<CardCategory, CategoryAccent> = {
     gradient:
       "linear-gradient(135deg, hsl(342 58% 88%) 0%, hsl(342 44% 60%) 100%)",
   },
+  Direction: {
+    hsl: "188 52% 46%",
+    ring: "188 45% 38%",
+    bg: "188 48% 93%",
+    gradient:
+      "linear-gradient(135deg, hsl(188 60% 86%) 0%, hsl(188 48% 50%) 100%)",
+  },
   Growth: {
     hsl: "148 34% 48%",
     ring: "148 30% 40%",

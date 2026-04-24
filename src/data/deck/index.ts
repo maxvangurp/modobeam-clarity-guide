@@ -1,4 +1,5 @@
 import { ACTION_CARDS } from "./action";
+import { DIRECTION_CARDS } from "./direction";
 import { EMOTION_CARDS } from "./emotion";
 import { GROWTH_CARDS } from "./growth";
 import { INNER_WORLD_CARDS } from "./innerWorld";
@@ -17,11 +18,14 @@ export const DECK: OracleCard[] = [
   ...LIFE_PATTERNS_CARDS,
   ...RELATIONSHIP_CARDS,
   ...RELATIONSHIP_CORE_CARDS,
+  ...DIRECTION_CARDS,
   ...GROWTH_CARDS,
   ...INNER_WORLD_CARDS,
 ];
 
 export const RELATIONSHIP_DECK: OracleCard[] = RELATIONSHIP_CORE_CARDS;
+
+export const DIRECTION_DECK: OracleCard[] = DIRECTION_CARDS;
 
 export function drawCards(count: number): OracleCard[] {
   const shuffled = [...DECK].sort(() => Math.random() - 0.5);
@@ -30,6 +34,11 @@ export function drawCards(count: number): OracleCard[] {
 
 export function drawRelationshipCards(count: number): OracleCard[] {
   const shuffled = [...RELATIONSHIP_DECK].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+export function drawDirectionCards(count: number): OracleCard[] {
+  const shuffled = [...DIRECTION_DECK].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
 

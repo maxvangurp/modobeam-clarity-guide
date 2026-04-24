@@ -50,7 +50,7 @@ export const READING_TYPES: ReadingType[] = [
     cardCount: 4,
     positionLabels: ["Where you are", "What keeps you stuck", "What wants to change", "Next step"],
     icon: Compass,
-    category: "Life Patterns",
+    category: "Direction",
   },
   {
     id: "love",
