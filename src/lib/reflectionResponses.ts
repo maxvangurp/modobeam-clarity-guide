@@ -94,6 +94,14 @@ const CATEGORY_FALLBACKS: Record<CardCategory, string[]> = {
     "A truer sentence about myself",
     "I'm not ready to name it yet",
   ],
+  Micro: [
+    "Just checking in",
+    "Naming what I feel",
+    "A small reset",
+    "I'm noticing more than I'm fixing",
+    "A breath, then continue",
+    "I don't need words today",
+  ],
 };
 
 const QUICK_CHOICE_RULES: QuickChoiceRule[] = [

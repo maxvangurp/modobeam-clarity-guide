@@ -459,6 +459,7 @@ const CATEGORY_TO_HOUSES: Record<string, number[]> = {
   Growth: [1, 9, 10],
   "Inner World": [4, 8, 12],
   Shadow: [8, 12, 4],
+  Micro: [1, 6],
 };
 
 export interface FocusArea {
