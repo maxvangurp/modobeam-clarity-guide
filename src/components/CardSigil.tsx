@@ -144,6 +144,31 @@ export const CardSigil = ({ card, className }: Props) => {
       );
     }
     motif = <g>{elems}</g>;
+  } else if (card.category === "Direction") {
+    // Ascending chevrons / upward paths — forward motion with forks
+    const paths = 3 + Math.floor(rnd() * 2);
+    const elems: JSX.Element[] = [];
+    for (let i = 0; i < paths; i++) {
+      const startX = 50 + i * 36 + (rnd() - 0.5) * 10;
+      const height = 48 + rnd() * 28;
+      const midY = 156 - height * 0.5;
+      const fork = rnd() > 0.5;
+      elems.push(
+        <path
+          key={i}
+          d={
+            fork
+              ? `M ${startX} 156 L ${startX - 10} ${midY} L ${startX - 18} ${midY - 10} M ${startX - 10} ${midY} L ${startX + 2} ${midY - 10}`
+              : `M ${startX} 156 L ${startX} ${156 - height} L ${startX - 8} ${156 - height + 10} M ${startX} ${156 - height} L ${startX + 8} ${156 - height + 10}`
+          }
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity={0.56 + i * 0.1}
+        />,
+      );
+    }
+    motif = <g>{elems}</g>;
   } else if (card.category === "Growth") {
     const stems = 4 + Math.floor(rnd() * 2);
     const elems = Array.from({ length: stems }).map((_, i) => {

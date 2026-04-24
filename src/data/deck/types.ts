@@ -4,6 +4,7 @@ export type CardCategory =
   | "Action"
   | "Life Patterns"
   | "Relationships"
+  | "Direction"
   | "Growth"
   | "Inner World";
 

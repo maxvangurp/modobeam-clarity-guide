@@ -23,7 +23,7 @@ import { fetchRecentInsights, detectRecentThemes } from "@/lib/progression";
 import { buildPriorThreads } from "@/lib/aiContinuity";
 import { getDailyQuote } from "@/lib/dailyQuote";
 import { recordMomentForStreak, shouldOfferRare, explainRareCard } from "@/lib/rareCard";
-import { drawCards as drawDeck, drawRelationshipCards } from "@/data/deck";
+import { drawCards as drawDeck, drawDirectionCards, drawRelationshipCards } from "@/data/deck";
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 import {
@@ -71,13 +71,9 @@ const Draw = () => {
 
   // Standard deal — may be quietly replaced by a rare card if conditions align.
   const cards = useMemo<OracleCard[]>(() => {
-    const dealt = type === "love" ? drawRelationshipCards(count) : drawDeck(count);
-    if (!contextReady || type !== "daily" || count !== 1) return dealt;
-
-    // Determine context for rare-card eligibility once we know recent volume.
-    // We read the locally-stamped streaks/return gap synchronously here,
-    // and the caller's effect below decides whether to swap.
-    return dealt;
+    if (type === "love") return drawRelationshipCards(count);
+    if (type === "direction") return drawDirectionCards(count);
+    return drawDeck(count);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, count, contextReady]);
 

@@ -455,6 +455,7 @@ const CATEGORY_TO_HOUSES: Record<string, number[]> = {
   Action: [1, 6, 10],
   "Life Patterns": [11, 12],
   Relationships: [5, 7],
+  Direction: [10, 1, 9],
   Growth: [1, 9, 10],
   "Inner World": [4, 8, 12],
 };

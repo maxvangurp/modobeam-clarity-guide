@@ -62,6 +62,14 @@ const CATEGORY_FALLBACKS: Record<CardCategory, string[]> = {
     "A softer connection",
     "I'm still figuring it out",
   ],
+  Direction: [
+    "A clearer next step",
+    "More confidence in my path",
+    "Permission to change direction",
+    "Less pressure to have it figured out",
+    "A truer sense of purpose",
+    "I'm still finding my way",
+  ],
   Growth: [
     "More self-trust",
     "The next version of me",
