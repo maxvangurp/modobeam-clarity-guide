@@ -7,6 +7,7 @@ import { LIFE_PATTERNS_CARDS } from "./lifePatterns";
 import { MIND_CARDS } from "./mind";
 import { RELATIONSHIP_CARDS } from "./relationships";
 import { RELATIONSHIP_CORE_CARDS } from "./relationshipsCore";
+import { SHADOW_CARDS } from "./shadow";
 import type { OracleCard } from "./types";
 
 export type { CardCategory, OracleCard } from "./types";
@@ -21,11 +22,14 @@ export const DECK: OracleCard[] = [
   ...DIRECTION_CARDS,
   ...GROWTH_CARDS,
   ...INNER_WORLD_CARDS,
+  ...SHADOW_CARDS,
 ];
 
 export const RELATIONSHIP_DECK: OracleCard[] = RELATIONSHIP_CORE_CARDS;
 
 export const DIRECTION_DECK: OracleCard[] = DIRECTION_CARDS;
+
+export const SHADOW_DECK: OracleCard[] = SHADOW_CARDS;
 
 export function drawCards(count: number): OracleCard[] {
   const shuffled = [...DECK].sort(() => Math.random() - 0.5);
