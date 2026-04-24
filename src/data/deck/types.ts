@@ -6,7 +6,8 @@ export type CardCategory =
   | "Relationships"
   | "Direction"
   | "Growth"
-  | "Inner World";
+  | "Inner World"
+  | "Shadow";
 
 export interface OracleCard {
   id: string;

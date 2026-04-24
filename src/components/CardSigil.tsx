@@ -204,6 +204,39 @@ export const CardSigil = ({ card, className }: Props) => {
       );
     });
     motif = <g>{elems}</g>;
+  } else if (card.category === "Shadow") {
+    // Shadow — a doubled, slightly-offset spiral motif: the visible self
+    // and the shadow self, slowly drawing inward toward integration.
+    const elems: JSX.Element[] = [];
+    const turns = 3.2 + rnd() * 0.8;
+    const segs = 110;
+    const buildSpiral = (offset: { x: number; y: number }, opacity: number) => {
+      const pts: string[] = [];
+      for (let s = 0; s <= segs; s++) {
+        const t = (s / segs) * turns * Math.PI * 2;
+        const r = 6 + (s / segs) * 70;
+        const px = cx + offset.x + Math.cos(t) * r;
+        const py = cy + offset.y + Math.sin(t) * r;
+        pts.push(`${s === 0 ? "M" : "L"} ${px.toFixed(1)} ${py.toFixed(1)}`);
+      }
+      return (
+        <path
+          key={`spiral-${opacity}`}
+          d={pts.join(" ")}
+          fill="none"
+          strokeLinecap="round"
+          opacity={opacity}
+        />
+      );
+    };
+    elems.push(buildSpiral({ x: 0, y: 0 }, 0.55));
+    elems.push(
+      buildSpiral(
+        { x: (rnd() - 0.5) * 14, y: (rnd() - 0.5) * 14 },
+        0.32,
+      ),
+    );
+    motif = <g>{elems}</g>;
   } else {
     // Life Patterns — orbital nodes
     const orbits = 2 + Math.floor(rnd() * 2);

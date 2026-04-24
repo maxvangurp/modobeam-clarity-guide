@@ -458,6 +458,7 @@ const CATEGORY_TO_HOUSES: Record<string, number[]> = {
   Direction: [10, 1, 9],
   Growth: [1, 9, 10],
   "Inner World": [4, 8, 12],
+  Shadow: [8, 12, 4],
 };
 
 export interface FocusArea {
