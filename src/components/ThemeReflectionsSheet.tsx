@@ -69,6 +69,7 @@ export function ThemeReflectionsSheet({
               <li key={m.id}>
                 <Link
                   to={`/insight/${m.id}`}
+                  state={{ back: "/" }}
                   onClick={() => onOpenChange(false)}
                   className="group flex items-start gap-3 rounded-2xl border border-border/40 bg-card/40 hover:bg-card/70 hover:border-border/70 px-4 py-3 transition-smooth"
                 >

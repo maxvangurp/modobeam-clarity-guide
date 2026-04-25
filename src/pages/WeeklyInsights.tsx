@@ -6,10 +6,12 @@ import { fetchRecentInsights, type InsightLite } from "@/lib/progression";
 import { getCurrentWeekId, readCachedSynthesis, type WeeklySynthesis } from "@/lib/weeklySynthesis";
 import { buildWeeklyInsights } from "@/lib/weeklyInsights";
 import { getProfile } from "@/lib/profile";
+import { useBackNavigation } from "@/hooks/useBackNavigation";
 import { cn } from "@/lib/utils";
 import { layout } from "@/lib/layout";
 
 const WeeklyInsights = () => {
+  const backTo = useBackNavigation("/preferences");
   const [insights, setInsights] = useState<InsightLite[]>([]);
   const currentWeekId = useMemo(() => getCurrentWeekId(), []);
   const profile = getProfile();
@@ -34,7 +36,7 @@ const WeeklyInsights = () => {
   }, [currentWeekId, insights.length]);
 
   return (
-    <AppShell showBack backTo="/preferences" showNav={false}>
+    <AppShell showBack backTo={backTo}>
       <section className={cn(layout.pageHeader, layout.pageSection)}>
         <div className={layout.pageIntro}>
           <p className={layout.eyebrow}>Reflection insights</p>
