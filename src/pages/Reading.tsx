@@ -274,7 +274,7 @@ const Reading = () => {
                 {cards.length === 1 ? (
                   <>Take a breath. <span className="font-medium italic">One card</span> for this moment.</>
                 ) : (
-                  <>Take a breath. <span className="font-medium italic">Three cards</span>, one at a time.</>
+                  <>Take a breath. <span className="font-medium italic">{cards.length} cards</span>, one at a time.</>
                 )}
               </h1>
               {insight.intention && (
@@ -408,6 +408,7 @@ const Reading = () => {
               {lifeArea && (
                 <Link
                   to={`/life-areas/${lifeArea.id}`}
+                  state={{ back: `/reading/${insight.id}` }}
                   className="mt-8 inline-flex items-center gap-3 rounded-full border border-border/60 bg-card/50 backdrop-blur px-4 py-2 text-[12px] text-foreground/80 hover:bg-card/80 hover:text-foreground transition-smooth"
                 >
                   <span className="h-5 w-5 text-[hsl(218_45%_28%)]">
