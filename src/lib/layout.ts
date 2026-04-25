@@ -13,7 +13,7 @@ export const layout = {
   chipRow: "flex flex-wrap gap-2",
   helperRow: "mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2",
   splitHeader: "flex items-baseline justify-between gap-3",
-  sectionStack: "space-y-4.5",
+  sectionStack: "space-y-5",
   cardStack: "space-y-3.5",
   actionBlock: "mt-8",
   sectionLabel: "text-[10px] font-semibold uppercase tracking-[0.26em] text-foreground/60",
