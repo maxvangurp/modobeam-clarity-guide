@@ -1,6 +1,12 @@
-// Modobeam — emotional color tinting
+// Modobeam — emotional color tinting + canonical moment ordering
+//
 // Each "moment" has a soft accent color used for chips, glows, and
 // background gestures. Subtle by design — never loud.
+//
+// This file is also the single source of truth for:
+//  - the order moments are presented in the UI
+//  - their short chip label
+//  - the matching surface tone class
 
 import type { MomentNeed } from "@/lib/profile";
 
@@ -50,3 +56,30 @@ export function getMomentTint(moment: MomentNeed | null): MomentTint | null {
   if (!moment) return null;
   return MOMENT_TINTS[moment];
 }
+
+/** Canonical UI ordering for the five moment chips. */
+export const MOMENT_ORDER: MomentNeed[] = [
+  "clarity",
+  "calm",
+  "direction",
+  "uncertain",
+  "reflect",
+];
+
+/** Short, single-word chip labels — used wherever space is tight. */
+export const MOMENT_CHIP: Record<MomentNeed, string> = {
+  clarity: "Clarity",
+  calm: "Calm",
+  direction: "Direction",
+  uncertain: "Uncertainty",
+  reflect: "Just reflecting",
+};
+
+/** Tone surface utility class — paired with the chosen moment. */
+export const MOMENT_SURFACE: Record<MomentNeed, string> = {
+  clarity: "bg-tone-clarity",
+  calm: "bg-tone-calm",
+  direction: "bg-tone-direction",
+  uncertain: "bg-tone-uncertain",
+  reflect: "bg-tone-reflect",
+};

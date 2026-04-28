@@ -1,4 +1,5 @@
 import { MOMENT_LABELS, type MomentNeed } from "@/lib/profile";
+import { MOMENT_ORDER } from "@/lib/momentTint";
 
 interface Props {
   value: MomentNeed | null;
@@ -6,13 +7,7 @@ interface Props {
   onSkip: () => void;
 }
 
-const ORDER: MomentNeed[] = [
-  "clarity",
-  "calm",
-  "uncertain",
-  "direction",
-  "reflect",
-];
+const ORDER = MOMENT_ORDER;
 
 export const MomentCheckIn = ({ value, onSelect, onSkip }: Props) => (
   <div className="animate-fade-up">
