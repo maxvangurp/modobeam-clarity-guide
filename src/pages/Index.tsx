@@ -327,6 +327,31 @@ const Index = () => {
                       />
                     </div>
                   </button>
+
+                  <Link
+                    to="/check-in"
+                    onClick={() => haptic("select")}
+                    className="group flex items-center justify-between gap-3 rounded-[1.18rem] border border-border/72 bg-background/82 px-3.5 py-3 text-left transition-smooth hover:border-border hover:bg-background/94"
+                    aria-label="Quick check-in — one micro card for right now"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-foreground/56">
+                        Quick check-in
+                      </p>
+                      <p className="mt-1 font-display text-[1.15rem] leading-[1.05] text-foreground">
+                        One word for right now
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80">
+                        Micro card
+                      </p>
+                      <ArrowRight
+                        className="ml-auto mt-1 h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground group-hover:translate-x-0.5"
+                        strokeWidth={1.8}
+                      />
+                    </div>
+                  </Link>
                 </div>
               </div>
             </div>
