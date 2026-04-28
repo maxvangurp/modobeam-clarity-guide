@@ -34,44 +34,13 @@ import { WeeklySynthesisCard } from "@/components/WeeklySynthesisCard";
 import { WeeklyOverviewSheet } from "@/components/WeeklyOverviewSheet";
 import { JustBeHere } from "@/components/JustBeHere";
 import { buildWeek } from "@/lib/weekProgress";
-import { getMomentTint, MOMENT_TINTS } from "@/lib/momentTint";
 import {
-  getCurrentWeekId,
-  readCachedSynthesis,
-  shouldOfferWeeklySynthesis,
-  type WeeklySynthesis,
-} from "@/lib/weeklySynthesis";
-import { checkReturnAndStamp } from "@/lib/returnGap";
-import { haptic } from "@/lib/haptics";
-import { SunGlyphChip } from "@/components/SunGlyphChip";
-import { layout } from "@/lib/layout";
-import { cn } from "@/lib/utils";
-import { getInsightMoment } from "@/lib/insightMoment";
-import { buildWeeklyInsights } from "@/lib/weeklyInsights";
-
-const MOMENT_ORDER: MomentNeed[] = [
-  "clarity",
-  "calm",
-  "direction",
-  "uncertain",
-  "reflect",
-];
-
-const MOMENT_CHIP: Record<MomentNeed, string> = {
-  clarity: "Clarity",
-  calm: "Calm",
-  direction: "Direction",
-  uncertain: "Uncertainty",
-  reflect: "Just reflecting",
-};
-
-const MOMENT_SURFACE: Record<MomentNeed, string> = {
-  clarity: "bg-tone-clarity",
-  calm: "bg-tone-calm",
-  direction: "bg-tone-direction",
-  uncertain: "bg-tone-uncertain",
-  reflect: "bg-tone-reflect",
-};
+  getMomentTint,
+  MOMENT_CHIP,
+  MOMENT_ORDER,
+  MOMENT_SURFACE,
+  MOMENT_TINTS,
+} from "@/lib/momentTint";
 
 function formatShortDate(iso: string) {
   return new Date(iso).toLocaleDateString(undefined, {
