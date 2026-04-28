@@ -16,3 +16,19 @@ export interface Combined {
   combined?: string;
   focus?: { key: string; label: string } | null;
 }
+
+/**
+ * Single source of truth for unwrapping `combined_insight`.
+ * The column historically stored either a JSON blob or — in older rows —
+ * a plain string. This helper hides both shapes from callers.
+ */
+export function parseCombined(raw: string | null | undefined): Combined {
+  if (!raw) return {};
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === "object") return parsed as Combined;
+  } catch {
+    return { combined: raw };
+  }
+  return {};
+}
