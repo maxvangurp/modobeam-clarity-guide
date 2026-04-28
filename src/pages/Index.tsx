@@ -41,6 +41,19 @@ import {
   MOMENT_SURFACE,
   MOMENT_TINTS,
 } from "@/lib/momentTint";
+import {
+  getCurrentWeekId,
+  readCachedSynthesis,
+  shouldOfferWeeklySynthesis,
+  type WeeklySynthesis,
+} from "@/lib/weeklySynthesis";
+import { checkReturnAndStamp } from "@/lib/returnGap";
+import { haptic } from "@/lib/haptics";
+import { SunGlyphChip } from "@/components/SunGlyphChip";
+import { layout } from "@/lib/layout";
+import { cn } from "@/lib/utils";
+import { getInsightMoment } from "@/lib/insightMoment";
+import { buildWeeklyInsights } from "@/lib/weeklyInsights";
 
 function formatShortDate(iso: string) {
   return new Date(iso).toLocaleDateString(undefined, {
