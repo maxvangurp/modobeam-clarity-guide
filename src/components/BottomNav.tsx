@@ -39,7 +39,7 @@ export const BottomNav = () => {
                 key={to}
                 to={to}
                 className={cn(
-                  "flex min-w-[5.4rem] flex-col items-center gap-1 rounded-full px-4 py-2.5 transition-smooth",
+                  "flex min-w-[4.4rem] flex-col items-center gap-1 rounded-full px-3 py-2.5 transition-smooth",
                   active
                     ? "bg-background/78 text-foreground shadow-[inset_0_1px_0_hsl(var(--background)/0.88)]"
                     : "text-muted-foreground/92 hover:text-foreground",
