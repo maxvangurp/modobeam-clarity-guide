@@ -71,23 +71,13 @@ const Preferences = () => {
       if (shouldRegenerate(recent.length)) {
         try {
           const reflections = recent.slice(0, 20).map((r) => {
-            let theme = "";
-            let tension = "";
-            if (r.combined_insight) {
-              try {
-                const p = JSON.parse(r.combined_insight);
-                theme = p.theme ?? "";
-                tension = p.tension ?? "";
-              } catch {
-                /* noop */
-              }
-            }
+            const parsed = parseCombined(r.combined_insight);
             return {
               date: r.created_at,
               draw_type: r.draw_type,
               cards: r.cards.map((c) => c.name),
-              theme,
-              tension,
+              theme: parsed.theme ?? "",
+              tension: parsed.tension ?? "",
             };
           });
           const { data, error } = await supabase.functions.invoke("know-you", {
