@@ -258,11 +258,21 @@ const Index = () => {
           <div className={cn("overflow-hidden rounded-[1.6rem] border border-border/80 bg-gradient-hero shadow-card", moment && MOMENT_SURFACE[moment])}>
             <div className="space-y-6 px-5 py-6">
               <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <p className="text-[12.5px] font-medium tracking-[0.01em] text-foreground/74">
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                  <p className="font-display text-[1.05rem] font-medium leading-tight text-foreground">
                     {greeting}
                   </p>
                   <SunGlyphChip />
+                  {!profile?.birthday && (
+                    <Link
+                      to="/preferences"
+                      onClick={() => haptic("select")}
+                      className="inline-flex items-center gap-1 rounded-full border border-dashed border-border/64 bg-background/62 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground/86 transition-smooth hover:border-border hover:text-foreground"
+                    >
+                      Add your sign
+                      <ArrowRight className="h-2.5 w-2.5" strokeWidth={2} />
+                    </Link>
+                  )}
                 </div>
                 <div className="space-y-3">
                   <p className={layout.eyebrow}>Daily clarity</p>
