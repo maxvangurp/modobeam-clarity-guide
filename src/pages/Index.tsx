@@ -675,16 +675,20 @@ const Index = () => {
         </Button>
 
         {isReturning && (
-          <button
-            type="button"
-            onClick={() => {
-              haptic("select");
-              startFreshDaily();
-            }}
-            className="mt-3 w-full text-center text-[11px] uppercase tracking-[0.22em] text-muted-foreground/86 transition-smooth hover:text-foreground"
-          >
-            Or pull a new card →
-          </button>
+          <div className="mt-3 flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                haptic("select");
+                startFreshDaily();
+              }}
+              className="group inline-flex items-center gap-2 rounded-full border border-border/68 bg-card/82 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/76 shadow-soft backdrop-blur transition-smooth hover:border-border hover:bg-card hover:text-foreground"
+            >
+              <Sparkles className="h-3 w-3 text-muted-foreground/80 transition-smooth group-hover:text-foreground" strokeWidth={1.8} />
+              Pull a new card
+              <ArrowRight className="h-3 w-3 transition-smooth group-hover:translate-x-0.5" strokeWidth={2} />
+            </button>
+          </div>
         )}
 
       </section>
