@@ -653,6 +653,19 @@ const Index = () => {
           </span>
         </Button>
 
+        {isReturning && (
+          <button
+            type="button"
+            onClick={() => {
+              haptic("select");
+              startFreshDaily();
+            }}
+            className="mt-3 w-full text-center text-[11px] uppercase tracking-[0.22em] text-muted-foreground/86 transition-smooth hover:text-foreground"
+          >
+            Or pull a new card →
+          </button>
+        )}
+
       </section>
 
       <section className={cn(layout.pageSection, "mt-16 [animation-delay:300ms]")}>
