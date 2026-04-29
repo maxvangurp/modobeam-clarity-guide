@@ -187,17 +187,15 @@ const Preferences = () => {
             description="Open your weekly snapshot, rhythm, and returning themes."
             icon={Sparkles}
           />
-          <InsightButton
+          <ComingSoonRow
             label="Monthly overview"
             description="A wider pattern view across the last month."
             icon={Clock3}
-            onClick={() => toast("Monthly overview is coming soon")}
           />
-          <InsightButton
+          <ComingSoonRow
             label="Pattern history"
             description="Trace recurring themes and tones across your reflection history."
             icon={Waypoints}
-            onClick={() => toast("Pattern history is coming soon")}
           />
           <div className="rounded-[1.15rem] border border-border/60 bg-card/70 px-4 py-3.5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/58">
