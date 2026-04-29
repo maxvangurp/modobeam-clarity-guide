@@ -27,6 +27,7 @@ import {
 import { fetchRecentInsights, type InsightLite } from "@/lib/progression";
 import { readKnowYou, shouldRegenerate, writeKnowYou } from "@/lib/aiKnowYou";
 import { supabase } from "@/integrations/supabase/client";
+import { parseCombined } from "@/lib/insightTypes";
 import { layout } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 
@@ -71,23 +72,13 @@ const Preferences = () => {
       if (shouldRegenerate(recent.length)) {
         try {
           const reflections = recent.slice(0, 20).map((r) => {
-            let theme = "";
-            let tension = "";
-            if (r.combined_insight) {
-              try {
-                const p = JSON.parse(r.combined_insight);
-                theme = p.theme ?? "";
-                tension = p.tension ?? "";
-              } catch {
-                /* noop */
-              }
-            }
+            const parsed = parseCombined(r.combined_insight);
             return {
               date: r.created_at,
               draw_type: r.draw_type,
               cards: r.cards.map((c) => c.name),
-              theme,
-              tension,
+              theme: parsed.theme ?? "",
+              tension: parsed.tension ?? "",
             };
           });
           const { data, error } = await supabase.functions.invoke("know-you", {
@@ -187,17 +178,15 @@ const Preferences = () => {
             description="Open your weekly snapshot, rhythm, and returning themes."
             icon={Sparkles}
           />
-          <InsightButton
+          <ComingSoonRow
             label="Monthly overview"
             description="A wider pattern view across the last month."
             icon={Clock3}
-            onClick={() => toast("Monthly overview is coming soon")}
           />
-          <InsightButton
+          <ComingSoonRow
             label="Pattern history"
             description="Trace recurring themes and tones across your reflection history."
             icon={Waypoints}
-            onClick={() => toast("Pattern history is coming soon")}
           />
           <div className="rounded-[1.15rem] border border-border/60 bg-card/70 px-4 py-3.5">
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-foreground/58">
@@ -432,31 +421,30 @@ const InsightLink = ({
   </Link>
 );
 
-const InsightButton = ({
+const ComingSoonRow = ({
   label,
   description,
   icon: Icon,
-  onClick,
 }: {
   label: string;
   description: string;
   icon: LucideIcon;
-  onClick: () => void;
 }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className="group flex w-full items-start justify-between gap-3 rounded-[1.15rem] border border-border/60 bg-card/70 px-4 py-3.5 text-left transition-smooth hover:bg-card/92"
+  <div
+    className="flex w-full items-start justify-between gap-3 rounded-[1.15rem] border border-dashed border-border/56 bg-card/52 px-4 py-3.5 opacity-90"
+    aria-label={`${label} — coming soon`}
   >
     <div className="flex min-w-0 gap-3">
-      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/60 bg-background/84">
-        <Icon className="h-4 w-4 text-foreground/74" strokeWidth={1.8} />
+      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/52 bg-background/72">
+        <Icon className="h-4 w-4 text-muted-foreground/82" strokeWidth={1.8} />
       </span>
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/62">{label}</p>
-        <p className="mt-1 text-[13px] leading-[1.58] text-foreground/86">{description}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/58">{label}</p>
+        <p className="mt-1 text-[13px] leading-[1.58] text-muted-foreground/92">{description}</p>
       </div>
     </div>
-    <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground" strokeWidth={1.8} />
-  </button>
+    <span className="mt-0.5 shrink-0 rounded-full border border-border/56 bg-background/72 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-muted-foreground/82">
+      Soon
+    </span>
+  </div>
 );

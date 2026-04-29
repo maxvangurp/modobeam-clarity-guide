@@ -186,7 +186,23 @@ const Index = () => {
   const lastCardTitle = last?.cards?.[0]?.name ?? null;
   const lastCardName = lastCardTitle?.toLowerCase();
 
+  // Primary CTA behavior:
+  //  - Returning user (has a last insight) → resume the most recent reflection
+  //    so "Continue your reflection" actually continues, not silently starts over.
+  //  - First-time / fresh slate → start a new daily draw.
   const startDaily = () => {
+    if (isReturning && last) {
+      navigate(`/insight/${last.id}`, { state: { back: "/" } });
+      return;
+    }
+    const params = new URLSearchParams();
+    if (moment) params.set("moment", moment);
+    navigate(`/draw/daily${params.toString() ? `?${params}` : ""}`);
+  };
+
+  // Always-available fresh draw, used by a secondary affordance so the
+  // primary CTA can stay focused on continuity.
+  const startFreshDaily = () => {
     const params = new URLSearchParams();
     if (moment) params.set("moment", moment);
     navigate(`/draw/daily${params.toString() ? `?${params}` : ""}`);
@@ -636,6 +652,19 @@ const Index = () => {
             →
           </span>
         </Button>
+
+        {isReturning && (
+          <button
+            type="button"
+            onClick={() => {
+              haptic("select");
+              startFreshDaily();
+            }}
+            className="mt-3 w-full text-center text-[11px] uppercase tracking-[0.22em] text-muted-foreground/86 transition-smooth hover:text-foreground"
+          >
+            Or pull a new card →
+          </button>
+        )}
 
       </section>
 

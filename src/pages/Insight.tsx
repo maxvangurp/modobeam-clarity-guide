@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { useBackNavigation } from "@/hooks/useBackNavigation";
-import type { InsightRow, Combined } from "@/lib/insightTypes";
+import { type InsightRow, type Combined, parseCombined } from "@/lib/insightTypes";
 import { getReadingType } from "@/data/readingTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
@@ -104,16 +104,10 @@ const Insight = () => {
     })();
   }, [id, navigate]);
 
-  const combined = useMemo<Combined>(() => {
-    if (!insight?.combined_insight) return {};
-    try {
-      const parsed = JSON.parse(insight.combined_insight);
-      if (parsed && typeof parsed === "object") return parsed as Combined;
-    } catch {
-      return { combined: insight.combined_insight };
-    }
-    return {};
-  }, [insight]);
+  const combined = useMemo<Combined>(
+    () => parseCombined(insight?.combined_insight),
+    [insight],
+  );
 
   const cards = useMemo(() => {
     if (!insight) return [];

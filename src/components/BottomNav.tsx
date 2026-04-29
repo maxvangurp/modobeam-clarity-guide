@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Compass, BookOpen } from "lucide-react";
+import { Home, Compass, Sparkles, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { layout } from "@/lib/layout";
 
 const links = [
   { to: "/", label: "Home", icon: Home },
+  { to: "/check-in", label: "Check-in", icon: Sparkles },
   { to: "/readings", label: "Explore", icon: Compass },
   { to: "/history", label: "History", icon: BookOpen },
 ];
@@ -24,19 +25,21 @@ export const BottomNav = () => {
             const active =
               to === "/"
                 ? path === "/"
-                : to === "/readings"
-                  ? path.startsWith("/readings") ||
-                    path.startsWith("/draw") ||
-                    path.startsWith("/reading") ||
-                    path.startsWith("/insight") ||
-                    path.startsWith("/life-areas")
-                  : path.startsWith(to);
+                : to === "/check-in"
+                  ? path === "/check-in"
+                  : to === "/readings"
+                    ? path.startsWith("/readings") ||
+                      path.startsWith("/draw") ||
+                      path.startsWith("/reading") ||
+                      path.startsWith("/insight") ||
+                      path.startsWith("/life-areas")
+                    : path.startsWith(to);
             return (
               <Link
                 key={to}
                 to={to}
                 className={cn(
-                  "flex min-w-[5.4rem] flex-col items-center gap-1 rounded-full px-4 py-2.5 transition-smooth",
+                  "flex min-w-[4.4rem] flex-col items-center gap-1 rounded-full px-3 py-2.5 transition-smooth",
                   active
                     ? "bg-background/78 text-foreground shadow-[inset_0_1px_0_hsl(var(--background)/0.88)]"
                     : "text-muted-foreground/92 hover:text-foreground",
