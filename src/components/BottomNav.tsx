@@ -25,13 +25,15 @@ export const BottomNav = () => {
             const active =
               to === "/"
                 ? path === "/"
-                : to === "/readings"
-                  ? path.startsWith("/readings") ||
-                    path.startsWith("/draw") ||
-                    path.startsWith("/reading") ||
-                    path.startsWith("/insight") ||
-                    path.startsWith("/life-areas")
-                  : path.startsWith(to);
+                : to === "/check-in"
+                  ? path === "/check-in"
+                  : to === "/readings"
+                    ? path.startsWith("/readings") ||
+                      path.startsWith("/draw") ||
+                      path.startsWith("/reading") ||
+                      path.startsWith("/insight") ||
+                      path.startsWith("/life-areas")
+                    : path.startsWith(to);
             return (
               <Link
                 key={to}
