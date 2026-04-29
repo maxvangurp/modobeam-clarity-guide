@@ -431,19 +431,26 @@ const ComingSoonRow = ({
   icon: LucideIcon;
 }) => (
   <div
-    className="flex w-full items-start justify-between gap-3 rounded-[1.15rem] border border-dashed border-border/56 bg-card/52 px-4 py-3.5 opacity-90"
+    className="group relative flex w-full items-start justify-between gap-3 overflow-hidden rounded-[1.15rem] border border-border/56 bg-[linear-gradient(135deg,hsl(40_30%_98%/0.78)_0%,hsl(211_42%_94%/0.62)_55%,hsl(218_36%_88%/0.5)_100%)] px-4 py-3.5 shadow-soft backdrop-blur"
     aria-label={`${label} — coming soon`}
   >
+    {/* Soft top-edge highlight to give it depth */}
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent_0%,hsl(0_0%_100%/0.7)_50%,transparent_100%)]"
+    />
     <div className="flex min-w-0 gap-3">
-      <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/52 bg-background/72">
-        <Icon className="h-4 w-4 text-muted-foreground/82" strokeWidth={1.8} />
+      <span
+        className="relative mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[hsl(218_38%_70%)]/30 bg-background/76 shadow-[0_0_14px_hsl(218_60%_70%/0.28)] backdrop-blur"
+      >
+        <Icon className="h-4 w-4 text-[hsl(218_45%_30%)]/82" strokeWidth={1.7} />
       </span>
       <div className="min-w-0">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground/58">{label}</p>
-        <p className="mt-1 text-[13px] leading-[1.58] text-muted-foreground/92">{description}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[hsl(218_30%_38%)]/82">{label}</p>
+        <p className="mt-1 text-[13px] leading-[1.58] text-foreground/82">{description}</p>
       </div>
     </div>
-    <span className="mt-0.5 shrink-0 rounded-full border border-border/56 bg-background/72 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-muted-foreground/82">
+    <span className="mt-0.5 shrink-0 rounded-full border border-[hsl(218_38%_70%)]/35 bg-background/82 px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-[hsl(218_45%_30%)]/82 shadow-[0_1px_0_hsl(0_0%_100%/0.6)_inset]">
       Soon
     </span>
   </div>

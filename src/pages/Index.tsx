@@ -258,11 +258,21 @@ const Index = () => {
           <div className={cn("overflow-hidden rounded-[1.6rem] border border-border/80 bg-gradient-hero shadow-card", moment && MOMENT_SURFACE[moment])}>
             <div className="space-y-6 px-5 py-6">
               <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <p className="text-[12.5px] font-medium tracking-[0.01em] text-foreground/74">
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
+                  <p className="font-display text-[1.05rem] font-medium leading-tight text-foreground">
                     {greeting}
                   </p>
                   <SunGlyphChip />
+                  {!profile?.birthday && (
+                    <Link
+                      to="/preferences"
+                      onClick={() => haptic("select")}
+                      className="inline-flex items-center gap-1 rounded-full border border-dashed border-border/64 bg-background/62 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground/86 transition-smooth hover:border-border hover:text-foreground"
+                    >
+                      Add your sign
+                      <ArrowRight className="h-2.5 w-2.5" strokeWidth={2} />
+                    </Link>
+                  )}
                 </div>
                 <div className="space-y-3">
                   <p className={layout.eyebrow}>Daily clarity</p>
@@ -329,11 +339,22 @@ const Index = () => {
                   <Link
                     to="/check-in"
                     onClick={() => haptic("select")}
-                    className="group flex items-center justify-between gap-3 rounded-[1.18rem] border border-border/72 bg-background/82 px-3.5 py-3 text-left transition-smooth hover:border-border hover:bg-background/94"
+                    className="group relative flex items-center gap-3 overflow-hidden rounded-[1.18rem] border border-border/72 bg-[linear-gradient(135deg,hsl(40_30%_98%/0.92)_0%,hsl(211_42%_94%/0.72)_55%,hsl(218_36%_88%/0.62)_100%)] px-3.5 py-3 text-left shadow-soft transition-smooth hover:border-border hover:shadow-card"
                     aria-label="Quick check-in — one micro card for right now"
                   >
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-foreground/56">
+                    {/* Sigil orb — quietly accents the row */}
+                    <span
+                      aria-hidden
+                      className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[hsl(218_38%_70%)]/35 bg-background/70 shadow-[0_0_18px_hsl(218_60%_70%/0.32)] backdrop-blur"
+                    >
+                      <Sparkles
+                        className="h-4 w-4 text-[hsl(218_45%_30%)]"
+                        strokeWidth={1.6}
+                      />
+                      <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-[hsl(218_60%_60%)] shadow-[0_0_6px_hsl(218_60%_60%/0.7)]" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[hsl(218_30%_38%)]/82">
                         Quick check-in
                       </p>
                       <p className="mt-1 font-display text-[1.15rem] leading-[1.05] text-foreground">
@@ -341,11 +362,11 @@ const Index = () => {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/82">
                         Micro card
                       </p>
                       <ArrowRight
-                        className="ml-auto mt-1 h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground group-hover:translate-x-0.5"
+                        className="ml-auto mt-1 h-4 w-4 shrink-0 text-muted-foreground/68 transition-smooth group-hover:text-foreground group-hover:translate-x-0.5"
                         strokeWidth={1.8}
                       />
                     </div>
@@ -654,16 +675,20 @@ const Index = () => {
         </Button>
 
         {isReturning && (
-          <button
-            type="button"
-            onClick={() => {
-              haptic("select");
-              startFreshDaily();
-            }}
-            className="mt-3 w-full text-center text-[11px] uppercase tracking-[0.22em] text-muted-foreground/86 transition-smooth hover:text-foreground"
-          >
-            Or pull a new card →
-          </button>
+          <div className="mt-3 flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                haptic("select");
+                startFreshDaily();
+              }}
+              className="group inline-flex items-center gap-2 rounded-full border border-border/68 bg-card/82 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-foreground/76 shadow-soft backdrop-blur transition-smooth hover:border-border hover:bg-card hover:text-foreground"
+            >
+              <Sparkles className="h-3 w-3 text-muted-foreground/80 transition-smooth group-hover:text-foreground" strokeWidth={1.8} />
+              Pull a new card
+              <ArrowRight className="h-3 w-3 transition-smooth group-hover:translate-x-0.5" strokeWidth={2} />
+            </button>
+          </div>
         )}
 
       </section>
