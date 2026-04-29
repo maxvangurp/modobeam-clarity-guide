@@ -27,6 +27,7 @@ import {
 import { fetchRecentInsights, type InsightLite } from "@/lib/progression";
 import { readKnowYou, shouldRegenerate, writeKnowYou } from "@/lib/aiKnowYou";
 import { supabase } from "@/integrations/supabase/client";
+import { parseCombined } from "@/lib/insightTypes";
 import { layout } from "@/lib/layout";
 import { cn } from "@/lib/utils";
 
