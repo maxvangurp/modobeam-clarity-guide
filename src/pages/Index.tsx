@@ -339,11 +339,22 @@ const Index = () => {
                   <Link
                     to="/check-in"
                     onClick={() => haptic("select")}
-                    className="group flex items-center justify-between gap-3 rounded-[1.18rem] border border-border/72 bg-background/82 px-3.5 py-3 text-left transition-smooth hover:border-border hover:bg-background/94"
+                    className="group relative flex items-center gap-3 overflow-hidden rounded-[1.18rem] border border-border/72 bg-[linear-gradient(135deg,hsl(40_30%_98%/0.92)_0%,hsl(211_42%_94%/0.72)_55%,hsl(218_36%_88%/0.62)_100%)] px-3.5 py-3 text-left shadow-soft transition-smooth hover:border-border hover:shadow-card"
                     aria-label="Quick check-in — one micro card for right now"
                   >
-                    <div className="min-w-0">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-foreground/56">
+                    {/* Sigil orb — quietly accents the row */}
+                    <span
+                      aria-hidden
+                      className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[hsl(218_38%_70%)]/35 bg-background/70 shadow-[0_0_18px_hsl(218_60%_70%/0.32)] backdrop-blur"
+                    >
+                      <Sparkles
+                        className="h-4 w-4 text-[hsl(218_45%_30%)]"
+                        strokeWidth={1.6}
+                      />
+                      <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-[hsl(218_60%_60%)] shadow-[0_0_6px_hsl(218_60%_60%/0.7)]" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[hsl(218_30%_38%)]/82">
                         Quick check-in
                       </p>
                       <p className="mt-1 font-display text-[1.15rem] leading-[1.05] text-foreground">
@@ -351,11 +362,11 @@ const Index = () => {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/80">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/82">
                         Micro card
                       </p>
                       <ArrowRight
-                        className="ml-auto mt-1 h-4 w-4 shrink-0 text-muted-foreground/62 transition-smooth group-hover:text-foreground group-hover:translate-x-0.5"
+                        className="ml-auto mt-1 h-4 w-4 shrink-0 text-muted-foreground/68 transition-smooth group-hover:text-foreground group-hover:translate-x-0.5"
                         strokeWidth={1.8}
                       />
                     </div>
