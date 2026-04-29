@@ -1,10 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Compass, BookOpen } from "lucide-react";
+import { Home, Compass, Sparkles, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { layout } from "@/lib/layout";
 
 const links = [
   { to: "/", label: "Home", icon: Home },
+  { to: "/check-in", label: "Check-in", icon: Sparkles },
   { to: "/readings", label: "Explore", icon: Compass },
   { to: "/history", label: "History", icon: BookOpen },
 ];
