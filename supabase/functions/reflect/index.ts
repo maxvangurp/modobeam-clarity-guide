@@ -154,8 +154,18 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { intention, drawType, positionLabels, cards, profile, moment, priorThreads, dailyQuote, astroContext } =
-      (await req.json()) as Payload;
+    const {
+      intention,
+      drawType,
+      positionLabels,
+      cards,
+      profile,
+      moment,
+      priorThreads,
+      dailyQuote,
+      astroContext,
+      readingContext,
+    } = (await req.json()) as Payload;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
