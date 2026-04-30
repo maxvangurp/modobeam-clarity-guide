@@ -43,6 +43,40 @@ interface AstroContext {
   focusArea?: { key: string; label: string } | null;
 }
 
+type ReadingContext =
+  | {
+      kind: "friend";
+      personName: string;
+      personRelation: string;
+      topic?: string | null;
+    }
+  | {
+      kind: "this-or-that";
+      optionA: string;
+      optionB: string;
+      question?: string | null;
+    }
+  | {
+      kind: "horizon";
+      rangeKey: string;
+      rangeLabel: string;
+      toneHint: string;
+      area?: string | null;
+    }
+  | {
+      kind: "relationship-future";
+      personName: string;
+      personRelation: string;
+      statusKey: string;
+      statusLabel: string;
+    }
+  | {
+      kind: "milestone";
+      milestoneKey: string;
+      milestoneLabel: string;
+      note?: string | null;
+    };
+
 interface Payload {
   intention?: string;
   drawType: string;
@@ -53,6 +87,7 @@ interface Payload {
   priorThreads?: PriorThread[] | null;
   dailyQuote?: { text: string; author?: string } | null;
   astroContext?: AstroContext | null;
+  readingContext?: ReadingContext | null;
 }
 
 const READING_DESCRIPTIONS: Record<string, string> = {
@@ -64,6 +99,16 @@ const READING_DESCRIPTIONS: Record<string, string> = {
     "a 4-card Direction reading (where you are → what keeps you stuck → what wants to change → next step)",
   love: "a 4-card Love & Emotion reading (what you feel → what you hold onto → what you need to see → what helps you move forward)",
   year: "a 4-card Year Reflection (main theme → inner tension → growth area → focus point)",
+  friend:
+    "a 3-card Ask-for-a-friend reading (what they're carrying → what may be unseen → what might help) — a reflection ABOUT someone close to the user, through the user's lens of them",
+  "this-or-that":
+    "a 3-card This-or-That comparison (Path A → Path B → what sits underneath) — two options held side by side",
+  horizon:
+    "a 5-card Horizon reading (where you are now → what is forming → what will challenge you → what supports you → what this may lead toward) — future-facing reflection, never prediction",
+  "relationship-future":
+    "a 5-card Relationship Future lens (current dynamic → hidden issue → what strengthens this → what weakens this → where this is heading) for a specific bond",
+  milestone:
+    "a 4-card Milestone reading (what you're leaving → what you're entering → what to honor → what to carry forward) for a threshold moment",
 };
 
 const SYSTEM_PROMPT = `You are Modobeam — a reflective voice that helps people see themselves more clearly. You sound like a thoughtful human, not a system. Sometimes a perceptive friend, sometimes a quiet therapist, sometimes a writer noticing something true.
@@ -109,8 +154,18 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const { intention, drawType, positionLabels, cards, profile, moment, priorThreads, dailyQuote, astroContext } =
-      (await req.json()) as Payload;
+    const {
+      intention,
+      drawType,
+      positionLabels,
+      cards,
+      profile,
+      moment,
+      priorThreads,
+      dailyQuote,
+      astroContext,
+      readingContext,
+    } = (await req.json()) as Payload;
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -184,6 +239,45 @@ Deno.serve(async (req: Request) => {
           })
           .join("\n")}\n`
       : "";
+
+    // Reading-specific context (friend / horizon / this-or-that / etc.)
+    let readingContextBlock = "";
+    if (readingContext) {
+      switch (readingContext.kind) {
+        case "friend":
+          readingContextBlock = `\nThis reading is ABOUT someone in the user's life — not about the user directly:
+- Person: ${readingContext.personName} (${readingContext.personRelation})
+${readingContext.topic ? `- What's on the user's mind: "${readingContext.topic}"` : ""}
+Speak through the user's lens of this person. Use the person's name once or twice, sparingly. Be careful: the user can only know this person from the outside. Frame insight as what the user might be sensing or projecting, not as a verdict on the other person. Never claim to know the other person's inner state.\n`;
+          break;
+        case "this-or-that":
+          readingContextBlock = `\nThis is a comparison reading — two paths held side by side:
+- Path A: "${readingContext.optionA}"
+- Path B: "${readingContext.optionB}"
+${readingContext.question ? `- The question underneath: "${readingContext.question}"` : ""}
+The first card speaks to the shape of Path A. The second to Path B. The third names what's actually being decided underneath. Don't pick a winner — name the cost and the pull of each, and surface the real question.\n`;
+          break;
+        case "horizon":
+          readingContextBlock = `\nThis is a HORIZON reading — future-facing reflection, never prediction:
+- Range: ${readingContext.rangeLabel}
+${readingContext.area ? `- Area of life in focus: "${readingContext.area}"` : ""}
+- Tone for this range: ${readingContext.toneHint}
+Stay reflective, never predictive. No "you will" — instead "this is forming", "this is asking", "this may ask of you". Themes over events.\n`;
+          break;
+        case "relationship-future":
+          readingContextBlock = `\nThis is a RELATIONSHIP FUTURE reading — about a specific bond:
+- Person: ${readingContext.personName} (${readingContext.personRelation})
+- Status: ${readingContext.statusLabel}
+Read this as the dynamic between the user and this person. Be honest about what strengthens and what weakens it. The final position ("where this is heading") is directional, not predictive — describe the trajectory if nothing changes, while leaving room for agency.\n`;
+          break;
+        case "milestone":
+          readingContextBlock = `\nThis is a MILESTONE reading — a ritual reflection for a threshold moment:
+- Milestone: ${readingContext.milestoneLabel}
+${readingContext.note ? `- What it means to them: "${readingContext.note}"` : ""}
+Treat this with weight. The reading should feel like a small ceremony — what's being released, what's being entered, what to honor, what to carry. Slower pacing. Allow one image or metaphor.\n`;
+          break;
+      }
+    }
 
     const readingDesc =
       READING_DESCRIPTIONS[drawType] ?? `a ${cards.length}-card reading`;
@@ -286,7 +380,7 @@ Deno.serve(async (req: Request) => {
     const userPrompt = `${profileBlock}${intentionLine}They drew ${readingDesc}.
 
 ${cardSummary}
-${guidanceLine}${momentLine}${priorBlock}${quoteHint}${astroBlock}
+${guidanceLine}${momentLine}${readingContextBlock}${priorBlock}${quoteHint}${astroBlock}
 
 ${modeInstruction[mode]}
 

@@ -3,9 +3,19 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ReflectionCard } from "@/components/ReflectionCard";
 import { MomentCheckIn } from "@/components/MomentCheckIn";
+import { ReadingContextStep } from "@/components/ReadingContextStep";
 import { Button } from "@/components/ui/button";
 import { type OracleCard } from "@/data/deck";
 import { getReadingType } from "@/data/readingTypes";
+import {
+  HORIZON_LABELS,
+  HORIZON_TONES,
+  MILESTONE_LABELS,
+  RELATIONSHIP_STATUS_LABELS,
+  describeContext,
+  stashContext,
+  type ReadingContext,
+} from "@/lib/readingContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
 import {
@@ -34,6 +44,51 @@ import {
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
+// Build the soft, AI-facing payload from the user's pre-draw context.
+// Kept tiny and human — the edge function knows what to do with it.
+function buildAiReadingContext(ctx: ReadingContext) {
+  switch (ctx.kind) {
+    case "friend":
+      return {
+        kind: "friend" as const,
+        personName: ctx.personName,
+        personRelation: ctx.personRelation,
+        topic: ctx.topic ?? null,
+      };
+    case "this-or-that":
+      return {
+        kind: "this-or-that" as const,
+        optionA: ctx.optionA,
+        optionB: ctx.optionB,
+        question: ctx.question ?? null,
+      };
+    case "horizon":
+      return {
+        kind: "horizon" as const,
+        rangeKey: ctx.range,
+        rangeLabel: HORIZON_LABELS[ctx.range],
+        toneHint: HORIZON_TONES[ctx.range],
+        area: ctx.area ?? null,
+      };
+    case "relationship-future":
+      return {
+        kind: "relationship-future" as const,
+        personName: ctx.personName,
+        personRelation: ctx.personRelation,
+        statusKey: ctx.status,
+        statusLabel: RELATIONSHIP_STATUS_LABELS[ctx.status],
+      };
+    case "milestone":
+      return {
+        kind: "milestone" as const,
+        milestoneKey: ctx.milestone,
+        milestoneLabel: MILESTONE_LABELS[ctx.milestone],
+        note: ctx.note ?? null,
+      };
+  }
+}
+
+
 const Draw = () => {
   const { type } = useParams<{ type: string }>();
   const [searchParams] = useSearchParams();
@@ -56,6 +111,11 @@ const Draw = () => {
     !fromOnboarding && !validMoment && shouldPromptMoment(profile?.rhythm),
   );
 
+  // Pre-draw context (friend / horizon / this-or-that / etc.)
+  const needsContext = !!reading?.needsContext;
+  const [readingCtx, setReadingCtx] = useState<ReadingContext | null>(null);
+  const [showContextStep, setShowContextStep] = useState<boolean>(needsContext);
+
   // Mark the prompt as shown the first time we surface it
   useEffect(() => {
     if (showMoment) markMomentPromptShown();
@@ -71,8 +131,10 @@ const Draw = () => {
 
   // Standard deal — may be quietly replaced by a rare card if conditions align.
   const cards = useMemo<OracleCard[]>(() => {
-    if (type === "love") return drawRelationshipCards(count);
-    if (type === "direction") return drawDirectionCards(count);
+    if (type === "love" || type === "relationship-future")
+      return drawRelationshipCards(count);
+    if (type === "direction" || type === "horizon")
+      return drawDirectionCards(count);
     return drawDeck(count);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, count, contextReady]);
@@ -179,6 +241,22 @@ const Draw = () => {
 
   const labels = reading.positionLabels;
 
+  if (showContextStep) {
+    return (
+      <AppShell showBack backTo="/readings" ambientMoment={moment} screenMood="draw">
+        <div className="pt-2">
+          <ReadingContextStep
+            type={reading.id}
+            onConfirm={(ctx) => {
+              setReadingCtx(ctx);
+              setShowContextStep(false);
+            }}
+          />
+        </div>
+      </AppShell>
+    );
+  }
+
   if (showMoment) {
     return (
       <AppShell showBack backTo="/" ambientMoment={moment} screenMood="draw">
@@ -243,6 +321,9 @@ const Draw = () => {
             : null,
           priorThreads,
           dailyQuote,
+          readingContext: readingCtx
+            ? buildAiReadingContext(readingCtx)
+            : null,
           astroContext: (() => {
             if (!isAstroLensEnabled(profile)) return null;
             if (!profile?.birthday) return null;
@@ -294,6 +375,11 @@ const Draw = () => {
       if (moment && inserted?.id) {
         const { setInsightMoment } = await import("@/lib/insightMoment");
         setInsightMoment(inserted.id, moment);
+      }
+      // Persist reading context against this insight so Insight/Reading
+      // screens can quote it back ("about Maya · close friend").
+      if (readingCtx && inserted?.id) {
+        stashContext(inserted.id, readingCtx);
       }
       navigate(`/reading/${inserted.id}`, { state: { back: "/" } });
     } catch (e: any) {

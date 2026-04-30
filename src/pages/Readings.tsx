@@ -1,17 +1,23 @@
 // Modobeam — Readings library
 //
-// A destination, not a list. Modes are grouped by the kind of reflection
-// they invite: Quick · Deeper · Different lens · Context (Life Areas).
-// Each mode renders as a category-tinted preview card with a depth chip
-// and one of three states: ready, locked (with unlock-in count), or
-// coming soon (premium placeholder for modes still in development).
+// A destination, not a list. Modes are grouped by *mood* — what the
+// user is reaching for: Quick · Deeper · Together · Horizon · Moments.
+// Each mode renders as a category-tinted preview card with a depth chip.
+//
+// Locks remain only on the original readings that already had thresholds
+// (direction, love, next-phase, year). All new modes are immediately
+// available so the app feels rich and explorable from day one.
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ReadingPreviewCard } from "@/components/ReadingPreviewCard";
-import { READING_TYPES, type ReadingType } from "@/data/readingTypes";
-import { COMING_SOON_MODES, type ComingSoonMode } from "@/data/comingSoonModes";
+import {
+  READING_TYPES,
+  readingsByGroup,
+  type ReadingGroup,
+  type ReadingType,
+} from "@/data/readingTypes";
 import {
   fetchRecentInsights,
   isReadingUnlocked,
@@ -21,50 +27,19 @@ import { Compass } from "lucide-react";
 import { layout } from "@/lib/layout";
 
 interface SectionDef {
-  key: "quick" | "deeper" | "context" | "coming";
+  key: ReadingGroup | "context";
   title: string;
   hint: string;
 }
 
 const SECTIONS: SectionDef[] = [
-  {
-    key: "quick",
-    title: "Quick",
-    hint: "Short, grounding moments — anytime",
-  },
-  {
-    key: "deeper",
-    title: "Deeper",
-    hint: "When something is asking for more time",
-  },
-  {
-    key: "context",
-    title: "Context & layers",
-    hint: "The wider map your reflections live inside",
-  },
-  {
-    key: "coming",
-    title: "Coming soon",
-    hint: "New ways to reflect, on the way",
-  },
+  { key: "quick", title: "Quick", hint: "Short, grounding moments — anytime" },
+  { key: "deeper", title: "Deeper", hint: "When something is asking for more time" },
+  { key: "together", title: "Together", hint: "Readings about someone — or with someone in mind" },
+  { key: "horizon", title: "Horizon", hint: "Future-facing reflection · 3 months → 5 years" },
+  { key: "moments", title: "Moments", hint: "Ritual readings for thresholds in your life" },
+  { key: "context", title: "Context & layers", hint: "The wider map your reflections live inside" },
 ];
-
-// Where each existing reading type belongs in the library.
-const READING_GROUP: Record<string, "quick" | "deeper"> = {
-  daily: "quick",
-  three: "quick",
-  direction: "deeper",
-  love: "deeper",
-  "next-phase": "deeper",
-  year: "deeper",
-};
-
-// The 3 coming-soon previews we surface as a dedicated section.
-const COMING_SOON_FEATURED_IDS = [
-  "ask-for-friend",
-  "this-or-that",
-  "whats-going-on",
-] as const;
 
 const Readings = () => {
   const navigate = useNavigate();
@@ -79,34 +54,23 @@ const Readings = () => {
 
   const t = total ?? 0;
 
-  // Bucket the real readings by group
-  const readingsByGroup = (group: "quick" | "deeper"): ReadingType[] =>
-    READING_TYPES.filter((r) => READING_GROUP[r.id] === group);
-
-  // The dedicated "Coming soon" preview list — order matches the spec.
-  const featuredComing: ComingSoonMode[] = COMING_SOON_FEATURED_IDS
-    .map((id) => COMING_SOON_MODES.find((m) => m.id === id))
-    .filter(Boolean) as ComingSoonMode[];
-
   return (
     <AppShell screenMood="reveal">
       {/* Header */}
       <section className={layout.pageHeader}>
         <div className={layout.pageIntro}>
-        <p className={layout.eyebrow}>
-          Ways to reflect
-        </p>
-        <h1 className={layout.title}>
-          Choose your <span className="font-medium italic">depth</span>.
-        </h1>
-        <p className={layout.body}>
-          Modobeam offers many ways in. Start with what's near. New shapes
-          appear as you keep showing up.
-        </p>
+          <p className={layout.eyebrow}>Ways to reflect</p>
+          <h1 className={layout.title}>
+            Choose your <span className="font-medium italic">depth</span>.
+          </h1>
+          <p className={layout.body}>
+            Modobeam offers many ways in — alone, about someone close,
+            for the day, or for the years ahead. Pick the shape that fits
+            this moment.
+          </p>
         </div>
       </section>
 
-      {/* Sections */}
       <div className="space-y-8">
         {SECTIONS.map((section, sectionIdx) => {
           if (section.key === "context") {
@@ -148,33 +112,7 @@ const Readings = () => {
             );
           }
 
-          if (section.key === "coming") {
-            return (
-              <section
-                key={section.key}
-                className="animate-fade-up"
-                style={{ animationDelay: `${120 + sectionIdx * 80}ms` }}
-              >
-                <SectionHeader title={section.title} hint={section.hint} />
-                <div className="mt-3 space-y-3">
-                  {featuredComing.map((m) => (
-                    <ReadingPreviewCard
-                      key={m.id}
-                      label={m.label}
-                      subtitle={m.subtitle}
-                      description={m.description}
-                      cardCount={m.cardCount}
-                      icon={m.icon}
-                      category={m.category}
-                      state="coming-soon"
-                    />
-                  ))}
-                </div>
-              </section>
-            );
-          }
-
-          const real = readingsByGroup(section.key);
+          const real = readingsByGroup(section.key as ReadingGroup);
           if (real.length === 0) return null;
 
           return (
@@ -211,7 +149,7 @@ const Readings = () => {
 
       {total !== null && total < 5 && (
         <p className="text-center text-[11px] text-muted-foreground/70 mt-10 italic">
-          Modobeam grows with you. New shapes will appear when you're ready.
+          Modobeam grows with you. Some shapes deepen as you keep showing up.
         </p>
       )}
     </AppShell>

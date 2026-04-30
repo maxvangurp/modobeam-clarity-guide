@@ -24,7 +24,7 @@ import {
 import { inferReadingHint, type ReadingHint } from "@/lib/themeUnlocks";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
 import { READING_TYPES } from "@/data/readingTypes";
-import { COMING_SOON_MODES } from "@/data/comingSoonModes";
+
 import { ReadingPreviewCard } from "@/components/ReadingPreviewCard";
 import { isReadingUnlocked, readingsRemainingToUnlock } from "@/lib/progression";
 import { ArrowRight, Pause, Sparkles, Waypoints, X } from "lucide-react";
@@ -766,8 +766,7 @@ interface ExploreCarouselProps {
   moment: MomentNeed | null;
 }
 
-const FEATURED_REAL_IDS = ["three", "direction"] as const;
-const FEATURED_COMING_IDS = ["ask-for-friend", "whats-going-on"] as const;
+const FEATURED_REAL_IDS = ["three", "friend", "this-or-that", "horizon", "milestone", "direction"] as const;
 
 const ExploreCarousel = ({
   totalReflections,
@@ -777,10 +776,6 @@ const ExploreCarousel = ({
     READING_TYPES.find((r) => r.id === id),
   ).filter(Boolean) as ReadingType[];
 
-  const featuredComing = FEATURED_COMING_IDS.map((id) =>
-    COMING_SOON_MODES.find((m) => m.id === id),
-  ).filter(Boolean);
-
   const buildTo = (id: string) => {
     const params = new URLSearchParams();
     if (moment) params.set("moment", moment);
@@ -788,10 +783,10 @@ const ExploreCarousel = ({
   };
 
   const leadReading = featuredReal[0] ?? null;
-  const railItems = [
-    ...featuredReal.slice(1).map((reading) => ({ type: "real" as const, item: reading })),
-    ...featuredComing.map((reading) => ({ type: "coming" as const, item: reading })),
-  ];
+  const railItems = featuredReal.slice(1).map((reading) => ({
+    type: "real" as const,
+    item: reading,
+  }));
 
   return (
     <section className="animate-fade-up [animation-delay:300ms]">
@@ -839,20 +834,20 @@ const ExploreCarousel = ({
           })()}
 
           <div className="space-y-2.5 border-t border-border/50 pt-3">
-            {railItems.map(({ type, item }) => {
-              const unlocked = type === "real" ? isReadingUnlocked(item.id, totalReflections) : false;
-              const remaining = type === "real" ? readingsRemainingToUnlock(item.id, totalReflections) : undefined;
+            {railItems.map(({ item }) => {
+              const unlocked = isReadingUnlocked(item.id, totalReflections);
+              const remaining = readingsRemainingToUnlock(item.id, totalReflections);
 
               return (
                 <ReadingPreviewCard
                   key={item.id}
-                  to={type === "real" && unlocked ? buildTo(item.id) : undefined}
+                  to={unlocked ? buildTo(item.id) : undefined}
                   label={item.label}
                   subtitle={item.subtitle}
                   cardCount={item.cardCount}
                   icon={item.icon}
                   category={item.category}
-                  state={type === "coming" ? "coming-soon" : unlocked ? "ready" : "locked"}
+                  state={unlocked ? "ready" : "locked"}
                   unlockIn={remaining}
                   size="compact"
                 />
