@@ -271,6 +271,14 @@ const Reading = () => {
                   <>Take a breath. <span className="font-medium italic">{cards.length} cards</span>, one at a time.</>
                 )}
               </h1>
+              {(() => {
+                const ctxLabel = describeContext(readContext(insight.id));
+                return ctxLabel ? (
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/85 mt-4">
+                    {ctxLabel}
+                  </p>
+                ) : null;
+              })()}
               {insight.intention && (
                 <p className="text-sm italic text-muted-foreground mt-5">
                   "{insight.intention}"
