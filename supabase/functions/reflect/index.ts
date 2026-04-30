@@ -380,7 +380,7 @@ Treat this with weight. The reading should feel like a small ceremony — what's
     const userPrompt = `${profileBlock}${intentionLine}They drew ${readingDesc}.
 
 ${cardSummary}
-${guidanceLine}${momentLine}${priorBlock}${quoteHint}${astroBlock}
+${guidanceLine}${momentLine}${readingContextBlock}${priorBlock}${quoteHint}${astroBlock}
 
 ${modeInstruction[mode]}
 
