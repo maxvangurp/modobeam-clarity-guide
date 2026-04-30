@@ -43,6 +43,40 @@ interface AstroContext {
   focusArea?: { key: string; label: string } | null;
 }
 
+type ReadingContext =
+  | {
+      kind: "friend";
+      personName: string;
+      personRelation: string;
+      topic?: string | null;
+    }
+  | {
+      kind: "this-or-that";
+      optionA: string;
+      optionB: string;
+      question?: string | null;
+    }
+  | {
+      kind: "horizon";
+      rangeKey: string;
+      rangeLabel: string;
+      toneHint: string;
+      area?: string | null;
+    }
+  | {
+      kind: "relationship-future";
+      personName: string;
+      personRelation: string;
+      statusKey: string;
+      statusLabel: string;
+    }
+  | {
+      kind: "milestone";
+      milestoneKey: string;
+      milestoneLabel: string;
+      note?: string | null;
+    };
+
 interface Payload {
   intention?: string;
   drawType: string;
@@ -53,6 +87,7 @@ interface Payload {
   priorThreads?: PriorThread[] | null;
   dailyQuote?: { text: string; author?: string } | null;
   astroContext?: AstroContext | null;
+  readingContext?: ReadingContext | null;
 }
 
 const READING_DESCRIPTIONS: Record<string, string> = {
@@ -64,6 +99,16 @@ const READING_DESCRIPTIONS: Record<string, string> = {
     "a 4-card Direction reading (where you are → what keeps you stuck → what wants to change → next step)",
   love: "a 4-card Love & Emotion reading (what you feel → what you hold onto → what you need to see → what helps you move forward)",
   year: "a 4-card Year Reflection (main theme → inner tension → growth area → focus point)",
+  friend:
+    "a 3-card Ask-for-a-friend reading (what they're carrying → what may be unseen → what might help) — a reflection ABOUT someone close to the user, through the user's lens of them",
+  "this-or-that":
+    "a 3-card This-or-That comparison (Path A → Path B → what sits underneath) — two options held side by side",
+  horizon:
+    "a 5-card Horizon reading (where you are now → what is forming → what will challenge you → what supports you → what this may lead toward) — future-facing reflection, never prediction",
+  "relationship-future":
+    "a 5-card Relationship Future lens (current dynamic → hidden issue → what strengthens this → what weakens this → where this is heading) for a specific bond",
+  milestone:
+    "a 4-card Milestone reading (what you're leaving → what you're entering → what to honor → what to carry forward) for a threshold moment",
 };
 
 const SYSTEM_PROMPT = `You are Modobeam — a reflective voice that helps people see themselves more clearly. You sound like a thoughtful human, not a system. Sometimes a perceptive friend, sometimes a quiet therapist, sometimes a writer noticing something true.
