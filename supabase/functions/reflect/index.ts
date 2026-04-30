@@ -240,6 +240,45 @@ Deno.serve(async (req: Request) => {
           .join("\n")}\n`
       : "";
 
+    // Reading-specific context (friend / horizon / this-or-that / etc.)
+    let readingContextBlock = "";
+    if (readingContext) {
+      switch (readingContext.kind) {
+        case "friend":
+          readingContextBlock = `\nThis reading is ABOUT someone in the user's life — not about the user directly:
+- Person: ${readingContext.personName} (${readingContext.personRelation})
+${readingContext.topic ? `- What's on the user's mind: "${readingContext.topic}"` : ""}
+Speak through the user's lens of this person. Use the person's name once or twice, sparingly. Be careful: the user can only know this person from the outside. Frame insight as what the user might be sensing or projecting, not as a verdict on the other person. Never claim to know the other person's inner state.\n`;
+          break;
+        case "this-or-that":
+          readingContextBlock = `\nThis is a comparison reading — two paths held side by side:
+- Path A: "${readingContext.optionA}"
+- Path B: "${readingContext.optionB}"
+${readingContext.question ? `- The question underneath: "${readingContext.question}"` : ""}
+The first card speaks to the shape of Path A. The second to Path B. The third names what's actually being decided underneath. Don't pick a winner — name the cost and the pull of each, and surface the real question.\n`;
+          break;
+        case "horizon":
+          readingContextBlock = `\nThis is a HORIZON reading — future-facing reflection, never prediction:
+- Range: ${readingContext.rangeLabel}
+${readingContext.area ? `- Area of life in focus: "${readingContext.area}"` : ""}
+- Tone for this range: ${readingContext.toneHint}
+Stay reflective, never predictive. No "you will" — instead "this is forming", "this is asking", "this may ask of you". Themes over events.\n`;
+          break;
+        case "relationship-future":
+          readingContextBlock = `\nThis is a RELATIONSHIP FUTURE reading — about a specific bond:
+- Person: ${readingContext.personName} (${readingContext.personRelation})
+- Status: ${readingContext.statusLabel}
+Read this as the dynamic between the user and this person. Be honest about what strengthens and what weakens it. The final position ("where this is heading") is directional, not predictive — describe the trajectory if nothing changes, while leaving room for agency.\n`;
+          break;
+        case "milestone":
+          readingContextBlock = `\nThis is a MILESTONE reading — a ritual reflection for a threshold moment:
+- Milestone: ${readingContext.milestoneLabel}
+${readingContext.note ? `- What it means to them: "${readingContext.note}"` : ""}
+Treat this with weight. The reading should feel like a small ceremony — what's being released, what's being entered, what to honor, what to carry. Slower pacing. Allow one image or metaphor.\n`;
+          break;
+      }
+    }
+
     const readingDesc =
       READING_DESCRIPTIONS[drawType] ?? `a ${cards.length}-card reading`;
 
