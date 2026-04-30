@@ -24,7 +24,7 @@ import {
 import { inferReadingHint, type ReadingHint } from "@/lib/themeUnlocks";
 import { getReadingType, type ReadingType } from "@/data/readingTypes";
 import { READING_TYPES } from "@/data/readingTypes";
-import { COMING_SOON_MODES } from "@/data/comingSoonModes";
+
 import { ReadingPreviewCard } from "@/components/ReadingPreviewCard";
 import { isReadingUnlocked, readingsRemainingToUnlock } from "@/lib/progression";
 import { ArrowRight, Pause, Sparkles, Waypoints, X } from "lucide-react";
