@@ -766,8 +766,7 @@ interface ExploreCarouselProps {
   moment: MomentNeed | null;
 }
 
-const FEATURED_REAL_IDS = ["three", "direction"] as const;
-const FEATURED_COMING_IDS = ["ask-for-friend", "whats-going-on"] as const;
+const FEATURED_REAL_IDS = ["three", "friend", "this-or-that", "horizon", "milestone", "direction"] as const;
 
 const ExploreCarousel = ({
   totalReflections,
@@ -777,10 +776,6 @@ const ExploreCarousel = ({
     READING_TYPES.find((r) => r.id === id),
   ).filter(Boolean) as ReadingType[];
 
-  const featuredComing = FEATURED_COMING_IDS.map((id) =>
-    COMING_SOON_MODES.find((m) => m.id === id),
-  ).filter(Boolean);
-
   const buildTo = (id: string) => {
     const params = new URLSearchParams();
     if (moment) params.set("moment", moment);
@@ -788,10 +783,10 @@ const ExploreCarousel = ({
   };
 
   const leadReading = featuredReal[0] ?? null;
-  const railItems = [
-    ...featuredReal.slice(1).map((reading) => ({ type: "real" as const, item: reading })),
-    ...featuredComing.map((reading) => ({ type: "coming" as const, item: reading })),
-  ];
+  const railItems = featuredReal.slice(1).map((reading) => ({
+    type: "real" as const,
+    item: reading,
+  }));
 
   return (
     <section className="animate-fade-up [animation-delay:300ms]">
