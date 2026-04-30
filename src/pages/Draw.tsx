@@ -331,6 +331,11 @@ const Draw = () => {
         const { setInsightMoment } = await import("@/lib/insightMoment");
         setInsightMoment(inserted.id, moment);
       }
+      // Persist reading context against this insight so Insight/Reading
+      // screens can quote it back ("about Maya · close friend").
+      if (readingCtx && inserted?.id) {
+        stashContext(inserted.id, readingCtx);
+      }
       navigate(`/reading/${inserted.id}`, { state: { back: "/" } });
     } catch (e: any) {
       console.error(e);
