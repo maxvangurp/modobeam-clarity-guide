@@ -276,6 +276,9 @@ const Draw = () => {
             : null,
           priorThreads,
           dailyQuote,
+          readingContext: readingCtx
+            ? buildAiReadingContext(readingCtx)
+            : null,
           astroContext: (() => {
             if (!isAstroLensEnabled(profile)) return null;
             if (!profile?.birthday) return null;
