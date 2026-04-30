@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { useBackNavigation } from "@/hooks/useBackNavigation";
 import { type InsightRow, type Combined, parseCombined } from "@/lib/insightTypes";
+import { describeContext, readContext } from "@/lib/readingContext";
 import { getReadingType } from "@/data/readingTypes";
 import { supabase } from "@/integrations/supabase/client";
 import { getCardById } from "@/data/deck";
