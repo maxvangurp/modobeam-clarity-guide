@@ -66,6 +66,11 @@ const Draw = () => {
     !fromOnboarding && !validMoment && shouldPromptMoment(profile?.rhythm),
   );
 
+  // Pre-draw context (friend / horizon / this-or-that / etc.)
+  const needsContext = !!reading?.needsContext;
+  const [readingCtx, setReadingCtx] = useState<ReadingContext | null>(null);
+  const [showContextStep, setShowContextStep] = useState<boolean>(needsContext);
+
   // Mark the prompt as shown the first time we surface it
   useEffect(() => {
     if (showMoment) markMomentPromptShown();
@@ -81,8 +86,10 @@ const Draw = () => {
 
   // Standard deal — may be quietly replaced by a rare card if conditions align.
   const cards = useMemo<OracleCard[]>(() => {
-    if (type === "love") return drawRelationshipCards(count);
-    if (type === "direction") return drawDirectionCards(count);
+    if (type === "love" || type === "relationship-future")
+      return drawRelationshipCards(count);
+    if (type === "direction" || type === "horizon")
+      return drawDirectionCards(count);
     return drawDeck(count);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, count, contextReady]);
