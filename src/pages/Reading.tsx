@@ -17,6 +17,7 @@ import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import { AppShell } from "@/components/AppShell";
 import { useBackNavigation } from "@/hooks/useBackNavigation";
 import { type InsightRow, type Combined, parseCombined } from "@/lib/insightTypes";
+import { describeContext, readContext } from "@/lib/readingContext";
 import { ReflectionCard } from "@/components/ReflectionCard";
 import { LifeAreaGlyph } from "@/components/LifeAreaGlyph";
 import { FocusChip } from "@/components/FocusChip";
