@@ -44,6 +44,51 @@ import {
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
+// Build the soft, AI-facing payload from the user's pre-draw context.
+// Kept tiny and human — the edge function knows what to do with it.
+function buildAiReadingContext(ctx: ReadingContext) {
+  switch (ctx.kind) {
+    case "friend":
+      return {
+        kind: "friend" as const,
+        personName: ctx.personName,
+        personRelation: ctx.personRelation,
+        topic: ctx.topic ?? null,
+      };
+    case "this-or-that":
+      return {
+        kind: "this-or-that" as const,
+        optionA: ctx.optionA,
+        optionB: ctx.optionB,
+        question: ctx.question ?? null,
+      };
+    case "horizon":
+      return {
+        kind: "horizon" as const,
+        rangeKey: ctx.range,
+        rangeLabel: HORIZON_LABELS[ctx.range],
+        toneHint: HORIZON_TONES[ctx.range],
+        area: ctx.area ?? null,
+      };
+    case "relationship-future":
+      return {
+        kind: "relationship-future" as const,
+        personName: ctx.personName,
+        personRelation: ctx.personRelation,
+        statusKey: ctx.status,
+        statusLabel: RELATIONSHIP_STATUS_LABELS[ctx.status],
+      };
+    case "milestone":
+      return {
+        kind: "milestone" as const,
+        milestoneKey: ctx.milestone,
+        milestoneLabel: MILESTONE_LABELS[ctx.milestone],
+        note: ctx.note ?? null,
+      };
+  }
+}
+
+
 const Draw = () => {
   const { type } = useParams<{ type: string }>();
   const [searchParams] = useSearchParams();
