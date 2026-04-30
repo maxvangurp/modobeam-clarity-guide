@@ -196,6 +196,22 @@ const Draw = () => {
 
   const labels = reading.positionLabels;
 
+  if (showContextStep) {
+    return (
+      <AppShell showBack backTo="/readings" ambientMoment={moment} screenMood="draw">
+        <div className="pt-2">
+          <ReadingContextStep
+            type={reading.id}
+            onConfirm={(ctx) => {
+              setReadingCtx(ctx);
+              setShowContextStep(false);
+            }}
+          />
+        </div>
+      </AppShell>
+    );
+  }
+
   if (showMoment) {
     return (
       <AppShell showBack backTo="/" ambientMoment={moment} screenMood="draw">
