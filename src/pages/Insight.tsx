@@ -300,6 +300,14 @@ const Insight = () => {
               </span>
             )}
           </div>
+          {(() => {
+            const ctxLabel = describeContext(readContext(insight.id));
+            return ctxLabel ? (
+              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/85">
+                {ctxLabel}
+              </p>
+            ) : null;
+          })()}
           {insight.intention && (
             <p className="text-sm italic text-muted-foreground">
               "{insight.intention}"
