@@ -3,9 +3,19 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { AppShell } from "@/components/AppShell";
 import { ReflectionCard } from "@/components/ReflectionCard";
 import { MomentCheckIn } from "@/components/MomentCheckIn";
+import { ReadingContextStep } from "@/components/ReadingContextStep";
 import { Button } from "@/components/ui/button";
 import { type OracleCard } from "@/data/deck";
 import { getReadingType } from "@/data/readingTypes";
+import {
+  HORIZON_LABELS,
+  HORIZON_TONES,
+  MILESTONE_LABELS,
+  RELATIONSHIP_STATUS_LABELS,
+  describeContext,
+  stashContext,
+  type ReadingContext,
+} from "@/lib/readingContext";
 import { supabase } from "@/integrations/supabase/client";
 import { getSessionId } from "@/lib/session";
 import {
