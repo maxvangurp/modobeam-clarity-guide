@@ -834,20 +834,20 @@ const ExploreCarousel = ({
           })()}
 
           <div className="space-y-2.5 border-t border-border/50 pt-3">
-            {railItems.map(({ type, item }) => {
-              const unlocked = type === "real" ? isReadingUnlocked(item.id, totalReflections) : false;
-              const remaining = type === "real" ? readingsRemainingToUnlock(item.id, totalReflections) : undefined;
+            {railItems.map(({ item }) => {
+              const unlocked = isReadingUnlocked(item.id, totalReflections);
+              const remaining = readingsRemainingToUnlock(item.id, totalReflections);
 
               return (
                 <ReadingPreviewCard
                   key={item.id}
-                  to={type === "real" && unlocked ? buildTo(item.id) : undefined}
+                  to={unlocked ? buildTo(item.id) : undefined}
                   label={item.label}
                   subtitle={item.subtitle}
                   cardCount={item.cardCount}
                   icon={item.icon}
                   category={item.category}
-                  state={type === "coming" ? "coming-soon" : unlocked ? "ready" : "locked"}
+                  state={unlocked ? "ready" : "locked"}
                   unlockIn={remaining}
                   size="compact"
                 />
