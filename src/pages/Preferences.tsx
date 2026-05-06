@@ -207,7 +207,8 @@ const Preferences = () => {
         <PeopleManager />
       </Section>
 
-
+      <Section
+        kicker="How you use it"
         title="What brings you here, generally?"
       >
         <div className="grid gap-2.5">
