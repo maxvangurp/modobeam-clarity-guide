@@ -286,6 +286,21 @@ Read this as the dynamic between the user and this person. Be honest about what 
 ${readingContext.note ? `- What it means to them: "${readingContext.note}"` : ""}
 Treat this with weight. The reading should feel like a small ceremony — what's being released, what's being entered, what to honor, what to carry. Slower pacing. Allow one image or metaphor.\n`;
           break;
+        case "duo": {
+          const [a, b] = readingContext.names;
+          readingContextBlock = `\nThis is a DUO reading — two people sharing one device:
+- Participants: ${a} and ${b}
+${readingContext.topic ? `- What it's about: "${readingContext.topic}"` : ""}
+Each card belongs to one person; the final card belongs to the space between them. Speak to both — name each person where useful. Be even-handed; never side with one. The "between you" card should describe the relational field, not a verdict.\n`;
+          break;
+        }
+        case "group": {
+          readingContextBlock = `\nThis is a GROUP / CIRCLE reading — ${readingContext.names.length} people sharing one device:
+- Circle: ${readingContext.names.join(", ")}
+${readingContext.topic ? `- What brings them together: "${readingContext.topic}"` : ""}
+Each named card belongs to one person in the circle. The final card ("for the circle") belongs to the group as a whole. Address each person by name briefly, then lift up to the shared field. Avoid singling anyone out as right or wrong; surface the dynamic between them.\n`;
+          break;
+        }
       }
     }
 
