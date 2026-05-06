@@ -85,6 +85,18 @@ function buildAiReadingContext(ctx: ReadingContext) {
         milestoneLabel: MILESTONE_LABELS[ctx.milestone],
         note: ctx.note ?? null,
       };
+    case "duo":
+      return {
+        kind: "duo" as const,
+        names: ctx.names,
+        topic: ctx.topic ?? null,
+      };
+    case "group":
+      return {
+        kind: "group" as const,
+        names: ctx.names,
+        topic: ctx.topic ?? null,
+      };
   }
 }
 
