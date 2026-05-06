@@ -75,6 +75,16 @@ type ReadingContext =
       milestoneKey: string;
       milestoneLabel: string;
       note?: string | null;
+    }
+  | {
+      kind: "duo";
+      names: string[];
+      topic?: string | null;
+    }
+  | {
+      kind: "group";
+      names: string[];
+      topic?: string | null;
     };
 
 interface Payload {
