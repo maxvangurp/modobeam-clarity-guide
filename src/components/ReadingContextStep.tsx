@@ -64,6 +64,8 @@ export const ReadingContextStep = ({ type, onConfirm, onSkip }: Props) => {
           <RelationshipFutureForm onConfirm={onConfirm} />
         )}
         {type === "milestone" && <MilestoneForm onConfirm={onConfirm} />}
+        {type === "duo" && <DuoForm onConfirm={onConfirm} />}
+        {type === "group" && <GroupForm onConfirm={onConfirm} />}
       </div>
 
       {onSkip && (
@@ -92,6 +94,10 @@ function contextIntro(type: DrawType): string {
       return "Choose who this is about and where you stand. The reading meets you there.";
     case "milestone":
       return "Mark the threshold. A short ritual reflection for the moment itself.";
+    case "duo":
+      return "Two people, one device. Add both names — you'll pass the phone between draws.";
+    case "group":
+      return "A circle of 3–5. Add everyone's name — pass the phone as each card is drawn.";
     default:
       return "A small step before the draw.";
   }
@@ -489,6 +495,143 @@ function MilestoneForm({
             kind: "milestone",
             milestone,
             note: note.trim() || undefined,
+          })
+        }
+      />
+    </div>
+  );
+}
+
+// ─── Duo (pass the phone) ──────────────────────────────────────────
+
+function DuoForm({ onConfirm }: { onConfirm: (c: ReadingContext) => void }) {
+  const [a, setA] = useState("");
+  const [b, setB] = useState("");
+  const [topic, setTopic] = useState("");
+  const ready = a.trim() && b.trim();
+
+  return (
+    <div className="space-y-5">
+      <FieldLabel>Who's reflecting together?</FieldLabel>
+      <div className="space-y-2.5">
+        <Input
+          value={a}
+          onChange={(e) => setA(e.target.value)}
+          placeholder="First person — e.g. you"
+          className="h-10 text-[13px]"
+          maxLength={40}
+        />
+        <Input
+          value={b}
+          onChange={(e) => setB(e.target.value)}
+          placeholder="Second person"
+          className="h-10 text-[13px]"
+          maxLength={40}
+        />
+      </div>
+      <FieldLabel>What's this about?  <Quiet>optional</Quiet></FieldLabel>
+      <Input
+        value={topic}
+        onChange={(e) => setTopic(e.target.value)}
+        placeholder="e.g. us, the move, the project"
+        className="h-10 text-[13px]"
+      />
+      <p className="text-[11.5px] leading-relaxed text-muted-foreground/85">
+        After the draw, you'll be prompted to pass the phone between cards so each
+        person reveals their own.
+      </p>
+      <ConfirmButton
+        disabled={!ready}
+        onClick={() =>
+          onConfirm({
+            kind: "duo",
+            names: [a.trim(), b.trim()],
+            topic: topic.trim() || undefined,
+          })
+        }
+      />
+    </div>
+  );
+}
+
+// ─── Group (circle reading) ────────────────────────────────────────
+
+function GroupForm({ onConfirm }: { onConfirm: (c: ReadingContext) => void }) {
+  const [names, setNames] = useState<string[]>(["", "", ""]);
+  const [topic, setTopic] = useState("");
+
+  const setAt = (i: number, v: string) =>
+    setNames((prev) => prev.map((n, idx) => (idx === i ? v : n)));
+  const addOne = () => {
+    if (names.length >= 5) return;
+    setNames((prev) => [...prev, ""]);
+  };
+  const removeAt = (i: number) => {
+    if (names.length <= 3) return;
+    setNames((prev) => prev.filter((_, idx) => idx !== i));
+  };
+
+  const trimmed = names.map((n) => n.trim()).filter(Boolean);
+  const ready = trimmed.length >= 3;
+
+  return (
+    <div className="space-y-5">
+      <FieldLabel>Who's in the circle?  <Quiet>3 to 5</Quiet></FieldLabel>
+      <div className="space-y-2.5">
+        {names.map((n, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70 w-5 shrink-0">
+              {i + 1}
+            </span>
+            <Input
+              value={n}
+              onChange={(e) => setAt(i, e.target.value)}
+              placeholder={`Person ${i + 1}`}
+              className="h-10 text-[13px]"
+              maxLength={40}
+            />
+            {names.length > 3 && (
+              <button
+                type="button"
+                onClick={() => removeAt(i)}
+                className="text-muted-foreground/70 hover:text-foreground"
+                aria-label="Remove person"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+        ))}
+        {names.length < 5 && (
+          <button
+            type="button"
+            onClick={addOne}
+            className="inline-flex items-center gap-1 rounded-full border border-dashed border-border/70 bg-background/60 px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] text-muted-foreground hover:text-foreground transition-smooth"
+          >
+            <Plus className="h-3 w-3" /> Add person
+          </button>
+        )}
+      </div>
+
+      <FieldLabel>What brings you together?  <Quiet>optional</Quiet></FieldLabel>
+      <Input
+        value={topic}
+        onChange={(e) => setTopic(e.target.value)}
+        placeholder="e.g. the trip, the year ahead"
+        className="h-10 text-[13px]"
+      />
+      <p className="text-[11.5px] leading-relaxed text-muted-foreground/85">
+        Each person draws their card. The final card belongs to the circle as a
+        whole.
+      </p>
+
+      <ConfirmButton
+        disabled={!ready}
+        onClick={() =>
+          onConfirm({
+            kind: "group",
+            names: trimmed,
+            topic: topic.trim() || undefined,
           })
         }
       />

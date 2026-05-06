@@ -766,7 +766,7 @@ interface ExploreCarouselProps {
   moment: MomentNeed | null;
 }
 
-const FEATURED_REAL_IDS = ["three", "friend", "this-or-that", "horizon", "milestone", "direction"] as const;
+const FEATURED_REAL_IDS = ["three", "friend", "duo", "this-or-that", "horizon", "milestone", "group", "direction"] as const;
 
 const ExploreCarousel = ({
   totalReflections,

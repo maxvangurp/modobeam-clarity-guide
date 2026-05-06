@@ -85,6 +85,18 @@ function buildAiReadingContext(ctx: ReadingContext) {
         milestoneLabel: MILESTONE_LABELS[ctx.milestone],
         note: ctx.note ?? null,
       };
+    case "duo":
+      return {
+        kind: "duo" as const,
+        names: ctx.names,
+        topic: ctx.topic ?? null,
+      };
+    case "group":
+      return {
+        kind: "group" as const,
+        names: ctx.names,
+        topic: ctx.topic ?? null,
+      };
   }
 }
 
@@ -103,18 +115,23 @@ const Draw = () => {
 
   const reading = getReadingType(type ?? "");
 
-  const count = reading?.cardCount ?? 1;
+  // Pre-draw context (friend / horizon / this-or-that / duo / group / etc.)
+  const needsContext = !!reading?.needsContext;
+  const [readingCtx, setReadingCtx] = useState<ReadingContext | null>(null);
+  const [showContextStep, setShowContextStep] = useState<boolean>(needsContext);
+
+  // Count is normally fixed, but Group adapts to circle size:
+  // one card per person + one shared "for the circle" card.
+  const count = (() => {
+    if (readingCtx?.kind === "group") return readingCtx.names.length + 1;
+    return reading?.cardCount ?? 1;
+  })();
 
   const [moment, setMoment] = useState<MomentNeed | null>(validMoment);
   // Auto-prompt the moment check-in only when the user's rhythm allows.
   const [showMoment, setShowMoment] = useState<boolean>(
     !fromOnboarding && !validMoment && shouldPromptMoment(profile?.rhythm),
   );
-
-  // Pre-draw context (friend / horizon / this-or-that / etc.)
-  const needsContext = !!reading?.needsContext;
-  const [readingCtx, setReadingCtx] = useState<ReadingContext | null>(null);
-  const [showContextStep, setShowContextStep] = useState<boolean>(needsContext);
 
   // Mark the prompt as shown the first time we surface it
   useEffect(() => {
@@ -239,7 +256,16 @@ const Draw = () => {
 
   if (!reading) return null;
 
-  const labels = reading.positionLabels;
+  // Dynamic per-person labels for Duo & Group; fall back to fixed labels.
+  const labels = (() => {
+    if (readingCtx?.kind === "duo") {
+      return [readingCtx.names[0], readingCtx.names[1], "Between you"];
+    }
+    if (readingCtx?.kind === "group") {
+      return [...readingCtx.names, "For the circle"];
+    }
+    return reading.positionLabels;
+  })();
 
   if (showContextStep) {
     return (
@@ -468,6 +494,35 @@ const Draw = () => {
           </p>
         )}
       </div>
+
+      {/* Pass-the-phone hint for duo / group readings */}
+      {(readingCtx?.kind === "duo" || readingCtx?.kind === "group") &&
+        !allRevealed &&
+        !shuffling &&
+        (() => {
+          const nextIdx = revealed.findIndex((r) => !r);
+          if (nextIdx < 0) return null;
+          const who = labels[nextIdx];
+          const isCircleCard =
+            readingCtx.kind === "group" && nextIdx === labels.length - 1;
+          return (
+            <div className="mb-6 rounded-2xl border border-border/55 bg-gradient-dawn px-4 py-3 text-center animate-fade-up">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-foreground/65">
+                Pass the phone
+              </p>
+              <p className="mt-1 text-[13px] leading-snug text-foreground/85">
+                {isCircleCard ? (
+                  "Last card — for the circle. Reveal it together."
+                ) : (
+                  <>
+                    <span className="font-medium">{who}</span> — your card is
+                    next.
+                  </>
+                )}
+              </p>
+            </div>
+          );
+        })()}
 
       <div
         className={`${gridClass} animate-fade-up [animation-delay:120ms] transition-opacity duration-700`}

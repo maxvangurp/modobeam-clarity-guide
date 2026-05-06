@@ -104,12 +104,29 @@ export interface MilestoneContext {
   note?: string;
 }
 
+export interface DuoContext {
+  kind: "duo";
+  /** Names of the two participants, in order. */
+  names: [string, string];
+  /** Optional shared topic — "the move", "us", "the project". */
+  topic?: string;
+}
+
+export interface GroupContext {
+  kind: "group";
+  /** 3–5 names. The last card is reserved "for the circle". */
+  names: string[];
+  topic?: string;
+}
+
 export type ReadingContext =
   | FriendContext
   | ThisOrThatContext
   | HorizonContext
   | RelationshipFutureContext
-  | MilestoneContext;
+  | MilestoneContext
+  | DuoContext
+  | GroupContext;
 
 const KEY_PREFIX = "modobeam_reading_ctx_v1:";
 
@@ -150,6 +167,10 @@ export function describeContext(ctx: ReadingContext | null | undefined): string 
       return `${ctx.personName} · ${RELATIONSHIP_STATUS_LABELS[ctx.status]}`;
     case "milestone":
       return MILESTONE_LABELS[ctx.milestone];
+    case "duo":
+      return `${ctx.names[0]} & ${ctx.names[1]}${ctx.topic ? ` — ${ctx.topic}` : ""}`;
+    case "group":
+      return `${ctx.names.join(" · ")}${ctx.topic ? ` — ${ctx.topic}` : ""}`;
   }
 }
 

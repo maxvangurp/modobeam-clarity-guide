@@ -24,6 +24,7 @@ import {
   type Rhythm,
   type UsageMode,
 } from "@/lib/profile";
+import { PeopleManager } from "@/components/PeopleManager";
 import { fetchRecentInsights, type InsightLite } from "@/lib/progression";
 import { readKnowYou, shouldRegenerate, writeKnowYou } from "@/lib/aiKnowYou";
 import { supabase } from "@/integrations/supabase/client";
@@ -197,6 +198,13 @@ const Preferences = () => {
             </p>
           </div>
         </div>
+      </Section>
+
+      <Section
+        kicker="People · together readings"
+        title="Who you reflect about"
+      >
+        <PeopleManager />
       </Section>
 
       <Section

@@ -9,6 +9,8 @@ import {
   Telescope,
   HeartHandshake,
   Flag,
+  UsersRound,
+  UserSquare2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { CardCategory } from "@/data/deck";
@@ -24,7 +26,9 @@ export type DrawType =
   | "this-or-that"
   | "horizon"
   | "relationship-future"
-  | "milestone";
+  | "milestone"
+  | "duo"
+  | "group";
 
 /** Where a mode lives in the Readings library / home */
 export type ReadingGroup =
@@ -193,6 +197,32 @@ export const READING_TYPES: ReadingType[] = [
       "Where this is heading",
     ],
     icon: HeartHandshake,
+    category: "Relationships",
+    group: "together",
+    needsContext: true,
+  },
+  {
+    id: "duo",
+    label: "Duo · pass the phone",
+    subtitle: "A shared reading for two",
+    description:
+      "Two people, one device. Each draws a card and a reflection emerges between you.",
+    cardCount: 3,
+    positionLabels: ["Person A", "Person B", "Between you"],
+    icon: UserSquare2,
+    category: "Relationships",
+    group: "together",
+    needsContext: true,
+  },
+  {
+    id: "group",
+    label: "Group · circle reading",
+    subtitle: "A shared reading for 3–5",
+    description:
+      "Pass the phone around. Each person draws a card. The final card is for the group.",
+    cardCount: 4,
+    positionLabels: ["Person 1", "Person 2", "Person 3", "For the circle"],
+    icon: UsersRound,
     category: "Relationships",
     group: "together",
     needsContext: true,
