@@ -9,6 +9,8 @@ import {
   Telescope,
   HeartHandshake,
   Flag,
+  UsersRound,
+  UserSquare2,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { CardCategory } from "@/data/deck";
@@ -24,7 +26,9 @@ export type DrawType =
   | "this-or-that"
   | "horizon"
   | "relationship-future"
-  | "milestone";
+  | "milestone"
+  | "duo"
+  | "group";
 
 /** Where a mode lives in the Readings library / home */
 export type ReadingGroup =
