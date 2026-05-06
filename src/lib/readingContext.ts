@@ -167,6 +167,10 @@ export function describeContext(ctx: ReadingContext | null | undefined): string 
       return `${ctx.personName} · ${RELATIONSHIP_STATUS_LABELS[ctx.status]}`;
     case "milestone":
       return MILESTONE_LABELS[ctx.milestone];
+    case "duo":
+      return `${ctx.names[0]} & ${ctx.names[1]}${ctx.topic ? ` — ${ctx.topic}` : ""}`;
+    case "group":
+      return `${ctx.names.join(" · ")}${ctx.topic ? ` — ${ctx.topic}` : ""}`;
   }
 }
 
