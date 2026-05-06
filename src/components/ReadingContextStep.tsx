@@ -64,6 +64,8 @@ export const ReadingContextStep = ({ type, onConfirm, onSkip }: Props) => {
           <RelationshipFutureForm onConfirm={onConfirm} />
         )}
         {type === "milestone" && <MilestoneForm onConfirm={onConfirm} />}
+        {type === "duo" && <DuoForm onConfirm={onConfirm} />}
+        {type === "group" && <GroupForm onConfirm={onConfirm} />}
       </div>
 
       {onSkip && (
