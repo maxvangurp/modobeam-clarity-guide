@@ -103,18 +103,23 @@ const Draw = () => {
 
   const reading = getReadingType(type ?? "");
 
-  const count = reading?.cardCount ?? 1;
+  // Pre-draw context (friend / horizon / this-or-that / duo / group / etc.)
+  const needsContext = !!reading?.needsContext;
+  const [readingCtx, setReadingCtx] = useState<ReadingContext | null>(null);
+  const [showContextStep, setShowContextStep] = useState<boolean>(needsContext);
+
+  // Count is normally fixed, but Group adapts to circle size:
+  // one card per person + one shared "for the circle" card.
+  const count = (() => {
+    if (readingCtx?.kind === "group") return readingCtx.names.length + 1;
+    return reading?.cardCount ?? 1;
+  })();
 
   const [moment, setMoment] = useState<MomentNeed | null>(validMoment);
   // Auto-prompt the moment check-in only when the user's rhythm allows.
   const [showMoment, setShowMoment] = useState<boolean>(
     !fromOnboarding && !validMoment && shouldPromptMoment(profile?.rhythm),
   );
-
-  // Pre-draw context (friend / horizon / this-or-that / etc.)
-  const needsContext = !!reading?.needsContext;
-  const [readingCtx, setReadingCtx] = useState<ReadingContext | null>(null);
-  const [showContextStep, setShowContextStep] = useState<boolean>(needsContext);
 
   // Mark the prompt as shown the first time we surface it
   useEffect(() => {
