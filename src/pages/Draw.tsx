@@ -498,32 +498,31 @@ const Draw = () => {
       {/* Pass-the-phone hint for duo / group readings */}
       {(readingCtx?.kind === "duo" || readingCtx?.kind === "group") &&
         !allRevealed &&
-        !shuffling && (
-          <div className="mb-6 rounded-2xl border border-border/55 bg-gradient-dawn px-4 py-3 text-center animate-fade-up">
-            <p className="text-[10px] uppercase tracking-[0.25em] text-foreground/65">
-              Pass the phone
-            </p>
-            <p className="mt-1 text-[13px] leading-snug text-foreground/85">
-              {(() => {
-                const nextIdx = revealed.findIndex((r) => !r);
-                if (nextIdx < 0) return "Everyone has drawn.";
-                const who = labels[nextIdx];
-                if (
-                  readingCtx.kind === "group" &&
-                  nextIdx === labels.length - 1
-                ) {
-                  return "Last card — for the circle. Reveal it together.";
-                }
-                return (
+        !shuffling &&
+        (() => {
+          const nextIdx = revealed.findIndex((r) => !r);
+          if (nextIdx < 0) return null;
+          const who = labels[nextIdx];
+          const isCircleCard =
+            readingCtx.kind === "group" && nextIdx === labels.length - 1;
+          return (
+            <div className="mb-6 rounded-2xl border border-border/55 bg-gradient-dawn px-4 py-3 text-center animate-fade-up">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-foreground/65">
+                Pass the phone
+              </p>
+              <p className="mt-1 text-[13px] leading-snug text-foreground/85">
+                {isCircleCard ? (
+                  "Last card — for the circle. Reveal it together."
+                ) : (
                   <>
                     <span className="font-medium">{who}</span> — your card is
                     next.
                   </>
-                ) as unknown as string;
-              })()}
-            </p>
-          </div>
-        )}
+                )}
+              </p>
+            </div>
+          );
+        })()}
 
       <div
         className={`${gridClass} animate-fade-up [animation-delay:120ms] transition-opacity duration-700`}
