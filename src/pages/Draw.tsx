@@ -244,7 +244,16 @@ const Draw = () => {
 
   if (!reading) return null;
 
-  const labels = reading.positionLabels;
+  // Dynamic per-person labels for Duo & Group; fall back to fixed labels.
+  const labels = (() => {
+    if (readingCtx?.kind === "duo") {
+      return [readingCtx.names[0], readingCtx.names[1], "Between you"];
+    }
+    if (readingCtx?.kind === "group") {
+      return [...readingCtx.names, "For the circle"];
+    }
+    return reading.positionLabels;
+  })();
 
   if (showContextStep) {
     return (
