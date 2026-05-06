@@ -94,6 +94,10 @@ function contextIntro(type: DrawType): string {
       return "Choose who this is about and where you stand. The reading meets you there.";
     case "milestone":
       return "Mark the threshold. A short ritual reflection for the moment itself.";
+    case "duo":
+      return "Two people, one device. Add both names — you'll pass the phone between draws.";
+    case "group":
+      return "A circle of 3–5. Add everyone's name — pass the phone as each card is drawn.";
     default:
       return "A small step before the draw.";
   }
