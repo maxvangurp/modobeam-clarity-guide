@@ -172,15 +172,24 @@ const EmptyState = () => (
   <div className="rounded-3xl border border-border/60 bg-card/60 p-8 text-center backdrop-blur animate-fade-up">
     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-beam-soft to-beam mx-auto mb-4 shadow-glow" />
     <h2 className="font-display text-lg mb-1">Nothing here yet</h2>
-    <p className="text-sm text-muted-foreground mb-5">
-      Your past insights will live here.
+    <p className="text-sm text-muted-foreground mb-6 max-w-[28ch] mx-auto leading-relaxed">
+      Once you complete a reading, your reflections settle here — a quiet
+      record you can return to.
     </p>
-    <Link
-      to="/"
-      className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:underline"
-    >
-      <Sparkles className="h-4 w-4" /> Draw your first card
-    </Link>
+    <div className="flex flex-col items-center gap-2.5">
+      <Link
+        to="/"
+        className="inline-flex items-center gap-2 rounded-full bg-foreground text-background px-5 py-2.5 text-[13px] font-medium hover:opacity-90 transition-smooth"
+      >
+        <Sparkles className="h-4 w-4" /> Draw your first card
+      </Link>
+      <Link
+        to="/readings"
+        className="text-[12px] uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground transition-smooth"
+      >
+        Or explore readings →
+      </Link>
+    </div>
   </div>
 );
 
