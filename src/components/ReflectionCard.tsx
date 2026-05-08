@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { OracleCard } from "@/data/deck";
 import { getCardArt } from "@/data/cardArt";
 import { CardSigil } from "@/components/CardSigil";
+import { CardFront } from "@/components/CardFront";
 import { haptic } from "@/lib/haptics";
 import { cn } from "@/lib/utils";
 
